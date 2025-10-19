@@ -34,7 +34,7 @@ build
 # Sample data (local development)
 /sample-data
 *.json.backup
-
+*.md
 # Editor directories and files
 .vscode/*
 !.vscode/extensions.json

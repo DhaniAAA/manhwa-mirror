@@ -159,7 +159,7 @@
 
           <div class="chapter-list" v-if="!loadingChapters">
             <div 
-              v-for="(chapter, index) in sortedChapters" 
+              v-for="chapter in sortedChapters" 
               :key="chapter.slug"
               class="chapter-item"
               @click="readChapter(chapter)"
@@ -168,7 +168,7 @@
                 <!-- <div class="chapter-number">{{ index + 1 }}</div> -->
                 <div class="chapter-details">
                   <h4 class="chapter-title">{{ chapter.title }}</h4>
-                  <span class="chapter-date">{{ chapter.date || 'Baru saja' }}</span>
+                  <span class="chapter-date">{{ chapter.waktu_rilis || 'Baru saja' }}</span>
                 </div>
               </div>
               <div class="chapter-action">
@@ -184,7 +184,7 @@
             <p>Memuat chapters...</p>
           </div>
 
-          <div class="empty-state" v-if="!loadingChapters && chapters.length === 0">
+          <div class="empty-state" v-if="!loadingChapters && chapters?.length === 0">
             <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
               <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
               <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -247,8 +247,9 @@ const toggleSort = () => {
 }
 
 const startReading = () => {
-  if (props.chapters && props.chapters.length > 0) {
-    readChapter(props.chapters[0])
+  const firstChapter = props.chapters?.[0]
+  if (firstChapter) {
+    readChapter(firstChapter)
   }
 }
 

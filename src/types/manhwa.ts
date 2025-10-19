@@ -8,6 +8,7 @@ export interface Chapter {
   slug: string
   title: string
   url: string
+  waktu_rilis?: string
   total_images: number
   images: string[]
 }
