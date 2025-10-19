@@ -291,7 +291,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
       :slug="selectedManhwa.slug || ''"
       :title="metadata?.title || selectedManhwa.title"
       :rating="metadata?.rating || selectedManhwa.rating"
-      :totalChapters="metadata?.total_chapters || selectedManhwa.chapters"
+      :totalChapters="metadata?.total_chapters || selectedManhwa.chapters || selectedManhwa.total_chapters || 0"
       :description="metadata?.description"
       :author="metadata?.author"
       :artist="metadata?.artist"
@@ -301,7 +301,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
       :releaseYear="metadata?.release_year"
       :lastUpdate="metadata?.lastUpdate || selectedManhwa.lastUpdate"
       :coverUrl="metadata?.cover_url || selectedManhwa.cover_url"
-      :chapters="chaptersData?.chapters || generateDemoChapters(selectedManhwa.chapters)"
+      :chapters="chaptersData?.chapters || generateDemoChapters(selectedManhwa.chapters || selectedManhwa.total_chapters || 0)"
       @close="closeDetail"
       @readChapter="openReaderFromDetail"
     />

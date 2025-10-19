@@ -11,13 +11,13 @@
           @error="handleImageError"
         />
         
-        <div class="cover-overlay">
+        <!-- <div class="cover-overlay">
           <button class="quick-read-btn" @click.stop="handleQuickRead">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
               <polygon points="5 3 19 12 5 21 5 3"/>
             </svg>
           </button>
-        </div>
+        </div> -->
         <div class="cover-badge" v-if="badge">{{ badge }}</div>
         <button class="bookmark-btn" :class="{ active: isBookmarked }" @click="toggleBookmark">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
@@ -32,16 +32,16 @@
     
     <div class="card-content">
       <h3 class="card-title">{{ title }}</h3>
-      <p class="card-genre">{{ genre }}</p>
+      <p class="card-genre" v-if="genre">{{ genre }}</p>
       <div class="card-meta">
-        <div class="meta-item">
+        <div class="meta-item" v-if="rating">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
           <span>{{ rating }}</span>
         </div>
-        <div class="meta-divider">•</div>
-        <div class="meta-item">
+        <div class="meta-divider" v-if="rating && chapters">•</div>
+        <div class="meta-item" v-if="chapters">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
@@ -66,9 +66,9 @@ import { ref } from 'vue'
 const props = defineProps<{
   slug?: string
   title: string
-  genre: string
-  rating: string
-  chapters: number
+  genre?: string
+  rating?: string
+  chapters?: number
   badge?: string
   progress?: number
   lastUpdate?: string
@@ -91,9 +91,9 @@ const handleCardClick = () => {
   emit('click', props.slug || '', props.title)
 }
 
-const handleQuickRead = () => {
-  emit('quickRead', props.slug || '', props.title)
-}
+// const handleQuickRead = () => {
+//   emit('quickRead', props.slug || '', props.title)
+// }
 
 const handleImageError = (event: Event) => {
   console.warn(`Failed to load cover image for: ${props.title}`)
@@ -156,7 +156,7 @@ const handleImageError = (event: Event) => {
   opacity: 1;
 }
 
-.quick-read-btn {
+/* .quick-read-btn {
   width: 56px;
   height: 56px;
   border-radius: 50%;
@@ -169,12 +169,12 @@ const handleImageError = (event: Event) => {
   justify-content: center;
   transition: all var(--transition-base);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
+} */
 
-.quick-read-btn:hover {
+/* .quick-read-btn:hover {
   transform: scale(1.1);
   background: var(--accent-secondary);
-}
+} */
 
 .cover-badge {
   position: absolute;

@@ -49,10 +49,13 @@ export interface ChaptersData {
 export interface ManhwaCardData {
   slug: string
   title: string
-  genre: string
-  rating: string
-  chapters: number
+  genre?: string
+  genres?: string[]
+  rating?: string
+  chapters?: number
+  total_chapters?: number
   badge?: string
+  status?: string
   progress?: number
   lastUpdate?: string
   coverImage?: string

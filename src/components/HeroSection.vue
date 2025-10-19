@@ -50,22 +50,33 @@
       </div>
       
       <div class="hero-showcase">
-        <div class="showcase-grid">
+        <div v-if="loading" class="showcase-loading">
+          <div class="spinner"></div>
+          <p>Memuat manhwa...</p>
+        </div>
+        
+        <div v-else class="showcase-grid">
           <div 
             v-for="(item, index) in featuredManhwa" 
-            :key="index"
+            :key="item.slug"
             class="showcase-card"
             :style="{ animationDelay: `${index * 0.1}s` }"
           >
             <div class="card-image">
-              <div class="card-overlay">
+              <img 
+                v-if="item.cover_url" 
+                :src="item.cover_url" 
+                :alt="item.title"
+                class="card-cover"
+              />
+              <!-- <div class="card-overlay">
                 <button class="card-play">
                   <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3"/>
                   </svg>
                 </button>
-              </div>
-              <div class="card-badge">{{ item.badge }}</div>
+              </div> -->
+              <div class="card-badge">{{ item.status || 'New' }}</div>
             </div>
             <div class="card-info">
               <h3 class="card-title">{{ item.title }}</h3>
@@ -74,9 +85,9 @@
                   <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
-                  {{ item.rating }}
+                  {{ item.rating || '9.5' }}
                 </span>
-                <span class="card-chapters">Ch. {{ item.chapters }}</span>
+                <span class="card-chapters">Ch. {{ item.total_chapters }}</span>
               </div>
             </div>
           </div>
@@ -87,34 +98,23 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
+import { ManhwaService } from '../services/manhwaService'
+import type { ManhwaCardData } from '../types/manhwa'
 
-const featuredManhwa = ref([
-  {
-    title: 'Solo Leveling',
-    badge: 'Hot',
-    rating: '9.8',
-    chapters: '179'
-  },
-  {
-    title: 'Tower of God',
-    badge: 'Popular',
-    rating: '9.5',
-    chapters: '586'
-  },
-  {
-    title: 'The Beginning After The End',
-    badge: 'New',
-    rating: '9.7',
-    chapters: '168'
-  },
-  {
-    title: 'Omniscient Reader',
-    badge: 'Trending',
-    rating: '9.6',
-    chapters: '145'
+const featuredManhwa = ref<ManhwaCardData[]>([])
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    const cards = await ManhwaService.getManhwaCards(4) // Get 4 featured
+    featuredManhwa.value = cards
+  } catch (error) {
+    console.error('Error loading featured manhwa:', error)
+  } finally {
+    loading.value = false
   }
-])
+})
 </script>
 
 <style scoped>
@@ -307,6 +307,35 @@ const featuredManhwa = ref([
   aspect-ratio: 3/4;
   background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated));
   overflow: hidden;
+}
+
+.card-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.showcase-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 400px;
+  color: var(--text-secondary);
+  gap: 1rem;
+}
+
+.spinner {
+  width: 48px;
+  height: 48px;
+  border: 4px solid var(--bg-tertiary);
+  border-top-color: var(--accent-primary);
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
 }
 
 .card-overlay {
