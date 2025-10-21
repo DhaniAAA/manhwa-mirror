@@ -2,12 +2,12 @@
   <div class="manhwa-card" @click="handleCardClick">
     <div class="card-cover">
       <div class="cover-image">
-        <!-- Cover Image -->
-        <img 
-          v-if="coverImage" 
-          :src="coverImage" 
+        <!-- Cover Image with Lazy Loading -->
+        <LazyImage
+          v-if="coverImage"
+          :src="coverImage"
           :alt="title"
-          class="cover-img"
+          image-class="cover-img"
           @error="handleImageError"
         />
         
@@ -57,11 +57,24 @@
         <span>{{ lastUpdate }}</span>
       </div>
     </div>
+    
+    <!-- Latest Chapters List -->
+    <div v-if="latestChapters && latestChapters.length > 0" class="chapters-list">
+      <div 
+        v-for="(chapter, index) in latestChapters.slice(0, 2)" 
+        :key="index"
+        class="chapter-item"
+      >
+        <span class="chapter-title">{{ chapter.title }}</span>
+        <span class="chapter-time">{{ chapter.waktu_rilis || 'Baru' }}</span>
+      </div>
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import LazyImage from './LazyImage.vue'
 
 const props = defineProps<{
   slug?: string
@@ -73,6 +86,7 @@ const props = defineProps<{
   progress?: number
   lastUpdate?: string
   coverImage?: string
+  latestChapters?: Array<{ title: string; waktu_rilis?: string }>
 }>()
 
 const emit = defineEmits<{
@@ -97,8 +111,6 @@ const handleCardClick = () => {
 
 const handleImageError = (event: Event) => {
   console.warn(`Failed to load cover image for: ${props.title}`)
-  const img = event.target as HTMLImageElement
-  img.style.display = 'none'
 }
 </script>
 
@@ -310,5 +322,46 @@ const handleImageError = (event: Event) => {
 
 .card-update svg {
   color: var(--accent-primary);
+}
+
+/* Latest Chapters List */
+.chapters-list {
+  border-top: 1px solid var(--divider-color);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.chapter-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.625rem 1rem;
+  gap: 0.5rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background var(--transition-fast);
+}
+
+.chapter-item:last-child {
+  border-bottom: none;
+}
+
+.chapter-item:hover {
+  background: rgba(139, 92, 246, 0.1);
+}
+
+.chapter-title {
+  font-size: 0.8rem;
+  color: var(--text-secondary);
+  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  flex: 1;
+}
+
+.chapter-time {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  white-space: nowrap;
+  flex-shrink: 0;
 }
 </style>

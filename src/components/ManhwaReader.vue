@@ -88,7 +88,11 @@
             </button>
             
             <div class="chapter-select">
-              <select v-model="currentChapter" class="chapter-dropdown">
+              <select 
+                v-model="currentChapter" 
+                class="chapter-dropdown"
+                @change="onChapterSelect"
+              >
                 <option v-for="ch in totalChapters" :key="ch" :value="ch">
                   Chapter {{ ch }}
                 </option>
@@ -179,16 +183,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { ManhwaService } from '../services/manhwaService'
 
 const props = defineProps<{
   manhwaTitle: string
+  manhwaSlug: string
   chapterSlug?: string
+  initialChapter?: number
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   close: []
+  chapterChange: [chapter: number]
 }>()
 
 const loading = ref(false)
@@ -213,6 +220,10 @@ const readProgress = computed(() => {
   return (currentPage.value / totalPages.value) * 100
 })
 
+const onChapterSelect = () => {
+  console.log(`📖 Chapter selected from dropdown: ${currentChapter.value}`)
+}
+
 const toggleFullscreen = () => {
   isFullscreen.value = !isFullscreen.value
   if (isFullscreen.value) {
@@ -233,14 +244,35 @@ const toggleSettings = () => {
 const previousChapter = () => {
   if (currentChapter.value > 1) {
     currentChapter.value--
+    console.log(`⬅️ Previous chapter: ${currentChapter.value}`)
   }
 }
 
 const nextChapter = () => {
   if (currentChapter.value < totalChapters.value) {
     currentChapter.value++
+    console.log(`➡️ Next chapter: ${currentChapter.value}`)
   }
 }
+
+// Watch for chapter changes and reload images
+watch(currentChapter, async (newChapter, oldChapter) => {
+  if (newChapter !== oldChapter) {
+    console.log(`🔄 Chapter changed: ${oldChapter} → ${newChapter}`)
+    
+    // Construct chapter slug (e.g., "chapter-01", "chapter-02")
+    const chapterSlug = `chapter-${String(newChapter).padStart(2, '0')}`
+    
+    // Reload chapter images
+    await loadChapterImages(props.manhwaSlug, chapterSlug)
+    
+    // Emit event to parent
+    emit('chapterChange', newChapter)
+    
+    // Scroll to top
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+})
 
 const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
   loading.value = true
@@ -649,11 +681,13 @@ onMounted(() => {
   border-radius: 3px;
   background: var(--bg-tertiary);
   outline: none;
+  appearance: none;
   -webkit-appearance: none;
   margin-bottom: 0.5rem;
 }
 
 .setting-slider::-webkit-slider-thumb {
+  appearance: none;
   -webkit-appearance: none;
   width: 18px;
   height: 18px;

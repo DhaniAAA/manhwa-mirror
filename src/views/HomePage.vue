@@ -29,6 +29,7 @@
               :chapters="manhwa.total_chapters"
               :genre="manhwa.genres?.join(', ')"
               :badge="manhwa.status"
+              :latestChapters="manhwa.latestChapters"
               @click="goToDetail"
             />
           </div>
@@ -120,6 +121,7 @@
               :chapters="manhwa.total_chapters"
               :genre="manhwa.genres?.join(', ')"
               :badge="manhwa.status"
+              :latestChapters="manhwa.latestChapters"
               @click="goToDetail"
             />
           </div>
@@ -246,8 +248,8 @@ onMounted(async () => {
   try {
     console.log('🔄 Loading manhwa sections...')
     
-    // Load all manhwa
-    const allManhwa = await ManhwaService.getManhwaCards()
+    // Load all manhwa WITHOUT chapters first for faster initial load
+    const allManhwa = await ManhwaService.getManhwaCards(undefined, true)
     
     // Latest: Sort by total_chapters (assuming more chapters = more updates)
     latestManhwa.value = [...allManhwa].sort((a, b) => (b.total_chapters || 0) - (a.total_chapters || 0))
@@ -255,8 +257,20 @@ onMounted(async () => {
     // Popular: Sort by rating or randomly for now
     popularManhwa.value = [...allManhwa].sort(() => Math.random() - 0.5)
     
-    console.log(`✅ Loaded ${latestManhwa.value.length} manhwa`)
+    console.log(`✅ Loaded ${latestManhwa.value.length} manhwa (fast mode - no chapters)`)
     console.log(`📊 Latest pages: ${latestTotalPages.value}, Popular pages: ${popularTotalPages.value}`)
+    
+    // Load chapters in background after initial render
+    setTimeout(async () => {
+      console.log('🔄 Loading chapters data in background...')
+      const allManhwaWithChapters = await ManhwaService.getManhwaCards()
+      
+      // Update with chapters
+      latestManhwa.value = [...allManhwaWithChapters].sort((a, b) => (b.total_chapters || 0) - (a.total_chapters || 0))
+      popularManhwa.value = [...allManhwaWithChapters].sort(() => Math.random() - 0.5)
+      
+      console.log('✅ Chapters data loaded')
+    }, 1000)
   } catch (error) {
     console.error('❌ Error loading manhwa:', error)
   } finally {

@@ -1,14 +1,23 @@
 import { supabase, BUCKET_NAME } from '../lib/supabase'
 import type { ManhwaMetadata, ChaptersData, ManhwaCardData, ChapterDetail } from '../types/manhwa'
+import { cacheService } from './cacheService'
 
 /**
  * Service untuk mengakses data manhwa dari Supabase Storage
  */
 export class ManhwaService {
   /**
-   * Mendapatkan daftar semua manhwa dari comics-list.json
+   * Mendapatkan daftar semua manhwa dari comics-list.json (with caching)
    */
   static async getComicsList(): Promise<string[]> {
+    const cacheKey = 'comics-list'
+    
+    // Check cache first
+    const cached = cacheService.get<string[]>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     try {
       console.log(`📥 Fetching comics-list.json from bucket: ${BUCKET_NAME}`)
       
@@ -24,6 +33,9 @@ export class ManhwaService {
       const text = await data.text()
       const comics = JSON.parse(text)
       
+      // Cache for 10 minutes
+      cacheService.set(cacheKey, comics, 10 * 60 * 1000)
+      
       console.log(`✅ Found ${comics.length} comics in list`)
       return comics
     } catch (error) {
@@ -33,9 +45,17 @@ export class ManhwaService {
   }
 
   /**
-   * Mendapatkan metadata manhwa (tanpa chapter details)
+   * Mendapatkan metadata manhwa (with caching)
    */
   static async getMetadata(slug: string): Promise<ManhwaMetadata | null> {
+    const cacheKey = `metadata-${slug}`
+    
+    // Check cache first
+    const cached = cacheService.get<ManhwaMetadata>(cacheKey)
+    if (cached) {
+      return cached
+    }
+
     try {
       console.log(`📖 Fetching metadata for: ${slug}`)
       
@@ -50,6 +70,9 @@ export class ManhwaService {
 
       const text = await data.text()
       const metadata = JSON.parse(text)
+      
+      // Cache for 5 minutes
+      cacheService.set(cacheKey, metadata, 5 * 60 * 1000)
       
       console.log(`✅ Metadata loaded for: ${metadata.title}`)
       return metadata
@@ -122,10 +145,87 @@ export class ManhwaService {
   }
 
   /**
-   * Convert metadata ke format ManhwaCardData untuk UI
+   * Helper: Process manhwa in parallel batches
    */
-  static async getManhwaCards(limit?: number): Promise<ManhwaCardData[]> {
+  private static async processBatch(
+    slugs: string[], 
+    skipChapters: boolean,
+    batchSize: number = 10
+  ): Promise<ManhwaCardData[]> {
+    const results: ManhwaCardData[] = []
+    
+    // Process in batches to avoid overwhelming the server
+    for (let i = 0; i < slugs.length; i += batchSize) {
+      const batch = slugs.slice(i, i + batchSize)
+      console.log(`⚡ Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(slugs.length / batchSize)} (${batch.length} items)`)
+      
+      // Fetch metadata in parallel for this batch
+      const batchPromises = batch.map(async (slug) => {
+        try {
+          const metadata = await this.getMetadata(slug)
+          if (!metadata) return null
+
+          // Get latest 2 chapters (only if not skipped)
+          let latestChapters: Array<{ title: string; waktu_rilis?: string }> = []
+          
+          if (!skipChapters) {
+            try {
+              const chaptersData = await this.getChapters(slug)
+              if (chaptersData?.chapters && chaptersData.chapters.length > 0) {
+                latestChapters = chaptersData.chapters
+                  .slice(-2)
+                  .reverse()
+                  .map(ch => ({
+                    title: ch.title,
+                    waktu_rilis: ch.waktu_rilis || undefined
+                  }))
+              }
+            } catch (error) {
+              // Silently fail for chapters
+            }
+          }
+
+          return {
+            slug: metadata.slug,
+            title: metadata.title,
+            genre: metadata.genres?.join(', ') || 'Action, Fantasy',
+            rating: metadata.rating || '9.5',
+            chapters: metadata.total_chapters,
+            lastUpdate: (metadata as any).metadata?.['Updated on'] || 'Baru saja',
+            cover_url: metadata.cover_url,
+            coverImage: metadata.cover_url,
+            latestChapters
+          } as ManhwaCardData
+        } catch (error) {
+          console.warn(`⚠️ Failed to process: ${slug}`)
+          return null
+        }
+      })
+
+      // Wait for all promises in this batch
+      const batchResults = await Promise.all(batchPromises)
+      
+      // Filter out nulls and add to results
+      results.push(...batchResults.filter((item): item is ManhwaCardData => item !== null))
+    }
+
+    return results
+  }
+
+  /**
+   * Convert metadata ke format ManhwaCardData untuk UI (with caching and parallel loading)
+   */
+  static async getManhwaCards(limit?: number, skipChapters: boolean = false): Promise<ManhwaCardData[]> {
     try {
+      const cacheKey = `manhwa-cards-${limit || 'all'}-${skipChapters ? 'no-chapters' : 'with-chapters'}`
+      
+      // Check cache first
+      const cached = cacheService.get<ManhwaCardData[]>(cacheKey)
+      if (cached) {
+        console.log(`🔍 Using cached manhwa cards (${cached.length} items)`)
+        return cached
+      }
+
       console.log(`🔍 Getting manhwa cards (limit: ${limit || 'all'})`)
       
       const comicsList = await this.getComicsList()
@@ -136,30 +236,13 @@ export class ManhwaService {
       }
       
       const comics = limit ? comicsList.slice(0, limit) : comicsList
-      console.log(`📋 Processing ${comics.length} comics`)
+      console.log(`📋 Processing ${comics.length} comics in parallel batches`)
 
-      const manhwaCards: ManhwaCardData[] = []
+      // Process in parallel batches (10 at a time)
+      const manhwaCards = await this.processBatch(comics, skipChapters, 10)
 
-      for (const slug of comics) {
-        console.log(`  📖 Fetching metadata for: ${slug}`)
-        const metadata = await this.getMetadata(slug)
-        
-        if (metadata) {
-          manhwaCards.push({
-            slug: metadata.slug,
-            title: metadata.title,
-            genre: metadata.genres?.join(', ') || 'Action, Fantasy',
-            rating: metadata.rating || '9.5',
-            chapters: metadata.total_chapters,
-            lastUpdate: (metadata as any).metadata?.['Updated on'] || 'Baru saja',
-            cover_url: metadata.cover_url,
-            coverImage: metadata.cover_url
-          })
-          console.log(`  ✅ Added: ${metadata.title}`)
-        } else {
-          console.warn(`  ⚠️ No metadata found for: ${slug}`)
-        }
-      }
+      // Cache for 3 minutes
+      cacheService.set(cacheKey, manhwaCards, 3 * 60 * 1000)
 
       console.log(`✅ Total manhwa cards created: ${manhwaCards.length}`)
       return manhwaCards

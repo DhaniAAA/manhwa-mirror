@@ -2,8 +2,10 @@
   <div class="reader-page-wrapper">
     <ManhwaReader
       :manhwaTitle="manhwaTitle"
+      :manhwaSlug="slug"
       :chapterSlug="chapterSlug"
       @close="goToDetail"
+      @chapterChange="handleChapterChange"
     />
   </div>
 </template>
@@ -34,6 +36,16 @@ onMounted(async () => {
 
 const goToDetail = () => {
   router.push({ name: 'detail', params: { slug } })
+}
+
+const handleChapterChange = (chapter: number) => {
+  console.log(`📖 Chapter changed to: ${chapter}`)
+  // Update URL without reload
+  const newChapterSlug = `chapter-${String(chapter).padStart(2, '0')}`
+  router.replace({ 
+    name: 'reader', 
+    params: { slug, chapterSlug: newChapterSlug } 
+  })
 }
 </script>
 

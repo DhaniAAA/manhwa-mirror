@@ -60,6 +60,7 @@ export interface ManhwaCardData {
   lastUpdate?: string
   coverImage?: string
   cover_url?: string
+  latestChapters?: Array<{ title: string; waktu_rilis?: string }>
 }
 
 export interface ManhwaDetail extends ManhwaCardData {

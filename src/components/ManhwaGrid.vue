@@ -35,6 +35,7 @@
           :chapters="manhwa.total_chapters"
           :genre="manhwa.genres?.join(', ') || 'Action'"
           :badge="manhwa.status"
+          :latestChapters="manhwa.latestChapters"
         />
       </div>
 
@@ -155,9 +156,18 @@ const goToPage = (page: number) => {
 onMounted(async () => {
   try {
     console.log('🔍 Loading all manhwa...')
-    const cards = await ManhwaService.getManhwaCards()
+    // Load without chapters first for faster initial load
+    const cards = await ManhwaService.getManhwaCards(undefined, true)
     allManhwa.value = cards
-    console.log(`✅ Loaded ${cards.length} manhwa`)
+    console.log(`✅ Loaded ${cards.length} manhwa (fast mode)`)
+    
+    // Load chapters in background
+    setTimeout(async () => {
+      console.log('🔄 Loading chapters in background...')
+      const cardsWithChapters = await ManhwaService.getManhwaCards()
+      allManhwa.value = cardsWithChapters
+      console.log('✅ Chapters loaded')
+    }, 1500)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load manhwa'
     console.error('❌ Error loading manhwa:', err)
