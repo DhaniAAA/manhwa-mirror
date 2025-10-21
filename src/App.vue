@@ -310,6 +310,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
     <ManhwaReader 
       v-if="showReader"
       :manhwaTitle="selectedManhwa?.title || ''"
+      :manhwaSlug="selectedManhwa?.slug || ''"
       @close="closeReader"
     />
   </div>
