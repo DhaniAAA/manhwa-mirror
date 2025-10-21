@@ -109,7 +109,7 @@ const handleCardClick = () => {
 //   emit('quickRead', props.slug || '', props.title)
 // }
 
-const handleImageError = (event: Event) => {
+const handleImageError = () => {
   console.warn(`Failed to load cover image for: ${props.title}`)
 }
 </script>
