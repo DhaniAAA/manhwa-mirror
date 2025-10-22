@@ -9,6 +9,15 @@
 
 Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyaman, dan performa optimal. Dibangun dengan Vue 3, TypeScript, dan Vite.
 
+## 🆕 Recent Updates
+
+### v0.2.0 - Performance & Stability Improvements
+- ✅ **Fixed 404 Error on Refresh** - Added `vercel.json` for proper SPA routing
+- ⚡ **Image Loading Optimization** - Implemented lazy loading, preloading, and skeleton UI
+- 💾 **Enhanced Caching** - Multi-layer caching for chapters and metadata
+- 🔧 **CORS Error Handling** - Better error detection and user-friendly messages
+- 📖 **Improved Documentation** - Added comprehensive troubleshooting guides
+
 ## 📑 Daftar Isi
 
 - [Fitur Utama](#-fitur-utama)
@@ -27,12 +36,14 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 - 🎨 **UI/UX Intuitif** - Antarmuka pengguna yang bersih dan mudah digunakan
 - 📖 **Reader Mode** - Pengalaman membaca yang optimal dengan kontrol penuh
 - 🎯 **Responsive Design** - Tampilan sempurna di semua perangkat
-- ⚡ **Performance** - Loading cepat dan animasi yang smooth dengan lazy loading
+- ⚡ **Performance Optimization** - Loading cepat dengan lazy loading, preloading, dan caching
+- 🖼️ **Smart Image Loading** - Lazy loading dengan skeleton shimmer dan progressive preloading
 - 🔖 **Bookmark System** - Simpan dan lanjutkan membaca manhwa favorit
 - 🔍 **Search Function** - Cari manhwa dengan mudah
 - 📊 **Progress Tracking** - Lacak progress bacaan Anda
 - 🗺️ **Vue Router** - Navigasi SPA yang smooth dengan routing
-- 💾 **Cache System** - Sistem caching untuk performa optimal
+- 💾 **Advanced Cache System** - Multi-layer caching untuk performa optimal
+- 🔄 **SPA Routing** - No 404 errors on refresh dengan proper Vercel configuration
 
 ## 🛠️ Teknologi
 
@@ -99,11 +110,23 @@ npm run preview
 
 Aplikasi dapat di-deploy ke berbagai platform hosting:
 
-**Vercel / Netlify:**
+**Vercel (Recommended):**
 1. Connect repository GitHub
-2. Set environment variables (VITE_SUPABASE_URL, VITE_SUPABASE_ANON_KEY)
+2. Set environment variables:
+   - `VITE_SUPABASE_URL`
+   - `VITE_SUPABASE_ANON_KEY`
+   - `VITE_BUCKET_NAME` (optional, default: manga-data)
 3. Build command: `npm run build`
 4. Output directory: `dist`
+5. Framework preset: Vite
+
+**Important**: File `vercel.json` sudah dikonfigurasi untuk mengatasi 404 error pada refresh.
+
+**Netlify:**
+1. Connect repository GitHub
+2. Set environment variables (sama seperti Vercel)
+3. Build command: `npm run build`
+4. Publish directory: `dist`
 
 **Manual:**
 ```sh
@@ -148,6 +171,7 @@ manhwa-mirror/
 ├── public/                        # Static assets
 ├── .env                           # Environment variables (Supabase)
 ├── .env.example                   # Environment variables template
+├── vercel.json                    # Vercel deployment configuration
 ├── Panduan.md                     # Panduan struktur data Supabase
 └── index.html                     # HTML template
 ```
@@ -166,11 +190,17 @@ Menggunakan Vue 3 Composition API dengan composables:
 - `useManhwaDetail` - Mengelola state detail manhwa dan chapters
 
 ### Services
-- **manhwaService** - Mengambil data dari Supabase Storage
+- **manhwaService** - Mengambil data dari Supabase Storage dengan caching
+  - Metadata caching (5 menit)
+  - Chapters caching (5 menit)
+  - Chapter detail caching (10 menit)
+  - CORS error detection & helpful logging
 - **cacheService** - Mengelola caching data untuk performa optimal
 
 ### Components
-- **Lazy Loading** - Komponen `LazyImage` untuk optimasi loading gambar
+- **Smart Image Loading** - Lazy loading dengan priority loading untuk 3 gambar pertama
+- **Progressive Preloading** - Otomatis preload 3 gambar berikutnya saat scroll
+- **Loading Skeleton** - Shimmer animation untuk feedback visual
 - **Reusable Components** - Card, Grid, Section untuk konsistensi UI
 
 ## 🎨 Fitur Design
@@ -193,7 +223,8 @@ Website menggunakan efek ambient lighting dengan gradient radial yang beranimasi
 - Smooth transitions pada hover states
 - Ambient background animation
 - Progress bar animations
-- Lazy loading dengan skeleton screens
+- Skeleton shimmer untuk loading states
+- Image fade-in transitions
 
 ## 🔧 Customization
 
@@ -263,20 +294,38 @@ Lihat `Panduan.md` untuk detail lengkap struktur data.
 
 ## 🔍 Troubleshooting
 
+### CORS Error (Access-Control-Allow-Origin: Missing Header)
+**Solusi**: Set Supabase Storage bucket menjadi **Public**
+1. Buka Supabase Dashboard → Storage
+2. Pilih bucket `manga-data`
+3. Settings → Toggle **"Public bucket" ON**
+4. Save
+
+📖 **Lihat `SUPABASE_CORS_FIX.md` untuk panduan lengkap**
+
+### 404 Error saat Refresh Halaman
+**Solusi**: File `vercel.json` sudah dikonfigurasi untuk mengatasi ini.
+- Pastikan file `vercel.json` ada di root project
+- Deploy ulang ke Vercel
+- Refresh halaman seharusnya tidak error lagi
+
 ### Data tidak muncul
 - Pastikan file `.env` sudah dikonfigurasi dengan benar
 - Cek koneksi ke Supabase Storage
 - Pastikan bucket `manga-data` dapat diakses secara public
+- Buka browser console untuk melihat error messages
 
 ### Build error
 - Hapus folder `node_modules` dan `package-lock.json`
 - Jalankan `npm install` ulang
 - Pastikan menggunakan Node.js v16 atau lebih tinggi
 
-### Image tidak loading
-- Cek CORS settings di Supabase Storage
-- Pastikan URL image valid dan dapat diakses
-- Cek network tab di browser DevTools
+### Image loading lambat
+**Sudah dioptimasi dengan**:
+- Lazy loading untuk gambar di bawah viewport
+- Priority loading untuk 3 gambar pertama
+- Progressive preloading saat scroll
+- Multi-layer caching system
 
 ## 🤝 Contributing
 
@@ -292,11 +341,15 @@ Contributions, issues, dan feature requests sangat diterima!
 
 MIT License - lihat file LICENSE untuk detail
 
+## 📚 Documentation
+
+- **Panduan.md** - Panduan struktur data Supabase
+
 ## 🔗 Links
 
+- **Live Demo**: [manhwa-mirror.vercel.app](https://manhwa-mirror.vercel.app)
 - **Repository**: [github.com/DhaniAAA/manhwa-mirror](https://github.com/DhaniAAA/manhwa-mirror)
 - **Issues**: [Report Bug / Request Feature](https://github.com/DhaniAAA/manhwa-mirror/issues)
-- **Documentation**: Lihat `Panduan.md` untuk panduan lengkap
 
 ## 👨‍💻 Developer
 
