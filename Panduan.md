@@ -1,6 +1,4 @@
-Ini merupakan Struktur bucket pada storage Supabase saya.
-
-
+Ini merupakan Struktur bucket pada storage Supabase.
 
 ### **Struktur Baru (Bucket):**
 
