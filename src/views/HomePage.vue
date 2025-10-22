@@ -2,11 +2,68 @@
   <div class="home-page">
     <HeroSection />
     
-    <!-- Latest Updates Section -->
-    <section class="manhwa-section">
+    <!-- Search Results Section -->
+    <section v-if="searchQuery" class="manhwa-section search-section">
       <div class="container">
         <div class="section-header">
-          <h2 class="section-title">Update Terbaru</h2>
+          <h2 class="section-title">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+              <circle cx="11" cy="11" r="8"/>
+              <path d="m21 21-4.35-4.35"/>
+            </svg>
+            Hasil Pencarian: "{{ searchQuery }}"
+          </h2>
+          <div class="page-info">
+            {{ searchResults.length }} manhwa ditemukan
+          </div>
+        </div>
+        
+        <div v-if="searchLoading" class="loading-state">
+          <div class="spinner"></div>
+          <p>Mencari manhwa...</p>
+        </div>
+        
+        <div v-else-if="searchResults.length === 0" class="empty-state">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+            <circle cx="11" cy="11" r="8"/>
+            <path d="m21 21-4.35-4.35"/>
+          </svg>
+          <h3>Tidak ada hasil</h3>
+          <p>Coba kata kunci lain untuk menemukan manhwa yang Anda cari</p>
+        </div>
+        
+        <div v-else class="manhwa-grid">
+          <ManhwaCard
+            v-for="manhwa in searchResults"
+            :key="manhwa.slug"
+            :slug="manhwa.slug"
+            :title="manhwa.title"
+            :coverImage="manhwa.cover_url || manhwa.coverImage"
+            :rating="manhwa.rating"
+            :chapters="manhwa.chapters || manhwa.total_chapters"
+            :genre="manhwa.genre"
+            :badge="manhwa.badge"
+            :latestChapters="manhwa.latestChapters"
+            @click="goToDetail"
+            @chapterClick="goToChapter"
+          />
+        </div>
+      </div>
+    </section>
+    
+    <!-- Rekomendasi Manhwa Section -->
+    <section id="recommendation-section" class="manhwa-section recommendation-section">
+      <div class="container">
+        <div class="section-header">
+          <div class="header-with-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+              <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+            </svg>
+            <div>
+              <h2 class="section-title">Rekomendasi Manhwa</h2>
+              <p class="section-description">Pilihan terbaik untuk Anda berdasarkan rating tertinggi</p>
+            </div>
+          </div>
           <div class="page-info">
             Halaman {{ latestPage }} dari {{ latestTotalPages }}
           </div>
@@ -14,7 +71,7 @@
         
         <div v-if="loadingLatest" class="loading-state">
           <div class="spinner"></div>
-          <p>Memuat manhwa...</p>
+          <p>Memuat rekomendasi...</p>
         </div>
         
         <div v-else>
@@ -24,17 +81,18 @@
               :key="manhwa.slug"
               :slug="manhwa.slug"
               :title="manhwa.title"
-              :coverImage="manhwa.cover_url"
+              :coverImage="manhwa.cover_url || manhwa.coverImage"
               :rating="manhwa.rating"
-              :chapters="manhwa.total_chapters"
-              :genre="manhwa.genres?.join(', ')"
-              :badge="manhwa.status"
+              :chapters="manhwa.chapters || manhwa.total_chapters"
+              :genre="manhwa.genre"
+              :badge="manhwa.badge || 'Recommended'"
               :latestChapters="manhwa.latestChapters"
               @click="goToDetail"
+              @chapterClick="goToChapter"
             />
           </div>
           
-          <!-- Pagination for Latest -->
+          <!-- Pagination for Recommendations -->
           <div v-if="latestTotalPages > 1" class="pagination">
             <button 
               class="pagination-btn"
@@ -95,7 +153,7 @@
     </section>
     
     <!-- Popular Section -->
-    <section class="manhwa-section">
+    <section id="popular-section" class="manhwa-section">
       <div class="container">
         <div class="section-header">
           <h2 class="section-title">Manhwa Populer</h2>
@@ -123,6 +181,7 @@
               :badge="manhwa.status"
               :latestChapters="manhwa.latestChapters"
               @click="goToDetail"
+              @chapterClick="goToChapter"
             />
           </div>
           
@@ -189,19 +248,25 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import HeroSection from '../components/HeroSection.vue'
 import ManhwaCard from '../components/ManhwaCard.vue'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaCardData } from '../types/manhwa'
 
 const router = useRouter()
+const route = useRoute()
 
 const loadingLatest = ref(true)
 const loadingPopular = ref(true)
 const latestManhwa = ref<ManhwaCardData[]>([])
 const popularManhwa = ref<ManhwaCardData[]>([])
+
+// Search state
+const searchQuery = ref('')
+const searchResults = ref<ManhwaCardData[]>([])
+const searchLoading = ref(false)
 
 // Pagination state
 const latestPage = ref(1)
@@ -230,44 +295,158 @@ const goToDetail = (slug: string) => {
   router.push({ name: 'detail', params: { slug } })
 }
 
-// Pagination functions for Latest
+const goToChapter = (manhwaSlug: string, chapterSlug: string) => {
+  console.log(`📖 Navigating to chapter: ${manhwaSlug}/${chapterSlug}`)
+  router.push({ name: 'reader', params: { slug: manhwaSlug, chapterSlug } })
+}
+
+// Pagination functions for Recommendations (Latest)
 const goToLatestPage = (page: number) => {
   latestPage.value = page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
-  console.log(`📄 Latest page changed to: ${page}`)
+  console.log(`📄 Recommendations page changed to: ${page}`)
+  
+  // Scroll to recommendation section
+  nextTick(() => {
+    const recommendationSection = document.getElementById('recommendation-section')
+    if (recommendationSection) {
+      const offset = 80 // navbar height
+      const elementPosition = recommendationSection.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - offset
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+      console.log(`✅ Scrolled to recommendation section`)
+    } else {
+      console.warn('⚠️ Recommendation section not found')
+    }
+  })
 }
 
 // Pagination functions for Popular
 const goToPopularPage = (page: number) => {
   popularPage.value = page
-  window.scrollTo({ top: 0, behavior: 'smooth' })
   console.log(`📄 Popular page changed to: ${page}`)
+  
+  // Scroll to popular section
+  nextTick(() => {
+    const popularSection = document.getElementById('popular-section')
+    if (popularSection) {
+      const offset = 80 // navbar height
+      const elementPosition = popularSection.getBoundingClientRect().top
+      const offsetPosition = elementPosition + window.pageYOffset - offset
+      
+      window.scrollTo({
+        top: offsetPosition,
+        behavior: 'smooth'
+      })
+      console.log(`✅ Scrolled to popular section`)
+    } else {
+      console.warn('⚠️ Popular section not found')
+    }
+  })
 }
+
+// Search function
+const handleSearch = async (query: string) => {
+  console.log(`🔍 [HomePage] handleSearch called with query: "${query}"`)
+  searchQuery.value = query
+  
+  if (!query.trim()) {
+    console.log('📭 [HomePage] Empty query, clearing results')
+    searchResults.value = []
+    return
+  }
+  
+  searchLoading.value = true
+  console.log(`🔄 [HomePage] Starting search for: "${query}"`)
+  
+  try {
+    const results = await ManhwaService.searchManhwa(query)
+    searchResults.value = results
+    console.log(`✅ [HomePage] Found ${results.length} results:`, results.map(r => r.title))
+    
+    if (results.length === 0) {
+      console.warn(`⚠️ [HomePage] No results found for: "${query}"`)
+    }
+  } catch (error) {
+    console.error('❌ [HomePage] Search error:', error)
+    searchResults.value = []
+  } finally {
+    searchLoading.value = false
+    console.log(`🏁 [HomePage] Search completed. Loading: ${searchLoading.value}, Results: ${searchResults.value.length}`)
+  }
+}
+
+// Watch for route query changes (for search)
+watch(
+  () => route.query.search,
+  (newSearch) => {
+    console.log(`👀 [HomePage] Route query changed, search:`, newSearch)
+    if (typeof newSearch === 'string') {
+      handleSearch(newSearch)
+    } else if (newSearch === undefined) {
+      // Clear search when query is removed
+      handleSearch('')
+    }
+  },
+  { immediate: false } // Don't run on mount, onMounted will handle initial load
+)
+
+// Expose handleSearch for parent components
+defineExpose({
+  handleSearch
+})
 
 onMounted(async () => {
   try {
     console.log('🔄 Loading manhwa sections...')
     
+    // Check if there's a search query in URL
+    if (route.query.search && typeof route.query.search === 'string') {
+      console.log('🔍 Search query from URL:', route.query.search)
+      await handleSearch(route.query.search)
+    }
+    
     // Load all manhwa WITHOUT chapters first for faster initial load
     const allManhwa = await ManhwaService.getManhwaCards(undefined, true)
     
-    // Latest: Sort by total_chapters (assuming more chapters = more updates)
-    latestManhwa.value = [...allManhwa].sort((a, b) => (b.total_chapters || 0) - (a.total_chapters || 0))
+    // Recommendations: Sort by rating (highest first)
+    latestManhwa.value = [...allManhwa].sort((a, b) => {
+      const ratingA = parseFloat(a.rating || '0')
+      const ratingB = parseFloat(b.rating || '0')
+      return ratingB - ratingA
+    })
     
-    // Popular: Sort by rating or randomly for now
-    popularManhwa.value = [...allManhwa].sort(() => Math.random() - 0.5)
+    // Popular: Sort by total chapters (most chapters = most popular)
+    popularManhwa.value = [...allManhwa].sort((a, b) => {
+      const chaptersA = a.chapters || a.total_chapters || 0
+      const chaptersB = b.chapters || b.total_chapters || 0
+      return chaptersB - chaptersA
+    })
     
     console.log(`✅ Loaded ${latestManhwa.value.length} manhwa (fast mode - no chapters)`)
-    console.log(`📊 Latest pages: ${latestTotalPages.value}, Popular pages: ${popularTotalPages.value}`)
+    console.log(`📊 Recommendations pages: ${latestTotalPages.value}, Popular pages: ${popularTotalPages.value}`)
     
     // Load chapters in background after initial render
     setTimeout(async () => {
       console.log('🔄 Loading chapters data in background...')
       const allManhwaWithChapters = await ManhwaService.getManhwaCards()
       
-      // Update with chapters
-      latestManhwa.value = [...allManhwaWithChapters].sort((a, b) => (b.total_chapters || 0) - (a.total_chapters || 0))
-      popularManhwa.value = [...allManhwaWithChapters].sort(() => Math.random() - 0.5)
+      // Update with chapters - Recommendations by rating
+      latestManhwa.value = [...allManhwaWithChapters].sort((a, b) => {
+        const ratingA = parseFloat(a.rating || '0')
+        const ratingB = parseFloat(b.rating || '0')
+        return ratingB - ratingA
+      })
+      
+      // Popular by chapters
+      popularManhwa.value = [...allManhwaWithChapters].sort((a, b) => {
+        const chaptersA = a.chapters || a.total_chapters || 0
+        const chaptersB = b.chapters || b.total_chapters || 0
+        return chaptersB - chaptersA
+      })
       
       console.log('✅ Chapters data loaded')
     }, 1000)
@@ -339,6 +518,70 @@ onMounted(async () => {
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+/* Search Section */
+.search-section {
+  background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
+  border-bottom: 1px solid var(--border-color);
+}
+
+.search-section .section-title {
+  display: flex;
+  align-items: center;
+  color: var(--accent-primary);
+}
+
+/* Recommendation Section */
+.recommendation-section {
+  background: linear-gradient(180deg, rgba(251, 191, 36, 0.03) 0%, transparent 100%);
+}
+
+.header-with-icon {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.section-icon {
+  color: #fbbf24;
+  flex-shrink: 0;
+}
+
+.section-description {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0 0;
+}
+
+/* Empty State */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+  text-align: center;
+  padding: 3rem 1rem;
+}
+
+.empty-state svg {
+  color: var(--text-muted);
+  margin-bottom: 1.5rem;
+  opacity: 0.5;
+}
+
+.empty-state h3 {
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 0.5rem;
+}
+
+.empty-state p {
+  font-size: 1rem;
+  color: var(--text-secondary);
+  max-width: 400px;
 }
 
 /* Pagination */

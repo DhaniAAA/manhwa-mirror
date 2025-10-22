@@ -64,6 +64,7 @@
         v-for="(chapter, index) in latestChapters.slice(0, 2)" 
         :key="index"
         class="chapter-item"
+        @click="handleChapterClick($event, chapter)"
       >
         <span class="chapter-title">{{ chapter.title }}</span>
         <span class="chapter-time">{{ chapter.waktu_rilis || 'Baru' }}</span>
@@ -86,12 +87,13 @@ const props = defineProps<{
   progress?: number
   lastUpdate?: string
   coverImage?: string
-  latestChapters?: Array<{ title: string; waktu_rilis?: string }>
+  latestChapters?: Array<{ title: string; waktu_rilis?: string; slug?: string }>
 }>()
 
 const emit = defineEmits<{
   click: [slug: string, title: string]
   quickRead: [slug: string, title: string]
+  chapterClick: [manhwaSlug: string, chapterSlug: string]
 }>()
 
 const isBookmarked = ref(false)
@@ -103,6 +105,17 @@ const toggleBookmark = (event: Event) => {
 
 const handleCardClick = () => {
   emit('click', props.slug || '', props.title)
+}
+
+const handleChapterClick = (event: Event, chapter: { title: string; waktu_rilis?: string; slug?: string }) => {
+  event.stopPropagation() // Prevent card click
+  
+  if (chapter.slug && props.slug) {
+    console.log(`📖 Opening chapter: ${props.slug}/${chapter.slug}`)
+    emit('chapterClick', props.slug, chapter.slug)
+  } else {
+    console.warn('⚠️ Chapter slug or manhwa slug not available')
+  }
 }
 
 // const handleQuickRead = () => {
@@ -334,10 +347,11 @@ const handleImageError = () => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.625rem 1rem;
-  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
   border-bottom: 1px solid rgba(255, 255, 255, 0.05);
-  transition: background var(--transition-fast);
+  font-size: 0.8rem;
+  transition: all var(--transition-fast);
+  cursor: pointer;
 }
 
 .chapter-item:last-child {
@@ -345,7 +359,12 @@ const handleImageError = () => {
 }
 
 .chapter-item:hover {
-  background: rgba(139, 92, 246, 0.1);
+  background: rgba(139, 92, 246, 0.15);
+  transform: translateX(4px);
+}
+
+.chapter-item:hover .chapter-title {
+  color: var(--accent-primary);
 }
 
 .chapter-title {

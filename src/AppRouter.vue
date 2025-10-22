@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
-    <NavigationBar />
+    <NavigationBar @search="handleSearch" />
     
     <main class="main-content">
-      <RouterView />
+      <RouterView ref="routerViewRef" />
     </main>
     
     <footer class="app-footer">
@@ -84,10 +84,31 @@
 </template>
 
 <script setup lang="ts">
+import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue'
 
 const router = useRouter()
+const routerViewRef = ref<any>(null)
+
+// Handle search from NavigationBar
+const handleSearch = (query: string) => {
+  console.log(`🔍 [AppRouter] Search query received: "${query}"`)
+  console.log(`📍 [AppRouter] Current route:`, router.currentRoute.value.path)
+  
+  // Always use URL-based approach for reliability
+  const currentRoute = router.currentRoute.value
+  
+  if (currentRoute.path === '/') {
+    // Already on home, update query param
+    console.log(`✅ [AppRouter] On HomePage, updating query param`)
+    router.replace({ path: '/', query: { search: query || undefined } })
+  } else {
+    // Not on home, navigate with query
+    console.log(`🔄 [AppRouter] Navigating to home with search query`)
+    router.push({ path: '/', query: { search: query || undefined } })
+  }
+}
 
 // Filter by genre
 const filterByGenre = (genre: string) => {

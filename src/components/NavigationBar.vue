@@ -83,7 +83,7 @@
             placeholder="Cari manhwa favorit Anda..." 
             class="search-input"
             v-model="searchQuery"
-            @input="handleSearch"
+            ref="searchInputRef"
           />
           <button class="search-close" @click="toggleSearch">
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -98,22 +98,43 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, watch, nextTick } from 'vue'
+
+const emit = defineEmits<{
+  search: [query: string]
+}>()
 
 const searchOpen = ref(false)
 const searchQuery = ref('')
+const searchInputRef = ref<HTMLInputElement | null>(null)
 
 const toggleSearch = () => {
   searchOpen.value = !searchOpen.value
-  if (!searchOpen.value) {
+  console.log(`🔍 [NavBar] Search overlay toggled: ${searchOpen.value}`)
+  
+  if (searchOpen.value) {
+    // Focus input when opening
+    nextTick(() => {
+      searchInputRef.value?.focus()
+    })
+  } else {
+    // Clear search when closing
     searchQuery.value = ''
+    console.log('🧹 [NavBar] Clearing search')
+    emit('search', '')
   }
 }
 
-const handleSearch = () => {
-  // Search logic here
-  console.log('Searching for:', searchQuery.value)
-}
+// Watch for changes in search query with debounce
+let searchTimeout: number | undefined
+watch(searchQuery, (newQuery) => {
+  console.log(`⌨️ [NavBar] Search query changed: "${newQuery}"`)
+  clearTimeout(searchTimeout)
+  searchTimeout = window.setTimeout(() => {
+    console.log(`⏱️ [NavBar] Debounce complete, emitting: "${newQuery}"`)
+    emit('search', newQuery)
+  }, 300) // 300ms debounce
+})
 </script>
 
 <style scoped>

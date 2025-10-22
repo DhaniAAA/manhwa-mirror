@@ -6,88 +6,76 @@
     </div>
     
     <div class="container hero-content">
-      <div class="hero-text">
-        <h1 class="hero-title fade-in">
-          Temukan Dunia
-          <span class="text-gradient">Manhwa</span>
-          Terbaik
-        </h1>
-        <p class="hero-description fade-in">
-          Nikmati ribuan judul manhwa populer dengan antarmuka modern dan pengalaman membaca yang nyaman. 
-          Baca kapan saja, di mana saja.
-        </p>
-        <div class="hero-actions fade-in">
-          <button class="btn-primary">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polygon points="5 3 19 12 5 21 5 3"/>
-            </svg>
-            Mulai Membaca
-          </button>
-          <button class="btn-secondary">
-            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
-              <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
-            </svg>
-            Jelajahi Koleksi
-          </button>
+      <div class="hot-updates-header">
+        <div class="header-left">
+          <div class="fire-icon">🔥</div>
+          <div>
+            <h1 class="section-title">Hot Komik Update</h1>
+            <p class="section-subtitle">Manhwa terbaru yang baru saja dirilis</p>
+          </div>
         </div>
-        <div class="hero-stats fade-in">
-          <div class="stat-item">
-            <div class="stat-value">10K+</div>
-            <div class="stat-label">Manhwa</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-value">50K+</div>
-            <div class="stat-label">Pembaca</div>
-          </div>
-          <div class="stat-divider"></div>
-          <div class="stat-item">
-            <div class="stat-value">Daily</div>
-            <div class="stat-label">Update</div>
-          </div>
+        <div class="header-right">
+          <span class="update-badge">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <circle cx="12" cy="12" r="10"/>
+              <polyline points="12 6 12 12 16 14"/>
+            </svg>
+            Update Hari Ini
+          </span>
         </div>
       </div>
-      
-      <div class="hero-showcase">
-        <div v-if="loading" class="showcase-loading">
-          <div class="spinner"></div>
-          <p>Memuat manhwa...</p>
-        </div>
-        
-        <div v-else class="showcase-grid">
+
+      <div v-if="loading" class="hot-updates-loading">
+        <div class="spinner"></div>
+        <p>Memuat manhwa terbaru...</p>
+      </div>
+
+      <div v-else class="hot-updates-scroll">
+        <div class="hot-updates-grid">
           <div 
-            v-for="(item, index) in featuredManhwa" 
+            v-for="(item, index) in hotUpdates" 
             :key="item.slug"
-            class="showcase-card"
-            :style="{ animationDelay: `${index * 0.1}s` }"
+            class="hot-card"
+            :style="{ animationDelay: `${index * 0.05}s` }"
+            @click="goToDetail(item.slug)"
           >
-            <div class="card-image">
+            <div class="hot-card-image">
               <img 
                 v-if="item.cover_url" 
                 :src="item.cover_url" 
                 :alt="item.title"
-                class="card-cover"
+                class="hot-card-cover"
               />
-              <!-- <div class="card-overlay">
-                <button class="card-play">
-                  <svg width="24" height="24" viewBox="0 0 24 24" fill="currentColor">
+              <div class="hot-card-badge">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
+                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
+                </svg>
+                NEW
+              </div>
+              <div class="hot-card-overlay">
+                <button class="quick-read-btn">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3"/>
                   </svg>
                 </button>
-              </div> -->
-              <div class="card-badge">{{ item.status || 'New' }}</div>
+              </div>
             </div>
-            <div class="card-info">
-              <h3 class="card-title">{{ item.title }}</h3>
-              <div class="card-meta">
-                <span class="card-rating">
-                  <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor">
+            <div class="hot-card-info">
+              <h3 class="hot-card-title">{{ item.title }}</h3>
+              <div class="hot-card-meta">
+                <span class="hot-card-rating">
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
                   {{ item.rating || '9.5' }}
                 </span>
-                <span class="card-chapters">Ch. {{ item.total_chapters }}</span>
+                <span class="hot-card-chapters">{{ item.chapters || item.total_chapters }} Ch</span>
+              </div>
+              <div v-if="item.latestChapters && item.latestChapters.length > 0" class="hot-card-latest">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+                {{ item.latestChapters[0]?.title || 'Latest Chapter' }}
               </div>
             </div>
           </div>
@@ -99,18 +87,34 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaCardData } from '../types/manhwa'
 
-const featuredManhwa = ref<ManhwaCardData[]>([])
+const router = useRouter()
+const hotUpdates = ref<ManhwaCardData[]>([])
 const loading = ref(true)
+
+const goToDetail = (slug: string) => {
+  router.push({ name: 'detail', params: { slug } })
+}
 
 onMounted(async () => {
   try {
-    const cards = await ManhwaService.getManhwaCards(4) // Get 4 featured
-    featuredManhwa.value = cards
+    console.log('🔥 Loading hot updates...')
+    // Get manhwa with chapters for latest updates
+    const cards = await ManhwaService.getManhwaCards(12, false) // Get 12 with chapters
+    
+    // Sort by total chapters (more chapters = more updates)
+    hotUpdates.value = cards.sort((a, b) => {
+      const chaptersA = a.chapters || a.total_chapters || 0
+      const chaptersB = b.chapters || b.total_chapters || 0
+      return chaptersB - chaptersA
+    })
+    
+    console.log(`✅ Loaded ${hotUpdates.value.length} hot updates`)
   } catch (error) {
-    console.error('Error loading featured manhwa:', error)
+    console.error('❌ Error loading hot updates:', error)
   } finally {
     loading.value = false
   }
@@ -120,10 +124,8 @@ onMounted(async () => {
 <style scoped>
 .hero {
   position: relative;
-  min-height: calc(100vh - 70px);
   margin-top: 70px;
-  display: flex;
-  align-items: center;
+  padding: 3rem 0;
   overflow: hidden;
 }
 
@@ -160,167 +162,72 @@ onMounted(async () => {
 .hero-content {
   position: relative;
   z-index: 1;
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 4rem;
-  align-items: center;
-  padding: 4rem 1.5rem;
+  padding: 0 1.5rem;
 }
 
-/* Hero Text */
-.hero-text {
-  max-width: 600px;
-}
-
-.hero-title {
-  font-size: 3.5rem;
-  font-weight: 800;
-  line-height: 1.1;
-  margin-bottom: 1.5rem;
-  letter-spacing: -0.02em;
-}
-
-.hero-description {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-  line-height: 1.7;
-  margin-bottom: 2rem;
-}
-
-.hero-actions {
+/* Hot Updates Header */
+.hot-updates-header {
   display: flex;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--border-color);
 }
 
-.btn-primary,
-.btn-secondary {
+.header-left {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.fire-icon {
+  font-size: 2.5rem;
+  animation: fireFlicker 2s ease-in-out infinite;
+}
+
+@keyframes fireFlicker {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.section-title {
+  font-size: 2rem;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin: 0;
+  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.section-subtitle {
+  font-size: 0.95rem;
+  color: var(--text-secondary);
+  margin: 0.25rem 0 0 0;
+}
+
+.update-badge {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  padding: 0.875rem 1.75rem;
-  border: none;
-  border-radius: 0.75rem;
-  font-size: 1rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-base);
-}
-
-.btn-primary {
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  color: white;
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.3);
-}
-
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 8px 20px rgba(139, 92, 246, 0.4);
-}
-
-.btn-primary:active {
-  transform: translateY(0);
-}
-
-.btn-secondary {
-  background: var(--bg-elevated);
-  color: var(--text-primary);
-  border: 1px solid var(--border-color);
-}
-
-.btn-secondary:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-}
-
-/* Hero Stats */
-.hero-stats {
-  display: flex;
-  align-items: center;
-  gap: 2rem;
-}
-
-.stat-item {
-  text-align: center;
-}
-
-.stat-value {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.stat-label {
+  padding: 0.625rem 1.25rem;
+  background: rgba(139, 92, 246, 0.1);
+  border: 1px solid rgba(139, 92, 246, 0.3);
+  border-radius: 2rem;
   font-size: 0.875rem;
-  color: var(--text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
+  font-weight: 600;
+  color: var(--accent-primary);
 }
 
-.stat-divider {
-  width: 1px;
-  height: 40px;
-  background: var(--divider-color);
-}
-
-/* Hero Showcase */
-.hero-showcase {
-  position: relative;
-}
-
-.showcase-grid {
-  display: grid;
-  grid-template-columns: repeat(2, 1fr);
-  gap: 1.25rem;
-}
-
-.showcase-card {
-  background: var(--bg-secondary);
-  border-radius: 1rem;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-base);
-  animation: fadeInUp 0.6s ease-out backwards;
-}
-
-@keyframes fadeInUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.showcase-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--accent-primary);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), var(--glow-ambient);
-}
-
-.card-image {
-  position: relative;
-  aspect-ratio: 3/4;
-  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated));
-  overflow: hidden;
-}
-
-.card-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.showcase-loading {
+/* Hot Updates Loading */
+.hot-updates-loading {
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  min-height: 400px;
+  min-height: 300px;
   color: var(--text-secondary);
   gap: 1rem;
 }
@@ -338,7 +245,106 @@ onMounted(async () => {
   to { transform: rotate(360deg); }
 }
 
-.card-overlay {
+/* Hot Updates Scroll */
+.hot-updates-scroll {
+  position: relative;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: thin;
+  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
+  padding-bottom: 1rem;
+}
+
+.hot-updates-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+
+.hot-updates-scroll::-webkit-scrollbar-track {
+  background: var(--bg-tertiary);
+  border-radius: 4px;
+}
+
+.hot-updates-scroll::-webkit-scrollbar-thumb {
+  background: var(--accent-primary);
+  border-radius: 4px;
+}
+
+.hot-updates-scroll::-webkit-scrollbar-thumb:hover {
+  background: var(--accent-secondary);
+}
+
+.hot-updates-grid {
+  display: flex;
+  gap: 1.5rem;
+  padding: 0.5rem 0;
+}
+
+/* Hot Card */
+.hot-card {
+  flex: 0 0 200px;
+  background: var(--bg-secondary);
+  border-radius: 1rem;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+  transition: all var(--transition-base);
+  cursor: pointer;
+  animation: fadeInScale 0.5s ease-out backwards;
+}
+
+@keyframes fadeInScale {
+  from {
+    opacity: 0;
+    transform: scale(0.9);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.hot-card:hover {
+  transform: translateY(-8px);
+  border-color: var(--accent-primary);
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(139, 92, 246, 0.3);
+}
+
+.hot-card-image {
+  position: relative;
+  aspect-ratio: 3/4;
+  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated));
+  overflow: hidden;
+}
+
+.hot-card-cover {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--transition-base);
+}
+
+.hot-card:hover .hot-card-cover {
+  transform: scale(1.1);
+}
+
+.hot-card-badge {
+  position: absolute;
+  top: 0.75rem;
+  left: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.375rem 0.75rem;
+  background: rgba(239, 68, 68, 0.9);
+  backdrop-filter: blur(8px);
+  border-radius: 0.5rem;
+  font-size: 0.7rem;
+  font-weight: 700;
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.hot-card-overlay {
   position: absolute;
   inset: 0;
   background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
@@ -349,13 +355,13 @@ onMounted(async () => {
   transition: opacity var(--transition-base);
 }
 
-.showcase-card:hover .card-overlay {
+.hot-card:hover .hot-card-overlay {
   opacity: 1;
 }
 
-.card-play {
-  width: 56px;
-  height: 56px;
+.quick-read-btn {
+  width: 48px;
+  height: 48px;
   border-radius: 50%;
   border: none;
   background: var(--accent-primary);
@@ -368,101 +374,125 @@ onMounted(async () => {
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
 }
 
-.card-play:hover {
-  transform: scale(1.1);
+.quick-read-btn:hover {
+  transform: scale(1.15);
   background: var(--accent-secondary);
 }
 
-.card-badge {
-  position: absolute;
-  top: 0.75rem;
-  right: 0.75rem;
-  padding: 0.375rem 0.75rem;
-  background: rgba(139, 92, 246, 0.9);
-  backdrop-filter: blur(8px);
-  border-radius: 0.5rem;
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.card-info {
+.hot-card-info {
   padding: 1rem;
 }
 
-.card-title {
+.hot-card-title {
   font-size: 0.95rem;
   font-weight: 600;
   color: var(--text-primary);
   margin-bottom: 0.5rem;
   overflow: hidden;
   text-overflow: ellipsis;
-  white-space: nowrap;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+  line-height: 1.4;
+  min-height: 2.8em;
 }
 
-.card-meta {
+.hot-card-meta {
   display: flex;
   align-items: center;
-  gap: 1rem;
+  gap: 0.75rem;
   font-size: 0.8rem;
   color: var(--text-muted);
+  margin-bottom: 0.5rem;
 }
 
-.card-rating {
+.hot-card-rating {
   display: flex;
   align-items: center;
   gap: 0.25rem;
   color: #fbbf24;
 }
 
+.hot-card-latest {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.75rem;
+  color: var(--accent-primary);
+  padding: 0.375rem 0.625rem;
+  background: rgba(139, 92, 246, 0.1);
+  border-radius: 0.375rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
 /* Responsive */
 @media (max-width: 1024px) {
-  .hero-content {
-    grid-template-columns: 1fr;
-    gap: 3rem;
+  .section-title {
+    font-size: 1.75rem;
   }
   
-  .hero-title {
-    font-size: 2.5rem;
-  }
-  
-  .showcase-grid {
-    grid-template-columns: repeat(4, 1fr);
+  .hot-card {
+    flex: 0 0 180px;
   }
 }
 
 @media (max-width: 768px) {
   .hero {
     margin-top: 60px;
-    min-height: auto;
+    padding: 2rem 0;
   }
   
   .hero-content {
-    padding: 3rem 1.5rem;
+    padding: 0 1rem;
   }
   
-  .hero-title {
+  .hot-updates-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+  
+  .section-title {
+    font-size: 1.5rem;
+  }
+  
+  .section-subtitle {
+    font-size: 0.875rem;
+  }
+  
+  .fire-icon {
     font-size: 2rem;
   }
   
-  .hero-description {
-    font-size: 1rem;
+  .update-badge {
+    font-size: 0.8rem;
+    padding: 0.5rem 1rem;
   }
   
-  .hero-actions {
-    flex-direction: column;
+  .hot-card {
+    flex: 0 0 160px;
   }
   
-  .btn-primary,
-  .btn-secondary {
-    width: 100%;
-    justify-content: center;
+  .hot-card-title {
+    font-size: 0.875rem;
   }
   
-  .showcase-grid {
-    grid-template-columns: repeat(2, 1fr);
+  .hot-card-meta {
+    font-size: 0.75rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .hot-card {
+    flex: 0 0 140px;
+  }
+  
+  .hot-updates-scroll {
+    margin: 0 -1rem;
+    padding: 0 1rem 1rem;
   }
 }
 </style>

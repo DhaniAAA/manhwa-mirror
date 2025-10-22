@@ -166,7 +166,7 @@ export class ManhwaService {
           if (!metadata) return null
 
           // Get latest 2 chapters (only if not skipped)
-          let latestChapters: Array<{ title: string; waktu_rilis?: string }> = []
+          let latestChapters: Array<{ title: string; waktu_rilis?: string; slug?: string }> = []
           
           if (!skipChapters) {
             try {
@@ -177,7 +177,8 @@ export class ManhwaService {
                   .reverse()
                   .map(ch => ({
                     title: ch.title,
-                    waktu_rilis: ch.waktu_rilis || undefined
+                    waktu_rilis: ch.waktu_rilis || undefined,
+                    slug: ch.slug  // Include chapter slug
                   }))
               }
             } catch (error) {
