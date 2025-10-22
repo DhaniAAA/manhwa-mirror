@@ -53,7 +53,12 @@
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p>{{ error }}</p>
+          <p class="error-message">{{ error }}</p>
+          <div v-if="error.includes('CORS') || error.includes('fetch')" class="error-hint">
+            <p class="hint-title">💡 Possible CORS Issue</p>
+            <p class="hint-text">Please check Supabase Storage bucket CORS configuration.</p>
+            <p class="hint-text">Make sure the bucket is public or has proper CORS settings.</p>
+          </div>
         </div>
         
         <!-- Images -->
@@ -64,10 +69,19 @@
           class="page-item"
           :style="{ marginBottom: `${pageGap}px` }"
         >
+          <!-- Loading skeleton -->
+          <div v-if="!loadedImages.has(index)" class="image-skeleton">
+            <div class="skeleton-shimmer"></div>
+            <span class="skeleton-text">Loading page {{ index + 1 }}...</span>
+          </div>
+          
           <img 
             :src="image" 
             :alt="`Page ${index + 1}`"
             class="page-image"
+            :class="{ 'loaded': loadedImages.has(index) }"
+            :loading="index < 3 ? 'eager' : 'lazy'"
+            :fetchpriority="index < 3 ? 'high' : 'auto'"
             @error="handleImageError(index)"
             @load="handleImageLoad(index)"
           />
@@ -201,6 +215,7 @@ const emit = defineEmits<{
 const loading = ref(false)
 const error = ref<string | null>(null)
 const chapterImages = ref<string[]>([])
+const loadedImages = ref(new Set<number>()) // Track loaded images
 const availableChapters = ref<number[]>([]) // Store all available chapter numbers
 const chaptersData = ref<any>(null) // Store full chapters data
 
@@ -318,6 +333,7 @@ const loadTotalChapters = async (manhwaSlug: string) => {
 const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
   loading.value = true
   error.value = null
+  loadedImages.value.clear() // Reset loaded images
   
   try {
     console.log(`📖 Loading chapter: ${manhwaSlug}/${chapterSlug}`)
@@ -330,6 +346,9 @@ const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
     
     chapterImages.value = chapterData.images || []
     console.log(`✅ Loaded ${chapterImages.value.length} images`)
+    
+    // Preload first 3 images immediately
+    preloadInitialImages()
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load chapter'
     console.error('❌ Error loading chapter:', err)
@@ -338,12 +357,44 @@ const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
   }
 }
 
+const preloadInitialImages = () => {
+  // Preload first 3 images for faster initial display
+  const preloadCount = Math.min(3, chapterImages.value.length)
+  for (let i = 0; i < preloadCount; i++) {
+    const imageUrl = chapterImages.value[i]
+    if (imageUrl) {
+      const img = new Image()
+      img.src = imageUrl
+    }
+  }
+}
+
 const handleImageError = (index: number) => {
-  console.warn(`Failed to load image ${index + 1}`)
+  console.warn(`❌ Failed to load image ${index + 1}`)
+  loadedImages.value.delete(index)
 }
 
 const handleImageLoad = (index: number) => {
-  console.log(`Loaded image ${index + 1}/${totalPages.value}`)
+  loadedImages.value.add(index)
+  console.log(`✅ Loaded image ${index + 1}/${totalPages.value}`)
+  
+  // Preload next few images
+  preloadNextImages(index)
+}
+
+const preloadNextImages = (currentIndex: number) => {
+  // Preload next 3 images
+  const preloadCount = 3
+  for (let i = 1; i <= preloadCount; i++) {
+    const nextIndex = currentIndex + i
+    if (nextIndex < chapterImages.value.length && !loadedImages.value.has(nextIndex)) {
+      const imageUrl = chapterImages.value[nextIndex]
+      if (imageUrl) {
+        const img = new Image()
+        img.src = imageUrl
+      }
+    }
+  }
 }
 
 // Load chapter on mount
@@ -492,6 +543,7 @@ onMounted(async () => {
 
 .page-item {
   width: 100%;
+  position: relative;
   animation: fadeIn 0.3s ease-out;
 }
 
@@ -501,6 +553,67 @@ onMounted(async () => {
   display: block;
   border-radius: 0.5rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  opacity: 0;
+  transition: opacity 0.3s ease-in;
+}
+
+.page-image.loaded {
+  opacity: 1;
+}
+
+.image-skeleton {
+  width: 100%;
+  aspect-ratio: 2/3;
+  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
+  border-radius: 0.5rem;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  overflow: hidden;
+  border: 1px solid var(--border-color);
+}
+
+.skeleton-shimmer {
+  position: absolute;
+  top: 0;
+  left: -100%;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    rgba(255, 255, 255, 0.05),
+    transparent
+  );
+  animation: shimmer 2s infinite;
+}
+
+@keyframes shimmer {
+  0% {
+    left: -100%;
+  }
+  100% {
+    left: 100%;
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.skeleton-text {
+  font-size: 0.875rem;
+  color: var(--text-muted);
+  z-index: 1;
 }
 
 .loading-state,
@@ -512,6 +625,40 @@ onMounted(async () => {
   min-height: 400px;
   color: var(--text-secondary);
   gap: 1rem;
+}
+
+.error-message {
+  font-size: 1rem;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.error-hint {
+  margin-top: 1rem;
+  padding: 1.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.75rem;
+  max-width: 500px;
+  text-align: left;
+}
+
+.hint-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: var(--accent-primary);
+  margin-bottom: 0.75rem;
+}
+
+.hint-text {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  line-height: 1.6;
+  margin-bottom: 0.5rem;
+}
+
+.hint-text:last-child {
+  margin-bottom: 0;
 }
 
 .spinner {

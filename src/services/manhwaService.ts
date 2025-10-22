@@ -65,6 +65,10 @@ export class ManhwaService {
 
       if (error) {
         console.error(`❌ Error downloading metadata for ${slug}:`, error)
+        if (error.message?.includes('CORS') || error.message?.includes('fetch')) {
+          console.error(`❌ CORS Error: Please configure CORS in Supabase Storage bucket settings`)
+          console.error(`📖 See SUPABASE_CORS_FIX.md for instructions`)
+        }
         throw error
       }
 
@@ -78,38 +82,75 @@ export class ManhwaService {
       return metadata
     } catch (error) {
       console.error(`❌ Error fetching metadata for ${slug}:`, error)
+      if (error instanceof Error && error.message?.includes('Failed to fetch')) {
+        console.error(`💡 This might be a CORS issue. Check Supabase Storage bucket configuration.`)
+      }
       return null
     }
   }
 
   /**
-   * Mendapatkan semua chapters untuk manhwa tertentu
+   * Mendapatkan semua chapters untuk manhwa tertentu (with caching)
    */
   static async getChapters(slug: string): Promise<ChaptersData | null> {
+    const cacheKey = `chapters-${slug}`
+    
+    // Check cache first
+    const cached = cacheService.get<ChaptersData>(cacheKey)
+    if (cached) {
+      console.log(`💾 Using cached chapters for: ${slug}`)
+      return cached
+    }
+
     try {
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
         .download(`${slug}/chapters.json`)
 
-      if (error) throw error
+      if (error) {
+        // Check if it's a CORS error
+        if (error.message?.includes('CORS') || error.message?.includes('fetch')) {
+          console.error(`❌ CORS Error: Please configure CORS in Supabase Storage bucket settings`)
+          console.error(`📖 See SUPABASE_CORS_FIX.md for instructions`)
+        }
+        throw error
+      }
 
       const text = await data.text()
-      return JSON.parse(text)
+      const chaptersData = JSON.parse(text)
+      
+      // Cache for 5 minutes
+      cacheService.set(cacheKey, chaptersData, 5 * 60 * 1000)
+      console.log(`✅ Chapters cached for: ${slug}`)
+      
+      return chaptersData
     } catch (error) {
-      console.error(`Error fetching chapters for ${slug}:`, error)
+      console.error(`❌ Error fetching chapters for ${slug}:`, error)
+      if (error instanceof Error && error.message?.includes('Failed to fetch')) {
+        console.error(`💡 This might be a CORS issue. Check Supabase Storage bucket configuration.`)
+      }
       return null
     }
   }
 
   /**
-   * Mendapatkan data chapter individual (images)
+   * Mendapatkan data chapter individual (images) with caching
    * Mengambil dari chapters.json dan filter berdasarkan chapterSlug
    */
   static async getChapter(manhwaSlug: string, chapterSlug: string): Promise<ChapterDetail | null> {
+    const cacheKey = `chapter-${manhwaSlug}-${chapterSlug}`
+    
+    // Check cache first
+    const cached = cacheService.get<ChapterDetail>(cacheKey)
+    if (cached) {
+      console.log(`💾 Using cached chapter: ${manhwaSlug}/${chapterSlug}`)
+      return cached
+    }
+
     try {
       console.log(`📖 Fetching chapter: ${manhwaSlug}/${chapterSlug}`)
       
-      // Get all chapters from chapters.json
+      // Get all chapters from chapters.json (this is already cached)
       const chaptersData = await this.getChapters(manhwaSlug)
       
       if (!chaptersData || !chaptersData.chapters) {
@@ -124,6 +165,9 @@ export class ManhwaService {
         console.error(`❌ Chapter not found: ${chapterSlug}`)
         return null
       }
+      
+      // Cache for 10 minutes (longer since chapter content doesn't change often)
+      cacheService.set(cacheKey, chapter, 10 * 60 * 1000)
       
       console.log(`✅ Chapter loaded: ${chapter.title} (${chapter.images?.length || 0} images)`)
       return chapter

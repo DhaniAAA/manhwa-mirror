@@ -53,11 +53,11 @@
                 NEW
               </div>
               <div class="hot-card-overlay">
-                <button class="quick-read-btn">
+                <!-- <button class="quick-read-btn">
                   <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="5 3 19 12 5 21 5 3"/>
                   </svg>
-                </button>
+                </button> -->
               </div>
             </div>
             <div class="hot-card-info">
@@ -359,7 +359,7 @@ onMounted(async () => {
   opacity: 1;
 }
 
-.quick-read-btn {
+/* .quick-read-btn {
   width: 48px;
   height: 48px;
   border-radius: 50%;
@@ -372,12 +372,12 @@ onMounted(async () => {
   justify-content: center;
   transition: all var(--transition-base);
   box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
-}
+} */
 
-.quick-read-btn:hover {
+/* .quick-read-btn:hover {
   transform: scale(1.15);
   background: var(--accent-secondary);
-}
+} */
 
 .hot-card-info {
   padding: 1rem;
