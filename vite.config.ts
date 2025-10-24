@@ -81,7 +81,7 @@ export default defineConfig({
     }
   },
   //ESBuild options for all environments
-  // esbuild: {
-  //   drop: ['console', 'debugger'] // Remove console.log and debugger in production
-  // }
+  esbuild: {
+    drop: ['console', 'debugger'] // Remove console.log and debugger in production
+  }
 })
