@@ -11,7 +11,7 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/manhwa/:slug',
+    path: '/detail/:slug',
     name: 'detail',
     component: () => import('../views/DetailPage.vue'),
     meta: {
@@ -19,7 +19,7 @@ const routes: RouteRecordRaw[] = [
     }
   },
   {
-    path: '/manhwa/:slug/read/:chapterSlug',
+    path: '/baca/:slug/read/:chapterSlug',
     name: 'reader',
     component: () => import('../views/ReaderPage.vue'),
     meta: {
@@ -50,6 +50,7 @@ const routes: RouteRecordRaw[] = [
       title: 'Populer'
     }
   },
+  
   {
     path: '/:pathMatch(.*)*',
     name: 'not-found',

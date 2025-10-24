@@ -48,8 +48,8 @@
 
           <div class="hero-info">
             <div class="info-badges">
-              <span class="badge badge-status">Ongoing</span>
-              <span class="badge badge-type">Manhwa</span>
+              <span v-if="type" class="badge badge-type" :class="`badge-type-${type.toLowerCase()}`">{{ type.toUpperCase() }}</span>
+              <span v-if="status" class="badge badge-status" :class="`badge-${status.toLowerCase()}`">{{ status }}</span>
             </div>
             
             <h1 class="detail-title">{{ title }}</h1>
@@ -462,16 +462,55 @@ watch(isBookmarked, (newVal) => {
   letter-spacing: 0.05em;
 }
 
+/* Type Badges */
+.badge-type {
+  /* Base style */
+}
+
+/* Manhwa - Purple */
+.badge-type-manhwa {
+  background: rgba(139, 92, 246, 0.1);
+  color: #8b5cf6;
+  border: 1px solid rgba(139, 92, 246, 0.2);
+}
+
+/* Manhua - Red */
+.badge-type-manhua {
+  background: rgba(239, 68, 68, 0.1);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.2);
+}
+
+/* Manga - Blue */
+.badge-type-manga {
+  background: rgba(59, 130, 246, 0.1);
+  color: #3b82f6;
+  border: 1px solid rgba(59, 130, 246, 0.2);
+}
+
+/* Status Badges */
 .badge-status {
   background: rgba(34, 197, 94, 0.1);
   color: #22c55e;
   border: 1px solid rgba(34, 197, 94, 0.2);
 }
 
-.badge-type {
-  background: rgba(139, 92, 246, 0.1);
-  color: var(--accent-primary);
-  border: 1px solid rgba(139, 92, 246, 0.2);
+.badge-ongoing {
+  background: rgba(34, 197, 94, 0.1);
+  color: #22c55e;
+  border: 1px solid rgba(34, 197, 94, 0.2);
+}
+
+.badge-complete {
+  background: rgba(168, 85, 247, 0.1);
+  color: #a855f7;
+  border: 1px solid rgba(168, 85, 247, 0.2);
+}
+
+.badge-hiatus {
+  background: rgba(251, 146, 60, 0.1);
+  color: #fb923c;
+  border: 1px solid rgba(251, 146, 60, 0.2);
 }
 
 .detail-title {

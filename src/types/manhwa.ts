@@ -51,6 +51,7 @@ export interface ManhwaCardData {
   title: string
   genre?: string
   genres?: string[]
+  type?: string
   rating?: string
   chapters?: number
   total_chapters?: number

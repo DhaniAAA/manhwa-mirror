@@ -15,6 +15,8 @@ export class ManhwaService {
     // Check cache first
     const cached = cacheService.get<string[]>(cacheKey)
     if (cached) {
+      console.log(`✅ Using cached comics list (${cached.length} items)`)
+      console.log(`📋 First 5 comics from cache:`, cached.slice(0, 5))
       return cached
     }
 
@@ -37,6 +39,7 @@ export class ManhwaService {
       cacheService.set(cacheKey, comics, 10 * 60 * 1000)
       
       console.log(`✅ Found ${comics.length} comics in list`)
+      console.log(`📋 First 5 comics:`, comics.slice(0, 5))
       return comics
     } catch (error) {
       console.error('❌ Error fetching comics list:', error)
@@ -230,13 +233,34 @@ export class ManhwaService {
             }
           }
 
+          // Get type from metadata.metadata.Type or metadata.type
+          const metadataObj = (metadata as any).metadata || {}
+          let type = metadata.type || metadataObj.Type
+          if (!type) {
+            // Auto-detect from title if possible
+            const title = metadata.title.toLowerCase()
+            if (title.includes('manhua') || title.includes('中国')) {
+              type = 'manhua'
+            } else if (title.includes('manga') || title.includes('日本')) {
+              type = 'manga'
+            } else {
+              type = 'manhwa' // Default
+            }
+          }
+
+          // Get status from metadata.metadata.Status or metadata.status
+          const status = metadata.status || metadataObj.Status || 'Ongoing'
+
           return {
             slug: metadata.slug,
             title: metadata.title,
             genre: metadata.genres?.join(', ') || 'Action, Fantasy',
+            genres: metadata.genres,
+            type: type,
+            status: status,
             rating: metadata.rating || '9.5',
             chapters: metadata.total_chapters,
-            lastUpdate: (metadata as any).metadata?.['Updated on'] || 'Baru saja',
+            lastUpdate: metadataObj['Updated on'] || 'Baru saja',
             cover_url: metadata.cover_url,
             coverImage: metadata.cover_url,
             latestChapters
@@ -286,6 +310,22 @@ export class ManhwaService {
       // Process in parallel batches (10 at a time)
       const manhwaCards = await this.processBatch(comics, skipChapters, 10)
 
+      // Log type distribution for debugging
+      const typeCount = manhwaCards.reduce((acc, card) => {
+        const type = card.type || 'unknown'
+        acc[type] = (acc[type] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      console.log(`📊 Type distribution:`, typeCount)
+      
+      // Log status distribution for debugging
+      const statusCount = manhwaCards.reduce((acc, card) => {
+        const status = card.status || 'unknown'
+        acc[status] = (acc[status] || 0) + 1
+        return acc
+      }, {} as Record<string, number>)
+      console.log(`📊 Status distribution:`, statusCount)
+
       // Cache for 3 minutes
       cacheService.set(cacheKey, manhwaCards, 3 * 60 * 1000)
 
@@ -326,14 +366,24 @@ export class ManhwaService {
   }
 
   /**
-   * Search manhwa by title
+   * Search manhwa by title, genre, or type
    */
   static async searchManhwa(query: string): Promise<ManhwaCardData[]> {
     const allCards = await this.getManhwaCards()
+    const searchQuery = query.toLowerCase()
     
-    return allCards.filter(card => 
-      card.title.toLowerCase().includes(query.toLowerCase())
-    )
+    return allCards.filter(card => {
+      const title = card.title.toLowerCase()
+      const genre = card.genre?.toLowerCase() || ''
+      const genres = card.genres?.map(g => g.toLowerCase()).join(' ') || ''
+      const type = card.type?.toLowerCase() || ''
+      
+      // Search in title, genre, genres, and type
+      return title.includes(searchQuery) || 
+             genre.includes(searchQuery) || 
+             genres.includes(searchQuery) ||
+             type.includes(searchQuery)
+    })
   }
 
   /**
@@ -352,5 +402,13 @@ export class ManhwaService {
       console.error(`Error fetching chapter images for ${slug}/${chapterSlug}:`, error)
       return []
     }
+  }
+
+  /**
+   * Clear all cache - useful for debugging
+   */
+  static clearCache(): void {
+    cacheService.clearAll()
+    console.log('🗑️ All cache cleared')
   }
 }

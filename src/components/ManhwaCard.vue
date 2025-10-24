@@ -19,7 +19,15 @@
             </svg>
           </button>
         </div> -->
-        <div class="cover-badge" v-if="badge">{{ badge }}</div>
+        <!-- Type Badge (manhwa/manhua/manga) -->
+        <div v-if="type" class="cover-badge badge-type" :class="`badge-type-${type.toLowerCase()}`">
+          {{ type.toUpperCase() }}
+        </div>
+        
+        <!-- Status Badge (Ongoing/Complete) -->
+        <div v-if="status" class="cover-badge badge-status" :class="`badge-${status.toLowerCase()}`">
+          {{ status }}
+        </div>
         <button class="bookmark-btn" :class="{ active: isBookmarked }" @click="toggleBookmark">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" stroke="currentColor" stroke-width="2">
             <path d="M19 21l-7-5-7 5V5a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2z"/>
@@ -82,6 +90,8 @@ const props = defineProps<{
   slug?: string
   title: string
   genre?: string
+  type?: string
+  status?: string
   rating?: string
   chapters?: number
   badge?: string
@@ -91,6 +101,11 @@ const props = defineProps<{
   latestChapters?: Array<{ title: string; waktu_rilis?: string; slug?: string }>
   priority?: boolean  // For LCP optimization - first visible cards should have priority
 }>()
+
+// Debug: Log type and status
+if (props.type || props.status) {
+  console.log(`📛 [${props.title}] Type: ${props.type}, Status: ${props.status}`)
+}
 
 const emit = defineEmits<{
   click: [slug: string, title: string]
@@ -205,18 +220,56 @@ const handleImageError = () => {
 
 .cover-badge {
   position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
   padding: 0.375rem 0.75rem;
-  background: rgba(139, 92, 246, 0.9);
   backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
   border-radius: 0.5rem;
   font-size: 0.7rem;
-  font-weight: 600;
+  font-weight: 700;
   color: white;
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  z-index: 2;
+  z-index: 10;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+}
+
+/* Type Badge (manhwa/manhua/manga) */
+.badge-type {
+  top: 0.5rem;
+  left: 0.5rem;
+}
+
+/* Manhwa - Purple */
+.badge-type-manhwa {
+  background: rgba(139, 92, 246, 0.95);
+}
+
+/* Manhua - Red */
+.badge-type-manhua {
+  background: rgba(239, 68, 68, 0.95);
+}
+
+/* Manga - Blue */
+.badge-type-manga {
+  background: rgba(59, 130, 246, 0.95);
+}
+
+/* Status Badge (Ongoing/Complete) */
+.badge-status {
+  top: 2.75rem; /* Below type badge */
+  left: 0.5rem;
+}
+
+.badge-ongoing {
+  background: rgba(34, 197, 94, 0.95); /* Green */
+}
+
+.badge-complete {
+  background: rgba(58, 0, 112, 0.95); /* Purple */
+}
+
+.badge-hiatus {
+  background: rgba(251, 146, 60, 0.95); /* Orange */
 }
 
 .bookmark-btn {

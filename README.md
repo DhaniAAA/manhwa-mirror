@@ -349,6 +349,9 @@ MIT License - lihat file LICENSE untuk detail
 ## 📚 Documentation
 
 - **Panduan.md** - Panduan struktur data Supabase
+- **MANHUA_ROUTES.md** - Manhua routes documentation with search & filter features
+- **SECURITY_NOTES.md** - Security analysis & mitigation strategies
+- **SUPABASE_CORS_FIX.md** - Panduan troubleshooting CORS Supabase
 
 ## 🔗 Links
 

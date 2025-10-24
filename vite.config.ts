@@ -80,8 +80,8 @@ export default defineConfig({
       // Remove unused CSS in production
     }
   },
-  // ESBuild options for all environments
-  esbuild: {
-    drop: ['console', 'debugger'] // Remove console.log and debugger in production
-  }
+  //ESBuild options for all environments
+  // esbuild: {
+  //   drop: ['console', 'debugger'] // Remove console.log and debugger in production
+  // }
 })
