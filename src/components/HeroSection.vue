@@ -45,6 +45,9 @@
                 :src="item.cover_url" 
                 :alt="item.title"
                 class="hot-card-cover"
+                :loading="index < 3 ? 'eager' : 'lazy'"
+                :fetchpriority="index === 0 ? 'high' : 'auto'"
+                :decoding="index < 3 ? 'sync' : 'async'"
               />
               <div class="hot-card-badge">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">

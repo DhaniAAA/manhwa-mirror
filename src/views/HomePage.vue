@@ -77,7 +77,7 @@
         <div v-else>
           <div class="manhwa-grid">
             <ManhwaCard
-              v-for="manhwa in displayedLatest"
+              v-for="(manhwa, index) in displayedLatest"
               :key="manhwa.slug"
               :slug="manhwa.slug"
               :title="manhwa.title"
@@ -87,6 +87,7 @@
               :genre="manhwa.genre"
               :badge="manhwa.badge || 'Recommended'"
               :latestChapters="manhwa.latestChapters"
+              :priority="index < 3"
               @click="goToDetail"
               @chapterClick="goToChapter"
             />

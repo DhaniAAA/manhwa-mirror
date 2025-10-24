@@ -5,6 +5,9 @@
       :src="src" 
       :alt="alt"
       :class="imageClass"
+      :loading="priority ? 'eager' : 'lazy'"
+      :fetchpriority="priority ? 'high' : 'auto'"
+      :decoding="priority ? 'sync' : 'async'"
       @error="handleError"
       @load="handleLoad"
     />
@@ -24,10 +27,11 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
 
-defineProps<{
+const props = defineProps<{
   src: string
   alt: string
   imageClass?: string
+  priority?: boolean  // For LCP optimization - load immediately without lazy loading
 }>()
 
 const emit = defineEmits<{
@@ -57,7 +61,13 @@ const handleLoad = () => {
 onMounted(() => {
   if (!imageWrapper.value) return
 
-  // Create Intersection Observer
+  // If priority image, load immediately for better LCP
+  if (props.priority) {
+    loadImage()
+    return
+  }
+
+  // Create Intersection Observer for non-priority images
   observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {

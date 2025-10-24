@@ -8,6 +8,7 @@
           :src="coverImage"
           :alt="title"
           image-class="cover-img"
+          :priority="priority"
           @error="handleImageError"
         />
         
@@ -88,6 +89,7 @@ const props = defineProps<{
   lastUpdate?: string
   coverImage?: string
   latestChapters?: Array<{ title: string; waktu_rilis?: string; slug?: string }>
+  priority?: boolean  // For LCP optimization - first visible cards should have priority
 }>()
 
 const emit = defineEmits<{
@@ -282,6 +284,7 @@ const handleImageError = () => {
   text-overflow: ellipsis;
   display: -webkit-box;
   -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
   line-height: 1.4;
   min-height: 2.8em;
