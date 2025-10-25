@@ -20,32 +20,32 @@
 
       <!-- Navigation Links -->
       <div class="navbar-menu">
-        <a href="#" class="nav-link active">
+        <router-link to="/" class="nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/>
           </svg>
           <span>Beranda</span>
-        </a>
-        <a href="#" class="nav-link">
+        </router-link>
+        <router-link to="/library" class="nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/>
             <path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>
           </svg>
           <span>Perpustakaan</span>
-        </a>
-        <a href="#" class="nav-link">
+        </router-link>
+        <router-link to="/latest" class="nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <path d="M12 6v6l4 2"/>
           </svg>
           <span>Terbaru</span>
-        </a>
-        <a href="#" class="nav-link">
+        </router-link>
+        <router-link to="/popular" class="nav-link">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
           <span>Populer</span>
-        </a>
+        </router-link>
       </div>
 
       <!-- Search & User Actions -->
@@ -213,12 +213,14 @@ watch(searchQuery, (newQuery) => {
   background: var(--bg-tertiary);
 }
 
-.nav-link.active {
+.nav-link.active,
+.nav-link.router-link-active {
   color: var(--accent-primary);
   background: rgba(139, 92, 246, 0.1);
 }
 
-.nav-link.active::after {
+.nav-link.active::after,
+.nav-link.router-link-active::after {
   content: '';
   position: absolute;
   bottom: -1px;

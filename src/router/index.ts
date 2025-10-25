@@ -29,25 +29,25 @@ const routes: RouteRecordRaw[] = [
   {
     path: '/library',
     name: 'library',
-    component: () => import('../views/HomePage.vue'), // Placeholder
+    component: () => import('../views/LibraryPage.vue'),
     meta: {
-      title: 'Perpustakaan'
+      title: 'Perpustakaan - Manhwa Mirror'
     }
   },
   {
     path: '/latest',
     name: 'latest',
-    component: () => import('../views/HomePage.vue'), // Placeholder
+    component: () => import('../views/LatestPage.vue'),
     meta: {
-      title: 'Terbaru'
+      title: 'Rilis Terbaru - Manhwa Mirror'
     }
   },
   {
     path: '/popular',
     name: 'popular',
-    component: () => import('../views/HomePage.vue'), // Placeholder
+    component: () => import('../views/PopularPage.vue'),
     meta: {
-      title: 'Populer'
+      title: 'Manhwa Populer - Manhwa Mirror'
     }
   },
   
