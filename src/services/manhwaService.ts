@@ -371,19 +371,83 @@ export class ManhwaService {
   static async searchManhwa(query: string): Promise<ManhwaCardData[]> {
     const allCards = await this.getManhwaCards()
     const searchQuery = query.toLowerCase()
-    
+
     return allCards.filter(card => {
       const title = card.title.toLowerCase()
       const genre = card.genre?.toLowerCase() || ''
       const genres = card.genres?.map(g => g.toLowerCase()).join(' ') || ''
       const type = card.type?.toLowerCase() || ''
-      
+
       // Search in title, genre, genres, and type
-      return title.includes(searchQuery) || 
-             genre.includes(searchQuery) || 
+      return title.includes(searchQuery) ||
+             genre.includes(searchQuery) ||
              genres.includes(searchQuery) ||
              type.includes(searchQuery)
     })
+  }
+
+  /**
+   * Menyuntikkan data chapter terbaru ke daftar kartu tanpa memuat ulang metadata
+   */
+  static async hydrateManhwaCardsWithChapters(
+    cards: ManhwaCardData[],
+    options: { limitChapters?: number; batchSize?: number } = {}
+  ): Promise<ManhwaCardData[]> {
+    if (!cards.length) {
+      return []
+    }
+
+    const { limitChapters = 2, batchSize = 6 } = options
+    const clonedCards = cards.map(card => ({ ...card })) as ManhwaCardData[]
+
+    const cardsToProcess = clonedCards
+      .map((card, index) => ({ card, index }))
+      .filter(({ card }) => !card.latestChapters || card.latestChapters.length === 0)
+
+    for (let i = 0; i < cardsToProcess.length; i += batchSize) {
+      const batch = cardsToProcess.slice(i, i + batchSize)
+
+      const batchResults = await Promise.all(
+        batch.map(async ({ card, index }) => {
+          try {
+            const chaptersData = await this.getChapters(card.slug)
+            if (!chaptersData?.chapters?.length) {
+              return null
+            }
+
+            const latestChapters = chaptersData.chapters
+              .slice(-limitChapters)
+              .reverse()
+              .map(chapter => ({
+                title: chapter.title,
+                waktu_rilis: chapter.waktu_rilis || undefined,
+                slug: chapter.slug
+              }))
+
+            return { index, latestChapters }
+          } catch (error) {
+            console.warn(`⚠️ Failed to hydrate chapters for ${card.slug}`, error)
+            return null
+          }
+        })
+      )
+
+      batchResults.forEach(result => {
+        if (!result) return
+        const { index, latestChapters } = result
+        const current = clonedCards[index]
+        if (!current?.slug) {
+          return
+        }
+
+        clonedCards[index] = {
+          ...current,
+          latestChapters
+        }
+      })
+    }
+
+    return clonedCards
   }
 
   /**

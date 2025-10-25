@@ -105,11 +105,12 @@ const goToDetail = (slug: string) => {
 onMounted(async () => {
   try {
     console.log('🔥 Loading hot updates...')
-    // Get manhwa with chapters for latest updates
-    const cards = await ManhwaService.getManhwaCards(12, false) // Get 12 with chapters
-    
+    // Get cards quickly without chapters
+    const cards = await ManhwaService.getManhwaCards(12, true)
+    const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(cards)
+
     // Sort by total chapters (more chapters = more updates)
-    hotUpdates.value = cards.sort((a, b) => {
+    hotUpdates.value = hydrated.sort((a, b) => {
       const chaptersA = a.chapters || a.total_chapters || 0
       const chaptersB = b.chapters || b.total_chapters || 0
       return chaptersB - chaptersA

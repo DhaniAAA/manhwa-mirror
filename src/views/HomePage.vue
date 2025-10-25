@@ -305,6 +305,17 @@ const goToChapter = (manhwaSlug: string, chapterSlug: string) => {
   router.push({ name: 'reader', params: { slug: manhwaSlug, chapterSlug } })
 }
 
+const mergeWithHydratedChapters = (
+  list: ManhwaCardData[],
+  hydratedMap: Map<string, ManhwaCardData>
+) => {
+  if (!hydratedMap.size) {
+    return list
+  }
+
+  return list.map(card => hydratedMap.get(card.slug) ?? card)
+}
+
 // Pagination functions for Recommendations (Latest)
 const goToLatestPage = (page: number) => {
   latestPage.value = page
@@ -333,7 +344,7 @@ const goToLatestPage = (page: number) => {
 const goToPopularPage = (page: number) => {
   popularPage.value = page
   console.log(`📄 Popular page changed to: ${page}`)
-  
+
   // Scroll to popular section
   nextTick(() => {
     const popularSection = document.getElementById('popular-section')
@@ -352,6 +363,42 @@ const goToPopularPage = (page: number) => {
     }
   })
 }
+
+const hydratingSlugs = new Set<string>()
+
+const ensureChaptersForCards = async (cards: ManhwaCardData[]) => {
+  const targets = cards.filter(card => {
+    if (!card.slug) return false
+    if (card.latestChapters && card.latestChapters.length > 0) return false
+    return !hydratingSlugs.has(card.slug)
+  })
+
+  if (!targets.length) {
+    return
+  }
+
+  targets.forEach(card => hydratingSlugs.add(card.slug))
+
+  try {
+    const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(targets)
+    const hydratedMap = new Map(hydrated.map(card => [card.slug, card]))
+
+    latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, hydratedMap)
+    popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, hydratedMap)
+  } catch (error) {
+    console.error('❌ Failed to hydrate chapters for current view:', error)
+  } finally {
+    targets.forEach(card => hydratingSlugs.delete(card.slug))
+  }
+}
+
+watch(displayedLatest, (cards) => {
+  ensureChaptersForCards(cards)
+})
+
+watch(displayedPopular, (cards) => {
+  ensureChaptersForCards(cards)
+})
 
 // Search function
 const handleSearch = async (query: string) => {
@@ -434,27 +481,39 @@ onMounted(async () => {
     console.log(`✅ Loaded ${latestManhwa.value.length} manhwa (fast mode - no chapters)`)
     console.log(`📊 Recommendations pages: ${latestTotalPages.value}, Popular pages: ${popularTotalPages.value}`)
     
-    // Load chapters in background after initial render
+    // Load chapter summaries progressively after initial render
     setTimeout(async () => {
-      console.log('🔄 Loading chapters data in background...')
-      const allManhwaWithChapters = await ManhwaService.getManhwaCards()
-      
-      // Update with chapters - Recommendations by rating
-      latestManhwa.value = [...allManhwaWithChapters].sort((a, b) => {
-        const ratingA = parseFloat(a.rating || '0')
-        const ratingB = parseFloat(b.rating || '0')
-        return ratingB - ratingA
-      })
-      
-      // Popular by chapters
-      popularManhwa.value = [...allManhwaWithChapters].sort((a, b) => {
-        const chaptersA = a.chapters || a.total_chapters || 0
-        const chaptersB = b.chapters || b.total_chapters || 0
-        return chaptersB - chaptersA
-      })
-      
-      console.log('✅ Chapters data loaded')
-    }, 1000)
+      console.log('🔄 Hydrating visible cards with latest chapters...')
+
+      const prioritizedSlugs = new Set<string>([
+        ...latestManhwa.value.slice(0, itemsPerPage).map(card => card.slug),
+        ...popularManhwa.value.slice(0, itemsPerPage).map(card => card.slug)
+      ])
+
+      const prioritizedCards = allManhwa.filter(card => prioritizedSlugs.has(card.slug))
+      const hydratedVisible = await ManhwaService.hydrateManhwaCardsWithChapters(prioritizedCards)
+      const visibleMap = new Map(hydratedVisible.map(card => [card.slug, card]))
+
+      latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, visibleMap)
+      popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, visibleMap)
+
+      const remainingCards = allManhwa.filter(card => !visibleMap.has(card.slug))
+      if (remainingCards.length) {
+        console.log(`🕒 Hydrating remaining ${remainingCards.length} cards in background...`)
+        ManhwaService.hydrateManhwaCardsWithChapters(remainingCards, { batchSize: 8 })
+          .then((rest) => {
+            const restMap = new Map(rest.map(card => [card.slug, card]))
+            latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, restMap)
+            popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, restMap)
+            console.log('✅ Chapters data hydrated for remaining cards')
+          })
+          .catch(error => {
+            console.error('❌ Error hydrating remaining chapters:', error)
+          })
+      } else {
+        console.log('✅ All cards already hydrated with chapters')
+      }
+    }, 500)
   } catch (error) {
     console.error('❌ Error loading manhwa:', error)
   } finally {
