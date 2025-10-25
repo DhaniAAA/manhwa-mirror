@@ -456,7 +456,7 @@ onMounted(async () => {
   // Extract slug from URL or props
   const pathParts = window.location.pathname.split('/')
   if (!resolvedManhwaSlug.value) {
-    resolvedManhwaSlug.value = pathParts[2] || '' // /manhwa/:slug/read/:chapterSlug
+    resolvedManhwaSlug.value = pathParts[2] || '' // /baca/:slug/read/:chapterSlug
   }
 
   const manhwaSlug = resolvedManhwaSlug.value

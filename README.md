@@ -186,8 +186,8 @@ manhwa-mirror/
 ### Routing
 Aplikasi menggunakan Vue Router dengan 3 halaman utama:
 - **Home** (`/`) - Daftar semua manhwa
-- **Detail** (`/manhwa/:slug`) - Detail manhwa dan daftar chapters
-- **Reader** (`/manhwa/:slug/:chapter`) - Halaman pembaca chapter
+- **Detail** (`/detail/:slug`) - Detail manhwa dan daftar chapters
+- **Reader** (`/baca/:slug/read/:chapterSlug`) - Halaman pembaca chapter
 
 ### State Management
 Menggunakan Vue 3 Composition API dengan composables:
