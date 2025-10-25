@@ -11,7 +11,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ManhwaReader from '../components/ManhwaReader.vue'
 import { useManhwaDetail } from '../composables/useManhwaDetail'
@@ -20,7 +20,7 @@ const route = useRoute()
 const router = useRouter()
 
 const slug = route.params.slug as string
-const chapterSlug = route.params.chapterSlug as string
+const chapterSlug = computed(() => route.params.chapterSlug as string)
 
 const manhwaTitle = ref('')
 
