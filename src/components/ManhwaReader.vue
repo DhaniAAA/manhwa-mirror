@@ -218,11 +218,15 @@ const chapterImages = ref<string[]>([])
 const loadedImages = ref(new Set<number>()) // Track loaded images
 const availableChapters = ref<number[]>([]) // Store all available chapter numbers
 const chaptersData = ref<any>(null) // Store full chapters data
+const resolvedManhwaSlug = ref(props.manhwaSlug || '')
+const activeChapterSlug = ref<string | null>(null)
 
 const currentChapter = ref(1)
 const totalChapters = ref(0) // Will be loaded from data
 const currentPage = ref(1)
 const totalPages = computed(() => chapterImages.value.length)
+
+const isSyncingFromRoute = ref(false)
 
 const isFullscreen = ref(false)
 const hideControls = ref(false)
@@ -274,12 +278,16 @@ const nextChapter = () => {
 
 // Watch for chapter changes
 watch(currentChapter, async (newChapter, oldChapter) => {
+  if (isSyncingFromRoute.value || newChapter === oldChapter) {
+    return
+  }
+
   if (newChapter !== oldChapter) {
     console.log(`🔄 Chapter changed: ${oldChapter} → ${newChapter}`)
-    
+
     // Get chapter slug from stored data
     let chapterSlug = `chapter-${String(newChapter).padStart(2, '0')}`
-    
+
     // If we have chapters data, use the actual slug
     if (chaptersData.value && chaptersData.value.chapters) {
       const chapterIndex = newChapter - 1
@@ -292,20 +300,65 @@ watch(currentChapter, async (newChapter, oldChapter) => {
     }
     
     // Reload chapter images
-    await loadChapterImages(props.manhwaSlug, chapterSlug)
-    
+    await loadChapterImages(resolvedManhwaSlug.value || props.manhwaSlug, chapterSlug)
+
     // Emit event to parent
     emit('chapterChange', newChapter)
-    
+
     // Scroll to top
     window.scrollTo({ top: 0, behavior: 'smooth' })
   }
 })
 
+const syncChapterFromSlug = async (chapterSlug?: string) => {
+  if (!chapterSlug) {
+    error.value = 'Invalid chapter URL'
+    return
+  }
+
+  const manhwaSlug = resolvedManhwaSlug.value || props.manhwaSlug
+
+  if (!manhwaSlug) {
+    error.value = 'Invalid manhwa URL'
+    return
+  }
+
+  isSyncingFromRoute.value = true
+
+  try {
+    await loadChapterImages(manhwaSlug, chapterSlug)
+
+    const chapterMatch = chapterSlug.match(/chapter-(\d+)/)
+    if (chapterMatch && chapterMatch[1]) {
+      currentChapter.value = parseInt(chapterMatch[1], 10)
+    }
+
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  } finally {
+    isSyncingFromRoute.value = false
+  }
+}
+
+watch(
+  () => props.chapterSlug,
+  async (newSlug) => {
+    if (!newSlug) {
+      error.value = 'Invalid chapter URL'
+      return
+    }
+
+    if (newSlug === activeChapterSlug.value) {
+      return
+    }
+
+    await syncChapterFromSlug(newSlug)
+  }
+)
+
 const loadTotalChapters = async (manhwaSlug: string) => {
   try {
     console.log(`📊 Loading total chapters for: ${manhwaSlug}`)
-    
+
     // Get all chapters data
     const data = await ManhwaService.getChapters(manhwaSlug)
     
@@ -334,19 +387,20 @@ const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
   loading.value = true
   error.value = null
   loadedImages.value.clear() // Reset loaded images
-  
+
   try {
     console.log(`📖 Loading chapter: ${manhwaSlug}/${chapterSlug}`)
-    
+
     const chapterData = await ManhwaService.getChapter(manhwaSlug, chapterSlug)
-    
+
     if (!chapterData) {
       throw new Error('Chapter not found')
     }
-    
+
     chapterImages.value = chapterData.images || []
+    activeChapterSlug.value = chapterSlug
     console.log(`✅ Loaded ${chapterImages.value.length} images`)
-    
+
     // Preload first 3 images immediately
     preloadInitialImages()
   } catch (err) {
@@ -401,27 +455,24 @@ const preloadNextImages = (currentIndex: number) => {
 onMounted(async () => {
   // Extract slug from URL or props
   const pathParts = window.location.pathname.split('/')
-  const manhwaSlug = props.manhwaSlug || pathParts[2] // /manhwa/:slug/read/:chapterSlug
-  const chapterSlug = props.chapterSlug || pathParts[4]
-  
-  if (manhwaSlug) {
-    // Load total chapters first
-    await loadTotalChapters(manhwaSlug)
-    
-    // Then load chapter images
-    if (chapterSlug) {
-      await loadChapterImages(manhwaSlug, chapterSlug)
-      
-      // Extract chapter number from slug (e.g., "chapter-01" -> 1)
-      const chapterMatch = chapterSlug.match(/chapter-(\d+)/)
-      if (chapterMatch && chapterMatch[1]) {
-        currentChapter.value = parseInt(chapterMatch[1], 10)
-      }
-    } else {
-      error.value = 'Invalid chapter URL'
-    }
-  } else {
+  if (!resolvedManhwaSlug.value) {
+    resolvedManhwaSlug.value = pathParts[2] || '' // /manhwa/:slug/read/:chapterSlug
+  }
+
+  const manhwaSlug = resolvedManhwaSlug.value
+  const initialChapterSlug = props.chapterSlug || pathParts[4]
+
+  if (!manhwaSlug) {
     error.value = 'Invalid manhwa URL'
+    return
+  }
+
+  await loadTotalChapters(manhwaSlug)
+
+  if (initialChapterSlug) {
+    await syncChapterFromSlug(initialChapterSlug)
+  } else {
+    error.value = 'Invalid chapter URL'
   }
 })
 </script>
