@@ -17,26 +17,33 @@ export default async function handler(req, res) {
     return res.status(405).json({ error: 'Method not allowed' });
   }
 
-  // Parse path: /api/image-proxy/{id}/{path}
-  const path = req.url.replace('/api/image-proxy/', '');
+  // Get parameters from query (Vercel routing passes them as query params)
+  const { id, path } = req.query;
   
-  // Extract ID (first segment)
-  const firstSlashIndex = path.indexOf('/');
-  if (firstSlashIndex === -1) {
-    return res.status(400).json({ error: 'Invalid URL format' });
+  // Validate parameters
+  if (!id || !path) {
+    return res.status(400).json({ 
+      error: 'Missing parameters', 
+      id, 
+      path,
+      url: req.url 
+    });
   }
   
-  const domainId = path.substring(0, firstSlashIndex);
-  const imagePath = path.substring(firstSlashIndex);
-  
   // Convert ID to domain
-  const domain = DOMAIN_MAP[domainId];
+  const domain = DOMAIN_MAP[id];
   
   if (!domain) {
-    return res.status(403).json({ error: 'Invalid domain ID', id: domainId });
+    return res.status(403).json({ 
+      error: 'Invalid domain ID', 
+      id, 
+      availableIds: Object.keys(DOMAIN_MAP) 
+    });
   }
   
   // Reconstruct original URL
+  // Path might be array if it contains multiple segments
+  const imagePath = Array.isArray(path) ? '/' + path.join('/') : '/' + path;
   const url = `https://${domain}${imagePath}`;
 
   try {
