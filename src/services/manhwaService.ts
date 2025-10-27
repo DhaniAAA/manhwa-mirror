@@ -1,6 +1,7 @@
 import { supabase, BUCKET_NAME } from '../lib/supabase'
 import type { ManhwaMetadata, ChaptersData, ManhwaCardData, ChapterDetail } from '../types/manhwa'
 import { cacheService } from './cacheService'
+import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy' // ← Tambahkan ini
 
 /**
  * Service untuk mengakses data manhwa dari Supabase Storage
@@ -93,7 +94,7 @@ export class ManhwaService {
   }
 
   /**
-   * Mendapatkan semua chapters untuk manhwa tertentu (with caching)
+   * Mendapatkan semua chapters untuk manhwa tertentu (with caching & proxy)
    */
   static async getChapters(slug: string): Promise<ChaptersData | null> {
     const cacheKey = `chapters-${slug}`
@@ -122,11 +123,14 @@ export class ManhwaService {
       const text = await data.text()
       const chaptersData = JSON.parse(text)
       
-      // Cache for 5 minutes
-      cacheService.set(cacheKey, chaptersData, 5 * 60 * 1000)
-      console.log(`✅ Chapters cached for: ${slug}`)
+      // ✨ Apply proxy to all image URLs
+      const proxiedData = proxyChaptersData(chaptersData)
       
-      return chaptersData
+      // Cache the proxied data for 5 minutes
+      cacheService.set(cacheKey, proxiedData, 5 * 60 * 1000)
+      console.log(`✅ Chapters cached for: ${slug} (with proxy)`)
+      
+      return proxiedData
     } catch (error) {
       console.error(`❌ Error fetching chapters for ${slug}:`, error)
       if (error instanceof Error && error.message?.includes('Failed to fetch')) {
@@ -137,7 +141,7 @@ export class ManhwaService {
   }
 
   /**
-   * Mendapatkan data chapter individual (images) with caching
+   * Mendapatkan data chapter individual (images) with caching & proxy
    * Mengambil dari chapters.json dan filter berdasarkan chapterSlug
    */
   static async getChapter(manhwaSlug: string, chapterSlug: string): Promise<ChapterDetail | null> {
@@ -153,7 +157,7 @@ export class ManhwaService {
     try {
       console.log(`📖 Fetching chapter: ${manhwaSlug}/${chapterSlug}`)
       
-      // Get all chapters from chapters.json (this is already cached)
+      // Get all chapters from chapters.json (already proxied from getChapters)
       const chaptersData = await this.getChapters(manhwaSlug)
       
       if (!chaptersData || !chaptersData.chapters) {
@@ -169,11 +173,14 @@ export class ManhwaService {
         return null
       }
       
-      // Cache for 10 minutes (longer since chapter content doesn't change often)
-      cacheService.set(cacheKey, chapter, 10 * 60 * 1000)
+      // ✨ Apply proxy as safety check (images already proxied from getChapters)
+      const proxiedChapter = proxyChapterImages(chapter)
       
-      console.log(`✅ Chapter loaded: ${chapter.title} (${chapter.images?.length || 0} images)`)
-      return chapter
+      // Cache for 10 minutes (longer since chapter content doesn't change often)
+      cacheService.set(cacheKey, proxiedChapter, 10 * 60 * 1000)
+      
+      console.log(`✅ Chapter loaded: ${proxiedChapter.title} (${proxiedChapter.images?.length || 0} images)`)
+      return proxiedChapter
     } catch (error) {
       console.error(`❌ Error fetching chapter ${manhwaSlug}/${chapterSlug}:`, error)
       return null

@@ -168,6 +168,10 @@ const openSocial = (platform: string) => {
   margin-bottom: 3rem;
 }
 
+.footer-links.ai-style-change-1 {
+  column-gap: 2rem;
+}
+
 .footer-brand {
   max-width: 400px;
 }
@@ -204,7 +208,7 @@ const openSocial = (platform: string) => {
   display: block;
   color: var(--text-secondary);
   font-size: 0.9rem;
-  margin-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
   transition: color var(--transition-fast);
   cursor: pointer;
   text-decoration: none;
@@ -269,14 +273,15 @@ const openSocial = (platform: string) => {
   }
   
   .footer-links {
-    grid-template-columns: 1fr;
+    grid-template-columns: repeat(3, 1fr);
     gap: 2rem;
   }
   
   .footer-bottom {
-    flex-direction: column;
+    flex-direction: row;
     gap: 1.5rem;
     text-align: center;
   }
+  
 }
 </style>

@@ -392,7 +392,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 2rem;
+  /* padding-top: 2rem; */
   border-top: 1px solid var(--divider-color);
 }
 
@@ -447,7 +447,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
   }
   
   .footer-bottom {
-    flex-direction: column;
+    /* flex-direction: column; */
     gap: 1.5rem;
     text-align: center;
   }

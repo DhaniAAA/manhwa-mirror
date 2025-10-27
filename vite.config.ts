@@ -1,6 +1,7 @@
 import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
+import { imageProxyPlugin } from './vite-plugins/imageProxyPlugin'
 
 // https://vite.dev/config/
 export default defineConfig({
@@ -13,6 +14,8 @@ export default defineConfig({
         }
       }
     }),
+    // Image proxy plugin for development
+    imageProxyPlugin(),
     // Modern image optimization plugin (more secure, actively maintained)
     ViteImageOptimizer({
       // JPEG optimization with progressive rendering
@@ -81,7 +84,7 @@ export default defineConfig({
     }
   },
   //ESBuild options for all environments
-  esbuild: {
-    drop: ['console', 'debugger'] // Remove console.log and debugger in production
-  }
+  // esbuild: {
+  //   drop: ['console', 'debugger'] // Remove console.log and debugger in production
+  // }
 })

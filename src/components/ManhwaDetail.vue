@@ -146,6 +146,21 @@
           <div class="section-header">
             <h2>Daftar Chapter</h2>
             <div class="chapter-controls">
+              <select 
+                class="chapter-select" 
+                @change="jumpToChapter"
+                v-model="selectedChapter"
+                v-if="sortedChapters.length > 0"
+              >
+                <option value="">Pilih Chapter</option>
+                <option 
+                  v-for="chapter in sortedChapters" 
+                  :key="chapter.slug"
+                  :value="chapter.slug"
+                >
+                  {{ chapter.title }}
+                </option>
+              </select>
               <button class="sort-btn" @click="toggleSort">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <line x1="4" y1="6" x2="20" y2="6"/>
@@ -229,6 +244,7 @@ const isBookmarked = ref(false)
 const loadingChapters = ref(false)
 const sortAscending = ref(false)
 const lastReadChapter = ref<number | null>(null)
+const selectedChapter = ref('')
 
 // Computed
 const sortedChapters = computed(() => {
@@ -262,6 +278,16 @@ const continueReading = () => {
 
 const readChapter = (chapter: Chapter) => {
   emit('readChapter', chapter)
+}
+
+const jumpToChapter = () => {
+  if (selectedChapter.value && props.chapters) {
+    const chapter = props.chapters.find(ch => ch.slug === selectedChapter.value)
+    if (chapter) {
+      readChapter(chapter)
+      selectedChapter.value = '' // Reset selection
+    }
+  }
 }
 
 const handleImageError = (event: Event) => {
@@ -696,6 +722,31 @@ watch(isBookmarked, (newVal) => {
   gap: 0.5rem;
 }
 
+.chapter-select {
+  padding: 0.625rem 1rem;
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  font-family: inherit;
+  cursor: pointer;
+  transition: all var(--transition-fast);
+  min-width: 200px;
+}
+
+.chapter-select:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+}
+
+.chapter-select:focus {
+  outline: none;
+  border-color: var(--accent-primary);
+  box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.1);
+}
+
 .sort-btn {
   display: flex;
   align-items: center;
@@ -719,8 +770,8 @@ watch(isBookmarked, (newVal) => {
 
 /* Chapter List */
 .chapter-list {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
   gap: 0.75rem;
 }
 
@@ -828,6 +879,11 @@ watch(isBookmarked, (newVal) => {
     max-width: 300px;
     margin: 0 auto;
   }
+  
+  /* Chapter list - 2 columns di tablet */
+  .chapter-list {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
 
 @media (max-width: 768px) {
@@ -852,8 +908,55 @@ watch(isBookmarked, (newVal) => {
     grid-template-columns: 1fr;
   }
   
+  /* Chapter controls responsive */
+  .chapter-controls {
+    flex-wrap: wrap;
+    width: 100%;
+  }
+  
+  .chapter-select {
+    flex: 1;
+    min-width: 150px;
+  }
+  
+  .sort-btn {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  /* Chapter list responsive - 1 column di mobile dengan max height */
+  .chapter-list {
+    grid-template-columns: 1fr;
+    max-height: 600px;
+    overflow-y: auto;
+    padding-right: 0.5rem;
+  }
+  
+  /* Custom scrollbar untuk mobile */
+  .chapter-list::-webkit-scrollbar {
+    width: 6px;
+  }
+  
+  .chapter-list::-webkit-scrollbar-track {
+    background: var(--bg-secondary);
+    border-radius: 3px;
+  }
+  
+  .chapter-list::-webkit-scrollbar-thumb {
+    background: var(--accent-primary);
+    border-radius: 3px;
+  }
+  
+  .chapter-list::-webkit-scrollbar-thumb:hover {
+    background: var(--accent-secondary);
+  }
+  
   .chapter-item {
     padding: 1rem;
+  }
+  
+  .chapter-item:hover {
+    transform: translateX(4px);
   }
   
   .chapter-number {

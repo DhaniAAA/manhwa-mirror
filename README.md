@@ -11,17 +11,18 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 
 ## 🆕 Recent Updates
 
-### v10.14.0 - Performance & Stability Improvements
-- ✅ **Fixed 404 Error on Refresh** - Added `vercel.json` for proper SPA routing
-- ⚡ **Image Loading Optimization** - Implemented lazy loading, preloading, and skeleton UI
-- 🎯 **LCP Optimization** - Priority loading for first 3 images, fetchpriority="high" for LCP element
-- 🚀 **Eliminated Render-Blocking** - Async font loading, inline critical CSS, optimized build
-- 🔗 **Optimized Request Chains** - Module preload, code splitting, asset inlining for 52% faster critical path
-- 📦 **Removed Unused Code** - Tree-shaking, CSS/JS minification for 58% smaller bundle
-- ♿ **Improved Accessibility** - WCAG AA compliant color contrast, +13 accessibility score
-- 💾 **Enhanced Caching** - Multi-layer caching for chapters and metadata
-- 🔧 **CORS Error Handling** - Better error detection and user-friendly messages
-- 📖 **Improved Documentation** - Added comprehensive troubleshooting guides
+### v11.0.0 - Image Proxy & UX Improvements
+- 🖼️ **Image Proxy System** - Self-hosted image proxy dengan domain tersembunyi (ID mapping)
+- 🔒 **Hidden Domain URLs** - URL menggunakan ID (1, 2, 3) bukan domain asli untuk security
+- 🎯 **Clean URLs** - Path-based URLs tanpa encoding (`/api/image/1/path` bukan `?url=...`)
+- 📱 **3-Column Chapter Grid** - Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column scrollable
+- 📜 **Scrollable Chapter List** - Max-height 600px di mobile untuk mudah akses footer
+- 🎛️ **Select Chapter Dropdown** - Quick jump ke chapter tertentu tanpa scroll
+- 🎨 **Footer Optimization** - Reduced gap untuk tampilan lebih compact
+- ⚡ **Vite Plugin Dev Proxy** - Development mode proxy untuk testing
+- 🚀 **Serverless Functions** - Vercel & Netlify functions untuk production proxy
+- 🔧 **Custom Scrollbar** - Stylish scrollbar dengan accent color di mobile
+
 
 ## 📑 Daftar Isi
 
@@ -42,6 +43,11 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 - 📖 **Reader Mode** - Pengalaman membaca yang optimal dengan kontrol penuh
 - 🎯 **Responsive Design** - Tampilan sempurna di semua perangkat
 - ⚡ **Performance Optimization** - Loading cepat dengan lazy loading, preloading, dan caching
+- 🖼️ **Image Proxy System** - Self-hosted proxy dengan domain tersembunyi untuk security & control
+- 🔒 **Hidden Domain URLs** - URL menggunakan ID mapping (1, 2, 3) bukan domain asli
+- 📱 **3-Column Chapter Grid** - Responsive grid layout: Desktop 3 cols, Tablet 2 cols, Mobile 1 col
+- 📜 **Scrollable Chapter List** - Max-height container di mobile untuk easy footer access
+- 🎛️ **Quick Chapter Jump** - Select dropdown untuk langsung ke chapter tertentu
 - 🖼️ **Smart Image Loading** - Lazy loading dengan skeleton shimmer dan progressive preloading
 - 🔖 **Bookmark System** - Simpan dan lanjutkan membaca manhwa favorit
 - 🔍 **Search Function** - Cari manhwa dengan mudah
@@ -150,7 +156,7 @@ manhwa-mirror/
 │   │   ├── ManhwaCard.vue         # Card component untuk manhwa
 │   │   ├── ManhwaSection.vue      # Section untuk koleksi manhwa
 │   │   ├── ManhwaGrid.vue         # Grid layout untuk manhwa
-│   │   ├── ManhwaDetail.vue       # Detail page component
+│   │   ├── ManhwaDetail.vue       # Detail page dengan 3-col grid & select chapter
 │   │   ├── ManhwaReader.vue       # Reader interface
 │   │   └── LazyImage.vue          # Lazy loading image component
 │   ├── views/
@@ -159,10 +165,13 @@ manhwa-mirror/
 │   │   └── ReaderPage.vue         # Reader page view
 │   ├── composables/
 │   │   ├── useManhwa.ts           # State management composable
-│   │   └── useManhwaDetail.ts     # Detail page composable
+│   │   ├── useManhwaDetail.ts     # Detail page composable
+│   │   └── useImageProxy.ts       # Image proxy composable
 │   ├── services/
-│   │   ├── manhwaService.ts       # Supabase data service
+│   │   ├── manhwaService.ts       # Supabase data service dengan proxy
 │   │   └── cacheService.ts        # Cache management service
+│   ├── utils/
+│   │   └── imageProxy.ts          # Image proxy utilities & domain mapping
 │   ├── router/
 │   │   └── index.ts               # Vue Router configuration
 │   ├── lib/
@@ -173,10 +182,16 @@ manhwa-mirror/
 │   ├── AppRouter.vue              # Router wrapper component
 │   ├── main.ts                    # Entry point
 │   └── style.css                  # Global styles & theme
+├── vite-plugins/
+│   └── imageProxyPlugin.ts        # Vite plugin untuk dev proxy
+├── api/
+│   └── image-proxy.js             # Vercel serverless function
+├── netlify/functions/
+│   └── image-proxy.js             # Netlify serverless function
 ├── public/                        # Static assets
 ├── .env                           # Environment variables (Supabase)
 ├── .env.example                   # Environment variables template
-├── vercel.json                    # Vercel deployment configuration
+├── vercel.json                    # Vercel deployment & routing config
 ├── Panduan.md                     # Panduan struktur data Supabase
 └── index.html                     # HTML template
 ```
@@ -194,15 +209,26 @@ Menggunakan Vue 3 Composition API dengan composables:
 - `useManhwa` - Mengelola state daftar manhwa
 - `useManhwaDetail` - Mengelola state detail manhwa dan chapters
 
+### Image Proxy System
+- **Development** - Vite plugin (`imageProxyPlugin.ts`) untuk proxy di dev mode
+- **Production** - Serverless functions untuk Vercel & Netlify
+- **Domain Mapping** - ID-based URLs (1, 2, 3) untuk hide external domains
+- **Clean URLs** - Path-based routing tanpa encoding
+- **Security** - Domain validation & whitelist protection
+
 ### Services
-- **manhwaService** - Mengambil data dari Supabase Storage dengan caching
+- **manhwaService** - Mengambil data dari Supabase Storage dengan caching & proxy
   - Metadata caching (5 menit)
   - Chapters caching (5 menit)
   - Chapter detail caching (10 menit)
+  - Auto-apply image proxy ke semua URLs
   - CORS error detection & helpful logging
 - **cacheService** - Mengelola caching data untuk performa optimal
+- **imageProxy** - Utilities untuk URL transformation & domain mapping
 
 ### Components
+- **ManhwaDetail** - 3-column grid layout dengan select chapter dropdown
+- **Chapter List** - Responsive grid: Desktop 3 cols, Tablet 2 cols, Mobile 1 col scrollable
 - **Smart Image Loading** - Lazy loading dengan priority loading untuk 3 gambar pertama
 - **Progressive Preloading** - Otomatis preload 3 gambar berikutnya saat scroll
 - **Loading Skeleton** - Shimmer animation untuk feedback visual
@@ -348,10 +374,9 @@ MIT License - lihat file LICENSE untuk detail
 
 ## 📚 Documentation
 
+### Core Documentation
 - **Panduan.md** - Panduan struktur data Supabase
-- **MANHUA_ROUTES.md** - Manhua routes documentation with search & filter features
-- **SECURITY_NOTES.md** - Security analysis & mitigation strategies
-- **SUPABASE_CORS_FIX.md** - Panduan troubleshooting CORS Supabase
+
 
 ## 🔗 Links
 
