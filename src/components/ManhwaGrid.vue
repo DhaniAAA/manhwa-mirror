@@ -63,15 +63,19 @@
         </button>
 
         <div class="pagination-numbers">
-          <button
-            v-for="page in visiblePages"
-            :key="page"
-            class="pagination-number"
-            :class="{ active: page === currentPage }"
-            @click="goToPage(page)"
-          >
-            {{ page }}
-          </button>
+          <template v-for="(page, index) in visiblePages" :key="index">
+            <button
+              v-if="typeof page === 'number'"
+              class="pagination-number"
+              :class="{ active: page === currentPage }"
+              @click="goToPage(page)"
+            >
+              {{ page }}
+            </button>
+            <span v-else class="pagination-ellipsis">
+              {{ page }}
+            </span>
+          </template>
         </div>
 
         <button 
@@ -128,19 +132,50 @@ const paginatedManhwa = computed(() => {
 })
 
 const visiblePages = computed(() => {
-  const pages: number[] = []
-  const maxVisible = 5
-  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
-  let end = Math.min(totalPages.value, start + maxVisible - 1)
-
-  if (end - start + 1 < maxVisible) {
-    start = Math.max(1, end - maxVisible + 1)
+  const maxVisible = 6
+  const pages: (number | string)[] = []
+  
+  if (totalPages.value <= maxVisible) {
+    // Show all pages if total is less than max
+    for (let i = 1; i <= totalPages.value; i++) {
+      pages.push(i)
+    }
+  } else {
+    // Always show first page
+    pages.push(1)
+    
+    let startPage = Math.max(2, currentPage.value - 1)
+    let endPage = Math.min(totalPages.value - 1, currentPage.value + 1)
+    
+    // Adjust if near start
+    if (currentPage.value <= 3) {
+      endPage = Math.min(maxVisible - 1, totalPages.value - 1)
+    }
+    
+    // Adjust if near end
+    if (currentPage.value >= totalPages.value - 2) {
+      startPage = Math.max(2, totalPages.value - (maxVisible - 2))
+    }
+    
+    // Add ellipsis after first page if needed
+    if (startPage > 2) {
+      pages.push('...')
+    }
+    
+    // Add middle pages
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i)
+    }
+    
+    // Add ellipsis before last page if needed
+    if (endPage < totalPages.value - 1) {
+      pages.push('...')
+    }
+    
+    // Always show last page
+    pages.push(totalPages.value)
   }
-
-  for (let i = start; i <= end; i++) {
-    pages.push(i)
-  }
-
+  
   return pages
 })
 
@@ -287,64 +322,152 @@ watch(paginatedManhwa, (cards) => {
   justify-content: center;
   gap: 0.5rem;
   margin-bottom: 2rem;
+  flex-wrap: wrap;
 }
 
 .pagination-btn {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--border-color);
+  border-radius: 0.625rem;
   background: var(--bg-secondary);
   color: var(--text-primary);
   cursor: pointer;
   display: flex;
   align-items: center;
   justify-content: center;
-  transition: all var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+}
+
+.pagination-btn::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.pagination-btn:hover:not(:disabled)::before {
+  width: 100%;
+  height: 100%;
 }
 
 .pagination-btn:hover:not(:disabled) {
   background: var(--bg-tertiary);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.pagination-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.2);
 }
 
 .pagination-btn:disabled {
   opacity: 0.3;
   cursor: not-allowed;
+  background: var(--bg-primary);
+}
+
+.pagination-btn svg {
+  position: relative;
+  z-index: 1;
 }
 
 .pagination-numbers {
   display: flex;
   gap: 0.5rem;
+  flex-wrap: wrap;
+  justify-content: center;
 }
 
 .pagination-number {
-  min-width: 40px;
-  height: 40px;
-  padding: 0 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
+  min-width: 44px;
+  height: 44px;
+  padding: 0 0.875rem;
+  border: 2px solid var(--border-color);
+  border-radius: 0.625rem;
   background: var(--bg-secondary);
   color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
+  font-size: 0.9375rem;
+  font-weight: 600;
   font-family: inherit;
   cursor: pointer;
-  transition: all var(--transition-fast);
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
 }
 
-.pagination-number:hover {
+.pagination-number::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  background: rgba(139, 92, 246, 0.1);
+  transform: translate(-50%, -50%);
+  transition: width 0.3s, height 0.3s;
+}
+
+.pagination-number:hover:not(.active)::before {
+  width: 100%;
+  height: 100%;
+}
+
+.pagination-number:hover:not(.active) {
   background: var(--bg-tertiary);
   border-color: var(--accent-primary);
   color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.pagination-number:active:not(.active) {
+  transform: translateY(0);
 }
 
 .pagination-number.active {
-  background: var(--accent-primary);
+  background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
   border-color: var(--accent-primary);
   color: white;
+  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
+  transform: scale(1.05);
+  font-weight: 700;
+}
+
+.pagination-number.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
+  pointer-events: none;
+}
+
+/* Pagination Ellipsis */
+.pagination-ellipsis {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 44px;
+  height: 44px;
+  color: var(--text-muted);
+  font-size: 1.25rem;
   font-weight: 600;
+  user-select: none;
 }
 
 /* Page Info */
@@ -373,14 +496,24 @@ watch(paginatedManhwa, (cards) => {
   }
 
   .pagination {
-    flex-wrap: wrap;
+    gap: 0.375rem;
   }
 
   .pagination-btn,
   .pagination-number {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    font-size: 0.875rem;
+  }
+  
+  .pagination-numbers {
+    gap: 0.375rem;
+  }
+  
+  .pagination-btn:hover:not(:disabled),
+  .pagination-number:hover:not(.active) {
+    transform: translateY(-1px);
   }
 }
 

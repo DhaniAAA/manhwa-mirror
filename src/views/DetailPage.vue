@@ -40,10 +40,11 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted } from 'vue'
+import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import ManhwaDetail from '../components/ManhwaDetail.vue'
 import { useManhwaDetail } from '../composables/useManhwaDetail'
+import { useMeta } from '../composables/useMeta'
 import type { Chapter } from '../types/manhwa'
 
 const route = useRoute()
@@ -51,6 +52,25 @@ const router = useRouter()
 const slug = route.params.slug as string
 
 const { loading, error, metadata, chaptersData, loadManhwaDetail } = useManhwaDetail()
+
+// Dynamic meta tags
+const metaOptions = computed(() => {
+  if (!metadata.value) return {}
+  
+  const baseUrl = window.location.origin
+  const currentUrl = `${baseUrl}/detail/${slug}`
+  
+  return {
+    title: `${metadata.value.title} - Manhwa Mirror`,
+    description: metadata.value.description || `Baca ${metadata.value.title} online. ${metadata.value.genres?.join(', ') || 'Manhwa'} dengan ${metadata.value.total_chapters} chapter tersedia.`,
+    image: metadata.value.cover_url || `${baseUrl}/og-image.jpg`,
+    url: currentUrl,
+    type: 'article',
+    keywords: `${metadata.value.title}, manhwa, ${metadata.value.genres?.join(', ') || 'komik'}, baca online`
+  }
+})
+
+useMeta(metaOptions)
 
 onMounted(async () => {
   await loadManhwaDetail(slug)

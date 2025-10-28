@@ -1,21 +1,25 @@
 <template>
-  <section class="hero">
-    <div class="hero-background">
-      <div class="hero-gradient"></div>
-      <div class="hero-pattern"></div>
+  <section class="relative mt-[70px] py-12 overflow-hidden">
+    <!-- Background -->
+    <div class="absolute inset-0 z-0">
+      <div class="absolute inset-0 bg-gradient-radial from-purple-500/15 via-transparent to-transparent animate-gradient-shift"></div>
+      <div class="absolute inset-0 opacity-50 bg-grid-pattern"></div>
     </div>
     
-    <div class="container hero-content">
-      <div class="hot-updates-header">
-        <div class="header-left">
-          <div class="fire-icon">🔥</div>
+    <div class="container relative z-10 px-6">
+      <!-- Header -->
+      <div class="flex items-center justify-between mb-8 pb-6 border-b border-gray-800">
+        <div class="flex items-center gap-4">
+          <div class="text-4xl animate-fire-flicker">🔥</div>
           <div>
-            <h1 class="section-title">Hot Komik Update</h1>
-            <p class="section-subtitle">Manhwa terbaru yang baru saja dirilis</p>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">
+              Hot Komik Update
+            </h1>
+            <p class="text-sm text-gray-400 mt-1">Manhwa terbaru yang baru saja dirilis</p>
           </div>
         </div>
-        <div class="header-right">
-          <span class="update-badge">
+        <div class="hidden sm:block">
+          <span class="flex items-center gap-2 px-5 py-2.5 bg-purple-500/10 border border-purple-500/30 rounded-full text-sm font-semibold text-purple-400">
             <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10"/>
               <polyline points="12 6 12 12 16 14"/>
@@ -25,56 +29,65 @@
         </div>
       </div>
 
-      <div v-if="loading" class="hot-updates-loading">
-        <div class="spinner"></div>
+      <!-- Loading State -->
+      <div v-if="loading" class="flex flex-col items-center justify-center min-h-[300px] text-gray-400 gap-4">
+        <div class="w-12 h-12 border-4 border-gray-700 border-t-purple-500 rounded-full animate-spin"></div>
         <p>Memuat manhwa terbaru...</p>
       </div>
 
-      <div v-else class="hot-updates-scroll">
-        <div class="hot-updates-grid">
+      <!-- Hot Updates Grid -->
+      <div v-else class="relative overflow-x-auto overflow-y-hidden pb-4 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-800">
+        <div class="flex gap-6 py-2">
           <div 
             v-for="(item, index) in hotUpdates" 
             :key="item.slug"
-            class="hot-card"
+            class="flex-none w-[200px] bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:border-purple-500 hover:shadow-2xl hover:shadow-purple-500/30 animate-fade-in-scale"
             :style="{ animationDelay: `${index * 0.05}s` }"
             @click="goToDetail(item.slug)"
           >
-            <div class="hot-card-image">
+            <!-- Image Container -->
+            <div class="relative aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden group">
               <img 
                 v-if="item.cover_url" 
                 :src="item.cover_url" 
                 :alt="item.title"
-                class="hot-card-cover"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
                 :loading="index < 3 ? 'eager' : 'lazy'"
                 :fetchpriority="index === 0 ? 'high' : 'auto'"
                 :decoding="index < 3 ? 'sync' : 'async'"
               />
-              <div class="hot-card-badge">
+              
+              <!-- NEW Badge -->
+              <div class="absolute top-3 left-3 flex items-center gap-1 px-3 py-1.5 bg-red-500/90 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold text-white uppercase tracking-wider">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                   <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
                 </svg>
                 NEW
               </div>
-              <div class="hot-card-overlay">
-                <!-- <button class="quick-read-btn">
-                  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                    <polygon points="5 3 19 12 5 21 5 3"/>
-                  </svg>
-                </button> -->
-              </div>
+              
+              <!-- Overlay -->
+              <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
-            <div class="hot-card-info">
-              <h3 class="hot-card-title">{{ item.title }}</h3>
-              <div class="hot-card-meta">
-                <span class="hot-card-rating">
+            
+            <!-- Info -->
+            <div class="p-4">
+              <h3 class="text-[0.95rem] font-semibold text-white mb-2 overflow-hidden line-clamp-2 leading-[1.4] min-h-[2.8em]">
+                {{ item.title }}
+              </h3>
+              
+              <!-- Meta -->
+              <div class="flex items-center gap-3 text-xs text-gray-500 mb-2">
+                <span class="flex items-center gap-1 text-yellow-400">
                   <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
                     <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                   </svg>
                   {{ item.rating || '9.5' }}
                 </span>
-                <span class="hot-card-chapters">{{ item.chapters || item.total_chapters }} Ch</span>
+                <span>{{ item.chapters || item.total_chapters }} Ch</span>
               </div>
-              <div v-if="item.latestChapters && item.latestChapters.length > 0" class="hot-card-latest">
+              
+              <!-- Latest Chapter -->
+              <div v-if="item.latestChapters && item.latestChapters.length > 0" class="flex items-center gap-1 text-xs text-purple-400 px-2.5 py-1.5 bg-purple-500/10 rounded-md overflow-hidden text-ellipsis whitespace-nowrap">
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="9 18 15 12 9 6"/>
                 </svg>
@@ -104,17 +117,9 @@ const goToDetail = (slug: string) => {
 
 onMounted(async () => {
   try {
-    console.log('🔥 Loading hot updates...')
-    // Get cards quickly without chapters
-    const cards = await ManhwaService.getManhwaCards(12, true)
-    const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(cards)
-
-    // Sort by total chapters (more chapters = more updates)
-    hotUpdates.value = hydrated.sort((a, b) => {
-      const chaptersA = a.chapters || a.total_chapters || 0
-      const chaptersB = b.chapters || b.total_chapters || 0
-      return chaptersB - chaptersA
-    })
+    console.log('🔥 Loading hot updates based on latest chapter releases...')
+    // Use getHotUpdates to get manhwa sorted by latest chapter update time
+    hotUpdates.value = await ManhwaService.getHotUpdates(12)
     
     console.log(`✅ Loaded ${hotUpdates.value.length} hot updates`)
   } catch (error) {
@@ -126,176 +131,18 @@ onMounted(async () => {
 </script>
 
 <style scoped>
-.hero {
-  position: relative;
-  margin-top: 70px;
-  padding: 3rem 0;
-  overflow: hidden;
-}
-
-.hero-background {
-  position: absolute;
-  inset: 0;
-  z-index: 0;
-}
-
-.hero-gradient {
-  position: absolute;
-  inset: 0;
-  background: 
-    radial-gradient(circle at 30% 20%, rgba(139, 92, 246, 0.15) 0%, transparent 50%),
-    radial-gradient(circle at 70% 80%, rgba(168, 85, 247, 0.1) 0%, transparent 50%);
-  animation: gradientShift 10s ease-in-out infinite;
-}
-
-@keyframes gradientShift {
+/* Custom Animations */
+@keyframes gradient-shift {
   0%, 100% { opacity: 1; }
   50% { opacity: 0.7; }
 }
 
-.hero-pattern {
-  position: absolute;
-  inset: 0;
-  background-image: 
-    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
-  background-size: 50px 50px;
-  opacity: 0.5;
-}
-
-.hero-content {
-  position: relative;
-  z-index: 1;
-  padding: 0 1.5rem;
-}
-
-/* Hot Updates Header */
-.hot-updates-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-  padding-bottom: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.header-left {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.fire-icon {
-  font-size: 2.5rem;
-  animation: fireFlicker 2s ease-in-out infinite;
-}
-
-@keyframes fireFlicker {
+@keyframes fire-flicker {
   0%, 100% { transform: scale(1); }
   50% { transform: scale(1.1); }
 }
 
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin: 0;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-}
-
-.section-subtitle {
-  font-size: 0.95rem;
-  color: var(--text-secondary);
-  margin: 0.25rem 0 0 0;
-}
-
-.update-badge {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  background: rgba(139, 92, 246, 0.1);
-  border: 1px solid rgba(139, 92, 246, 0.3);
-  border-radius: 2rem;
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--accent-primary);
-}
-
-/* Hot Updates Loading */
-.hot-updates-loading {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  color: var(--text-secondary);
-  gap: 1rem;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--bg-tertiary);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Hot Updates Scroll */
-.hot-updates-scroll {
-  position: relative;
-  overflow-x: auto;
-  overflow-y: hidden;
-  scrollbar-width: thin;
-  scrollbar-color: var(--accent-primary) var(--bg-tertiary);
-  padding-bottom: 1rem;
-}
-
-.hot-updates-scroll::-webkit-scrollbar {
-  height: 8px;
-}
-
-.hot-updates-scroll::-webkit-scrollbar-track {
-  background: var(--bg-tertiary);
-  border-radius: 4px;
-}
-
-.hot-updates-scroll::-webkit-scrollbar-thumb {
-  background: var(--accent-primary);
-  border-radius: 4px;
-}
-
-.hot-updates-scroll::-webkit-scrollbar-thumb:hover {
-  background: var(--accent-secondary);
-}
-
-.hot-updates-grid {
-  display: flex;
-  gap: 1.5rem;
-  padding: 0.5rem 0;
-}
-
-/* Hot Card */
-.hot-card {
-  flex: 0 0 200px;
-  background: var(--bg-secondary);
-  border-radius: 1rem;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-  transition: all var(--transition-base);
-  cursor: pointer;
-  animation: fadeInScale 0.5s ease-out backwards;
-}
-
-@keyframes fadeInScale {
+@keyframes fade-in-scale {
   from {
     opacity: 0;
     transform: scale(0.9);
@@ -306,197 +153,71 @@ onMounted(async () => {
   }
 }
 
-.hot-card:hover {
-  transform: translateY(-8px);
-  border-color: var(--accent-primary);
-  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.4), 0 0 20px rgba(139, 92, 246, 0.3);
+.animate-gradient-shift {
+  animation: gradient-shift 10s ease-in-out infinite;
 }
 
-.hot-card-image {
-  position: relative;
-  aspect-ratio: 3/4;
-  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated));
-  overflow: hidden;
+.animate-fire-flicker {
+  animation: fire-flicker 2s ease-in-out infinite;
 }
 
-.hot-card-cover {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  transition: transform var(--transition-base);
+.animate-fade-in-scale {
+  animation: fade-in-scale 0.5s ease-out backwards;
 }
 
-.hot-card:hover .hot-card-cover {
-  transform: scale(1.1);
+/* Grid Pattern Background */
+.bg-grid-pattern {
+  background-image: 
+    linear-gradient(rgba(255, 255, 255, 0.02) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255, 255, 255, 0.02) 1px, transparent 1px);
+  background-size: 50px 50px;
 }
 
-.hot-card-badge {
-  position: absolute;
-  top: 0.75rem;
-  left: 0.75rem;
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  padding: 0.375rem 0.75rem;
-  background: rgba(239, 68, 68, 0.9);
-  backdrop-filter: blur(8px);
-  border-radius: 0.5rem;
-  font-size: 0.7rem;
-  font-weight: 700;
-  color: white;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.hot-card-overlay {
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(to top, rgba(0, 0, 0, 0.8) 0%, transparent 50%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  opacity: 0;
-  transition: opacity var(--transition-base);
-}
-
-.hot-card:hover .hot-card-overlay {
-  opacity: 1;
-}
-
-/* .quick-read-btn {
-  width: 48px;
-  height: 48px;
-  border-radius: 50%;
-  border: none;
-  background: var(--accent-primary);
-  color: white;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-base);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.4);
+/* Radial Gradient */
+/* .bg-gradient-radial {
+  background: radial-gradient(circle at 30% 20%, currentColor 0%, transparent 50%);
 } */
 
-/* .quick-read-btn:hover {
-  transform: scale(1.15);
-  background: var(--accent-secondary);
-} */
-
-.hot-card-info {
-  padding: 1rem;
+/* Custom Scrollbar */
+.scrollbar-thin::-webkit-scrollbar {
+  height: 8px;
 }
 
-.hot-card-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2;
-  -webkit-box-orient: vertical;
-  line-height: 1.4;
-  min-height: 2.8em;
+.scrollbar-thin::-webkit-scrollbar-track {
+  background-color: rgb(31 41 55);
+  border-radius: 0.25rem;
 }
 
-.hot-card-meta {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  margin-bottom: 0.5rem;
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background-color: rgb(168 85 247);
+  border-radius: 0.25rem;
 }
 
-.hot-card-rating {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  color: #fbbf24;
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background-color: rgb(147 51 234);
 }
 
-.hot-card-latest {
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  font-size: 0.75rem;
-  color: var(--accent-primary);
-  padding: 0.375rem 0.625rem;
-  background: rgba(139, 92, 246, 0.1);
-  border-radius: 0.375rem;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.scrollbar-thin {
+  scrollbar-width: thin;
+  scrollbar-color: rgb(168 85 247) rgb(31 41 55);
 }
 
-/* Responsive */
+/* Responsive adjustments */
 @media (max-width: 1024px) {
-  .section-title {
-    font-size: 1.75rem;
-  }
-  
-  .hot-card {
-    flex: 0 0 180px;
+  .flex-none.w-\[200px\] {
+    width: 180px;
   }
 }
 
 @media (max-width: 768px) {
-  .hero {
-    margin-top: 60px;
-    padding: 2rem 0;
-  }
-  
-  .hero-content {
-    padding: 0 1rem;
-  }
-  
-  .hot-updates-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-  }
-  
-  .section-subtitle {
-    font-size: 0.875rem;
-  }
-  
-  .fire-icon {
-    font-size: 2rem;
-  }
-  
-  .update-badge {
-    font-size: 0.8rem;
-    padding: 0.5rem 1rem;
-  }
-  
-  .hot-card {
-    flex: 0 0 160px;
-  }
-  
-  .hot-card-title {
-    font-size: 0.875rem;
-  }
-  
-  .hot-card-meta {
-    font-size: 0.75rem;
+  .flex-none.w-\[200px\] {
+    width: 160px;
   }
 }
 
 @media (max-width: 480px) {
-  .hot-card {
-    flex: 0 0 140px;
-  }
-  
-  .hot-updates-scroll {
-    margin: 0 -1rem;
-    padding: 0 1rem 1rem;
+  .flex-none.w-\[200px\] {
+    width: 140px;
   }
 }
 </style>

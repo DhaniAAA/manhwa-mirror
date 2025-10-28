@@ -1,38 +1,38 @@
 <template>
-  <div class="home-page">
+  <div class="min-h-screen bg-white dark:bg-slate-900">
     <HeroSection />
     
     <!-- Search Results Section -->
-    <section v-if="searchQuery" class="manhwa-section search-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" style="display: inline-block; vertical-align: middle; margin-right: 0.5rem;">
+    <section v-if="searchQuery" class="py-12 bg-gradient-to-b from-violet-500/5 via-transparent border-b border-slate-200 dark:border-slate-700">
+      <div class="container px-4 mx-auto">
+        <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
+          <h2 class="flex items-center text-3xl font-bold text-violet-500 lg:text-2xl md:text-xl">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline-block mr-2">
               <circle cx="11" cy="11" r="8"/>
               <path d="m21 21-4.35-4.35"/>
             </svg>
             Hasil Pencarian: "{{ searchQuery }}"
           </h2>
-          <div class="page-info">
+          <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
             {{ searchResults.length }} manhwa ditemukan
           </div>
         </div>
         
-        <div v-if="searchLoading" class="loading-state">
-          <div class="spinner"></div>
+        <div v-if="searchLoading" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+          <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
           <p>Mencari manhwa...</p>
         </div>
         
-        <div v-else-if="searchResults.length === 0" class="empty-state">
-          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div v-else-if="searchResults.length === 0" class="flex flex-col items-center justify-center min-h-[300px] px-4 py-12 text-center">
+          <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-6 opacity-50 text-slate-400 dark:text-slate-500">
             <circle cx="11" cy="11" r="8"/>
             <path d="m21 21-4.35-4.35"/>
           </svg>
-          <h3>Tidak ada hasil</h3>
-          <p>Coba kata kunci lain untuk menemukan manhwa yang Anda cari</p>
+          <h3 class="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-100">Tidak ada hasil</h3>
+          <p class="text-base text-slate-600 dark:text-slate-400 max-w-[400px]">Coba kata kunci lain untuk menemukan manhwa yang Anda cari</p>
         </div>
         
-        <div v-else class="manhwa-grid">
+        <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
           <ManhwaCard
             v-for="manhwa in searchResults"
             :key="manhwa.slug"
@@ -54,30 +54,36 @@
     </section>
     
     <!-- Rekomendasi Manhwa Section -->
-    <section id="recommendation-section" class="manhwa-section recommendation-section">
-      <div class="container">
-        <div class="section-header">
-          <div class="header-with-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="section-icon">
+    <section id="recommendation-section" class="py-12 bg-gradient-to-b from-amber-400/5 via-transparent">
+      <div class="container px-4 mx-auto">
+        <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
+          <div class="flex items-center gap-4">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0 text-amber-400">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
             </svg>
             <div>
-              <h2 class="section-title">Rekomendasi Manhwa</h2>
-              <p class="section-description">Pilihan terbaik untuk Anda berdasarkan rating tertinggi</p>
+              <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Rekomendasi Manhwa</h2>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Pilihan terbaik untuk Anda berdasarkan rating tertinggi</p>
             </div>
           </div>
-          <div class="page-info">
-            Halaman {{ latestPage }} dari {{ latestTotalPages }}
+          <div class="flex items-center gap-3">
+            <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
+              Halaman {{ latestPage }} dari {{ latestTotalPages }}
+            </div>
+            <div v-if="isLoadingMore" class="flex items-center gap-2 px-3 py-2 text-xs font-medium border rounded-lg bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/20 dark:border-violet-800 dark:text-violet-400">
+              <div class="w-3 h-3 border-2 rounded-full border-violet-300 dark:border-violet-700 border-t-violet-600 dark:border-t-violet-400 animate-spin"></div>
+              <span>Memuat...</span>
+            </div>
           </div>
         </div>
         
-        <div v-if="loadingLatest" class="loading-state">
-          <div class="spinner"></div>
+        <div v-if="loadingLatest" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+          <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
           <p>Memuat rekomendasi...</p>
         </div>
         
         <div v-else>
-          <div class="manhwa-grid">
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
             <ManhwaCard
               v-for="(manhwa, index) in displayedLatest"
               :key="manhwa.slug"
@@ -97,56 +103,62 @@
           </div>
           
           <!-- Pagination for Recommendations -->
-          <div v-if="latestTotalPages > 1" class="pagination">
+          <div v-if="latestTotalPages > 1" class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="latestPage === 1"
               @click="goToLatestPage(1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="11 17 6 12 11 7"/>
                 <polyline points="18 17 13 12 18 7"/>
               </svg>
             </button>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="latestPage === 1"
               @click="goToLatestPage(latestPage - 1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
             </button>
             
-            <div class="pagination-numbers">
-              <button
-                v-for="page in latestTotalPages"
-                :key="page"
-                class="pagination-number"
-                :class="{ active: page === latestPage }"
-                @click="goToLatestPage(page)"
-              >
-                {{ page }}
-              </button>
+            <div class="flex flex-wrap justify-center gap-1.5 mx-1 md:gap-2 md:mx-2">
+              <template v-for="(page, index) in visibleLatestPages" :key="index">
+                <button
+                  v-if="typeof page === 'number'"
+                  class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                  :class="page === latestPage 
+                    ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold' 
+                    : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'"
+                  @click="goToLatestPage(page)"
+                >
+                  {{ page }}
+                </button>
+                <span v-else class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
+                  {{ page }}
+                </span>
+              </template>
             </div>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="latestPage === latestTotalPages"
               @click="goToLatestPage(latestPage + 1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="latestPage === latestTotalPages"
               @click="goToLatestPage(latestTotalPages)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="13 17 18 12 13 7"/>
                 <polyline points="6 17 11 12 6 7"/>
               </svg>
@@ -157,22 +169,22 @@
     </section>
     
     <!-- Popular Section -->
-    <section id="popular-section" class="manhwa-section">
-      <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">Manhwa Populer</h2>
-          <div class="page-info">
+    <section id="popular-section" class="py-12">
+      <div class="container px-4 mx-auto">
+        <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Manhwa Populer</h2>
+          <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
             Halaman {{ popularPage }} dari {{ popularTotalPages }}
           </div>
         </div>
         
-        <div v-if="loadingPopular" class="loading-state">
-          <div class="spinner"></div>
+        <div v-if="loadingPopular" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+          <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
           <p>Memuat manhwa...</p>
         </div>
         
         <div v-else>
-          <div class="manhwa-grid">
+          <div class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
             <ManhwaCard
               v-for="manhwa in displayedPopular"
               :key="manhwa.slug"
@@ -191,56 +203,62 @@
           </div>
           
           <!-- Pagination for Popular -->
-          <div v-if="popularTotalPages > 1" class="pagination">
+          <div v-if="popularTotalPages > 1" class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="popularPage === 1"
               @click="goToPopularPage(1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="11 17 6 12 11 7"/>
                 <polyline points="18 17 13 12 18 7"/>
               </svg>
             </button>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="popularPage === 1"
               @click="goToPopularPage(popularPage - 1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
             </button>
             
-            <div class="pagination-numbers">
-              <button
-                v-for="page in popularTotalPages"
-                :key="page"
-                class="pagination-number"
-                :class="{ active: page === popularPage }"
-                @click="goToPopularPage(page)"
-              >
-                {{ page }}
-              </button>
+            <div class="flex flex-wrap justify-center gap-1.5 mx-1 md:gap-2 md:mx-2">
+              <template v-for="(page, index) in visiblePopularPages" :key="index">
+                <button
+                  v-if="typeof page === 'number'"
+                  class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
+                  :class="page === popularPage 
+                    ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold' 
+                    : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'"
+                  @click="goToPopularPage(page)"
+                >
+                  {{ page }}
+                </button>
+                <span v-else class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
+                  {{ page }}
+                </span>
+              </template>
             </div>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="popularPage === popularTotalPages"
               @click="goToPopularPage(popularPage + 1)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
             
             <button 
-              class="pagination-btn"
+              class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
               :disabled="popularPage === popularTotalPages"
               @click="goToPopularPage(popularTotalPages)"
             >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
                 <polyline points="13 17 18 12 13 7"/>
                 <polyline points="6 17 11 12 6 7"/>
               </svg>
@@ -273,6 +291,11 @@ const searchQuery = ref('')
 const searchResults = ref<ManhwaCardData[]>([])
 const searchLoading = ref(false)
 
+// SSR + CSR Strategy
+const initialLoadCount = 10 // Load only 10 items on SSR
+const isClientHydrated = ref(false)
+const isLoadingMore = ref(false)
+
 // Pagination state
 const latestPage = ref(1)
 const popularPage = ref(1)
@@ -286,14 +309,78 @@ const popularTotalPages = computed(() => Math.ceil(popularManhwa.value.length / 
 const displayedLatest = computed(() => {
   const start = (latestPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
+  
+  // On SSR or before hydration, only show initial items
+  if (!isClientHydrated.value && latestPage.value === 1) {
+    return latestManhwa.value.slice(0, Math.min(initialLoadCount, end))
+  }
+  
   return latestManhwa.value.slice(start, end)
 })
 
 const displayedPopular = computed(() => {
   const start = (popularPage.value - 1) * itemsPerPage
   const end = start + itemsPerPage
+  
+  // On SSR or before hydration, only show initial items
+  if (!isClientHydrated.value && popularPage.value === 1) {
+    return popularManhwa.value.slice(0, Math.min(initialLoadCount, end))
+  }
+  
   return popularManhwa.value.slice(start, end)
 })
+
+// Smart pagination: show max 6 pages with ellipsis
+const getVisiblePages = (currentPage: number, totalPages: number) => {
+  const maxVisible = 6
+  const pages: (number | string)[] = []
+  
+  if (totalPages <= maxVisible) {
+    // Show all pages if total is less than max
+    for (let i = 1; i <= totalPages; i++) {
+      pages.push(i)
+    }
+  } else {
+    // Always show first page
+    pages.push(1)
+    
+    let startPage = Math.max(2, currentPage - 1)
+    let endPage = Math.min(totalPages - 1, currentPage + 1)
+    
+    // Adjust if near start
+    if (currentPage <= 3) {
+      endPage = Math.min(maxVisible - 1, totalPages - 1)
+    }
+    
+    // Adjust if near end
+    if (currentPage >= totalPages - 2) {
+      startPage = Math.max(2, totalPages - (maxVisible - 2))
+    }
+    
+    // Add ellipsis after first page if needed
+    if (startPage > 2) {
+      pages.push('...')
+    }
+    
+    // Add middle pages
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(i)
+    }
+    
+    // Add ellipsis before last page if needed
+    if (endPage < totalPages - 1) {
+      pages.push('...')
+    }
+    
+    // Always show last page
+    pages.push(totalPages)
+  }
+  
+  return pages
+}
+
+const visibleLatestPages = computed(() => getVisiblePages(latestPage.value, latestTotalPages.value))
+const visiblePopularPages = computed(() => getVisiblePages(popularPage.value, popularTotalPages.value))
 
 const goToDetail = (slug: string) => {
   console.log(`🔗 Navigating to: ${slug}`)
@@ -314,6 +401,60 @@ const mergeWithHydratedChapters = (
   }
 
   return list.map(card => hydratedMap.get(card.slug) ?? card)
+}
+
+// Progressive loading after initial render
+const loadRemainingData = async () => {
+  if (isLoadingMore.value) return
+  
+  isLoadingMore.value = true
+  console.log('🔄 Loading remaining manhwa data (client-side)...')
+  
+  try {
+    // If we already have all data, just hydrate chapters
+    if (latestManhwa.value.length > initialLoadCount) {
+      console.log('✅ All data already loaded, skipping')
+      return
+    }
+    
+    // Load all manhwa data on client-side
+    const allManhwa = await ManhwaService.getManhwaCards(undefined, true)
+    
+    // Update recommendations (sorted by rating)
+    latestManhwa.value = [...allManhwa].sort((a, b) => {
+      const ratingA = parseFloat(a.rating || '0')
+      const ratingB = parseFloat(b.rating || '0')
+      return ratingB - ratingA
+    })
+    
+    // Update popular (sorted by chapters)
+    popularManhwa.value = [...allManhwa].sort((a, b) => {
+      const chaptersA = a.chapters || a.total_chapters || 0
+      const chaptersB = b.chapters || b.total_chapters || 0
+      return chaptersB - chaptersA
+    })
+    
+    console.log(`✅ Loaded ${latestManhwa.value.length} manhwa on client-side`)
+    
+    // Hydrate visible cards with chapters
+    setTimeout(async () => {
+      const prioritizedSlugs = new Set<string>([
+        ...latestManhwa.value.slice(0, itemsPerPage).map(card => card.slug),
+        ...popularManhwa.value.slice(0, itemsPerPage).map(card => card.slug)
+      ])
+      
+      const prioritizedCards = allManhwa.filter(card => prioritizedSlugs.has(card.slug))
+      const hydratedVisible = await ManhwaService.hydrateManhwaCardsWithChapters(prioritizedCards)
+      const visibleMap = new Map(hydratedVisible.map(card => [card.slug, card]))
+      
+      latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, visibleMap)
+      popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, visibleMap)
+    }, 500)
+  } catch (error) {
+    console.error('❌ Error loading remaining data:', error)
+  } finally {
+    isLoadingMore.value = false
+  }
 }
 
 // Pagination functions for Recommendations (Latest)
@@ -453,7 +594,7 @@ defineExpose({
 
 onMounted(async () => {
   try {
-    console.log('🔄 Loading manhwa sections...')
+    console.log('🚀 SSR Strategy: Loading initial data...')
     
     // Check if there's a search query in URL
     if (route.query.search && typeof route.query.search === 'string') {
@@ -461,323 +602,46 @@ onMounted(async () => {
       await handleSearch(route.query.search)
     }
     
-    // Load all manhwa WITHOUT chapters first for faster initial load
+    // SSR: Load only initial items (10) for fast TTFB
     const allManhwa = await ManhwaService.getManhwaCards(undefined, true)
     
-    // Recommendations: Sort by rating (highest first)
-    latestManhwa.value = [...allManhwa].sort((a, b) => {
+    // Recommendations: Sort by rating (highest first) - only take initial items
+    const sortedByRating = [...allManhwa].sort((a, b) => {
       const ratingA = parseFloat(a.rating || '0')
       const ratingB = parseFloat(b.rating || '0')
       return ratingB - ratingA
     })
     
-    // Popular: Sort by total chapters (most chapters = most popular)
-    popularManhwa.value = [...allManhwa].sort((a, b) => {
+    // Popular: Sort by total chapters - only take initial items
+    const sortedByChapters = [...allManhwa].sort((a, b) => {
       const chaptersA = a.chapters || a.total_chapters || 0
       const chaptersB = b.chapters || b.total_chapters || 0
       return chaptersB - chaptersA
     })
     
-    console.log(`✅ Loaded ${latestManhwa.value.length} manhwa (fast mode - no chapters)`)
-    console.log(`📊 Recommendations pages: ${latestTotalPages.value}, Popular pages: ${popularTotalPages.value}`)
+    // Set only initial items for fast render
+    latestManhwa.value = sortedByRating.slice(0, initialLoadCount)
+    popularManhwa.value = sortedByChapters.slice(0, initialLoadCount)
     
-    // Load chapter summaries progressively after initial render
-    setTimeout(async () => {
-      console.log('🔄 Hydrating visible cards with latest chapters...')
-
-      const prioritizedSlugs = new Set<string>([
-        ...latestManhwa.value.slice(0, itemsPerPage).map(card => card.slug),
-        ...popularManhwa.value.slice(0, itemsPerPage).map(card => card.slug)
-      ])
-
-      const prioritizedCards = allManhwa.filter(card => prioritizedSlugs.has(card.slug))
-      const hydratedVisible = await ManhwaService.hydrateManhwaCardsWithChapters(prioritizedCards)
-      const visibleMap = new Map(hydratedVisible.map(card => [card.slug, card]))
-
-      latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, visibleMap)
-      popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, visibleMap)
-
-      const remainingCards = allManhwa.filter(card => !visibleMap.has(card.slug))
-      if (remainingCards.length) {
-        console.log(`🕒 Hydrating remaining ${remainingCards.length} cards in background...`)
-        ManhwaService.hydrateManhwaCardsWithChapters(remainingCards, { batchSize: 8 })
-          .then((rest) => {
-            const restMap = new Map(rest.map(card => [card.slug, card]))
-            latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, restMap)
-            popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, restMap)
-            console.log('✅ Chapters data hydrated for remaining cards')
-          })
-          .catch(error => {
-            console.error('❌ Error hydrating remaining chapters:', error)
-          })
-      } else {
-        console.log('✅ All cards already hydrated with chapters')
-      }
+    console.log(`✅ SSR: Loaded ${initialLoadCount} items for fast TTFB`)
+    console.log(`📊 Initial render complete`)
+    
+    loadingLatest.value = false
+    loadingPopular.value = false
+    
+    // Mark as hydrated and load remaining data
+    isClientHydrated.value = true
+    
+    // CSR: Load remaining data after initial render (lazy loading)
+    setTimeout(() => {
+      console.log('🔄 CSR: Starting lazy load of remaining data...')
+      loadRemainingData()
     }, 500)
+    
   } catch (error) {
     console.error('❌ Error loading manhwa:', error)
-  } finally {
     loadingLatest.value = false
     loadingPopular.value = false
   }
 })
 </script>
-
-<style scoped>
-.home-page {
-  min-height: 100vh;
-}
-
-.manhwa-section {
-  padding: 3rem 0;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.section-title {
-  font-size: 2rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.page-info {
-  padding: 0.5rem 1rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  font-weight: 500;
-}
-
-.manhwa-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-}
-
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  color: var(--text-secondary);
-  gap: 1rem;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--bg-tertiary);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-/* Search Section */
-.search-section {
-  background: linear-gradient(180deg, rgba(139, 92, 246, 0.05) 0%, transparent 100%);
-  border-bottom: 1px solid var(--border-color);
-}
-
-.search-section .section-title {
-  display: flex;
-  align-items: center;
-  color: var(--accent-primary);
-}
-
-/* Recommendation Section */
-.recommendation-section {
-  background: linear-gradient(180deg, rgba(251, 191, 36, 0.03) 0%, transparent 100%);
-}
-
-.header-with-icon {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.section-icon {
-  color: #fbbf24;
-  flex-shrink: 0;
-}
-
-.section-description {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  margin: 0.25rem 0 0 0;
-}
-
-/* Empty State */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 300px;
-  text-align: center;
-  padding: 3rem 1rem;
-}
-
-.empty-state svg {
-  color: var(--text-muted);
-  margin-bottom: 1.5rem;
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  font-size: 1rem;
-  color: var(--text-secondary);
-  max-width: 400px;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-top: 3rem;
-  padding-top: 2rem;
-  border-top: 1px solid var(--border-color);
-}
-
-.pagination-btn {
-  width: 40px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-family: inherit;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.pagination-numbers {
-  display: flex;
-  gap: 0.5rem;
-  margin: 0 0.5rem;
-}
-
-.pagination-number {
-  min-width: 40px;
-  height: 40px;
-  padding: 0 0.75rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  font-family: inherit;
-}
-
-.pagination-number:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.pagination-number.active {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: white;
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .manhwa-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.25rem;
-  }
-  
-  .section-title {
-    font-size: 1.75rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .manhwa-section {
-    padding: 2rem 0;
-  }
-  
-  .section-header {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 1rem;
-  }
-  
-  .section-title {
-    font-size: 1.5rem;
-  }
-  
-  .page-info {
-    width: 100%;
-    text-align: center;
-  }
-  
-  .manhwa-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-  }
-  
-  .pagination {
-    flex-wrap: wrap;
-    gap: 0.375rem;
-  }
-  
-  .pagination-btn,
-  .pagination-number {
-    width: 36px;
-    height: 36px;
-    min-width: 36px;
-  }
-  
-  .pagination-numbers {
-    margin: 0 0.25rem;
-  }
-}
-
-@media (max-width: 480px) {
-  .manhwa-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
-</style>

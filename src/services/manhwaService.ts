@@ -1,6 +1,7 @@
 import { supabase, BUCKET_NAME } from '../lib/supabase'
 import type { ManhwaMetadata, ChaptersData, ManhwaCardData, ChapterDetail } from '../types/manhwa'
 import { cacheService } from './cacheService'
+import { indexedDBCache } from './indexedDBCache'
 import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy' // ← Tambahkan ini
 
 /**
@@ -8,15 +9,15 @@ import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy' // �
  */
 export class ManhwaService {
   /**
-   * Mendapatkan daftar semua manhwa dari comics-list.json (with caching)
+   * Mendapatkan daftar semua manhwa dari comics-list.json (with IndexedDB caching)
    */
   static async getComicsList(): Promise<string[]> {
     const cacheKey = 'comics-list'
     
-    // Check cache first
-    const cached = cacheService.get<string[]>(cacheKey)
+    // Check IndexedDB cache first (persistent storage)
+    const cached = await indexedDBCache.get<string[]>(cacheKey)
     if (cached) {
-      console.log(`✅ Using cached comics list (${cached.length} items)`)
+      console.log(`✅ Using IndexedDB cached comics list (${cached.length} items)`)
       console.log(`📋 First 5 comics from cache:`, cached.slice(0, 5))
       return cached
     }
@@ -36,8 +37,8 @@ export class ManhwaService {
       const text = await data.text()
       const comics = JSON.parse(text)
       
-      // Cache for 10 minutes
-      cacheService.set(cacheKey, comics, 10 * 60 * 1000)
+      // Cache in IndexedDB for 1 hour (persistent across page reloads)
+      await indexedDBCache.set(cacheKey, comics, 60 * 60 * 1000)
       
       console.log(`✅ Found ${comics.length} comics in list`)
       console.log(`📋 First 5 comics:`, comics.slice(0, 5))
@@ -476,10 +477,102 @@ export class ManhwaService {
   }
 
   /**
+   * Get manhwa sorted by latest chapter update time
+   * Returns manhwa with the most recent chapter releases first
+   */
+  static async getHotUpdates(limit: number = 15): Promise<ManhwaCardData[]> {
+    try {
+      const cacheKey = `hot-updates-${limit}`
+      
+      // Check cache first
+      const cached = cacheService.get<ManhwaCardData[]>(cacheKey)
+      if (cached) {
+        console.log(`🔥 Using cached hot updates (${cached.length} items)`)
+        return cached
+      }
+
+      console.log('🔥 Fetching hot updates based on latest chapter releases...')
+      
+      // Get all manhwa with chapters
+      const allManhwa = await this.getManhwaCards(undefined, false)
+      
+      // Filter manhwa that have chapters with release dates
+      const manhwaWithDates = allManhwa.filter(manhwa => 
+        manhwa.latestChapters && 
+        manhwa.latestChapters.length > 0 && 
+        manhwa.latestChapters[0] &&
+        manhwa.latestChapters[0].waktu_rilis
+      )
+      
+      // Sort by latest chapter release date (most recent first)
+      const sorted = manhwaWithDates.sort((a, b) => {
+        const dateA = a.latestChapters?.[0]?.waktu_rilis || ''
+        const dateB = b.latestChapters?.[0]?.waktu_rilis || ''
+        
+        // Parse Indonesian date format or ISO format
+        const parseDate = (dateStr: string): Date => {
+          // Try ISO format first
+          const isoDate = new Date(dateStr)
+          if (!isNaN(isoDate.getTime())) {
+            return isoDate
+          }
+          
+          // Try Indonesian format: "1 hari yang lalu", "2 minggu yang lalu", etc.
+          const now = new Date()
+          const match = dateStr.match(/(\d+)\s+(detik|menit|jam|hari|minggu|bulan|tahun)/i)
+          
+          if (match && match[1] && match[2]) {
+            const value = parseInt(match[1])
+            const unit = match[2].toLowerCase()
+            
+            switch (unit) {
+              case 'detik':
+                return new Date(now.getTime() - value * 1000)
+              case 'menit':
+                return new Date(now.getTime() - value * 60 * 1000)
+              case 'jam':
+                return new Date(now.getTime() - value * 60 * 60 * 1000)
+              case 'hari':
+                return new Date(now.getTime() - value * 24 * 60 * 60 * 1000)
+              case 'minggu':
+                return new Date(now.getTime() - value * 7 * 24 * 60 * 60 * 1000)
+              case 'bulan':
+                return new Date(now.getTime() - value * 30 * 24 * 60 * 60 * 1000)
+              case 'tahun':
+                return new Date(now.getTime() - value * 365 * 24 * 60 * 60 * 1000)
+              default:
+                return new Date(0)
+            }
+          }
+          
+          return new Date(0)
+        }
+        
+        const timeA = parseDate(dateA).getTime()
+        const timeB = parseDate(dateB).getTime()
+        
+        return timeB - timeA // Most recent first
+      })
+      
+      const hotUpdates = sorted.slice(0, limit)
+      
+      // Cache for 2 minutes (shorter cache for hot updates)
+      cacheService.set(cacheKey, hotUpdates, 2 * 60 * 1000)
+      
+      console.log(`✅ Hot updates loaded: ${hotUpdates.length} manhwa`)
+      return hotUpdates
+    } catch (error) {
+      console.error('❌ Error getting hot updates:', error)
+      return []
+    }
+  }
+
+  /**
    * Clear all cache - useful for debugging
    */
-  static clearCache(): void {
+  static async clearCache(): Promise<void> {
     cacheService.clearAll()
-    console.log('🗑️ All cache cleared')
+    await indexedDBCache.clearAll()
+    console.log('🗑️ All cache cleared (memory + IndexedDB)')
   }
 }
