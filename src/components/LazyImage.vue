@@ -1,20 +1,20 @@
 <template>
-  <div class="lazy-image-wrapper" ref="imageWrapper">
-    <img 
+  <div class="absolute inset-0 h-full w-full" ref="imageWrapper">
+    <img
       v-if="isLoaded"
-      :src="src" 
+      :src="src"
       :alt="alt"
-      :class="imageClass"
+      :class="['absolute inset-0 h-full w-full object-cover object-center animate-fade', imageClass]"
       :loading="priority ? 'eager' : 'lazy'"
       :fetchpriority="priority ? 'high' : 'auto'"
       :decoding="priority ? 'sync' : 'async'"
       @error="handleError"
       @load="handleLoad"
     />
-    <div v-else-if="!error" class="lazy-placeholder">
-      <div class="lazy-spinner"></div>
+    <div v-else-if="!error" class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-background-tertiary to-background-elevated">
+      <div class="h-8 w-8 animate-spin rounded-full border-[3px] border-[rgba(139,92,246,0.2)] border-t-accent-primary"></div>
     </div>
-    <div v-else class="lazy-error">
+    <div v-else class="absolute inset-0 flex items-center justify-center bg-gradient-to-br from-background-tertiary to-background-elevated text-text-muted opacity-60">
       <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/>
         <circle cx="8.5" cy="8.5" r="1.5"/>
@@ -96,55 +96,3 @@ onUnmounted(() => {
   }
 })
 </script>
-
-<style scoped>
-.lazy-image-wrapper {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-}
-
-.lazy-image-wrapper img {
-  position: absolute;
-  inset: 0;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center;
-  animation: fadeIn 0.3s ease-in;
-}
-
-.lazy-placeholder,
-.lazy-error {
-  position: absolute;
-  inset: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg, var(--bg-tertiary), var(--bg-elevated));
-}
-
-.lazy-spinner {
-  width: 32px;
-  height: 32px;
-  border: 3px solid rgba(139, 92, 246, 0.2);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-.lazy-error {
-  color: var(--text-muted);
-  opacity: 0.5;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-</style>
