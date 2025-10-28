@@ -1,5 +1,5 @@
 <template>
-  <nav class="fixed inset-x-0 top-0 z-80 border-b border-border bg-[#0a0a0f]/80 backdrop-blur-2xl transition-all duration-200 ease-standard">
+  <nav class="fixed inset-x-0 top-0 z-[100] border-b border-border-color bg-bg-primary/95 backdrop-blur-2xl transition-all duration-200 ease-standard">
     <div class="container flex h-[70px] items-center justify-between gap-8">
       <!-- Logo -->
       <div class="flex items-center">
@@ -68,7 +68,7 @@
       <!-- Search & User Actions -->
       <div class="flex items-center gap-2">
         <button
-          class="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-background-tertiary/80 hover:text-text-primary"
+          class="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
           @click="toggleSearch"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -77,18 +77,18 @@
           </svg>
         </button>
         <button
-          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-background-tertiary/80 hover:text-text-primary"
+          class="relative flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
         >
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/>
             <path d="M13.73 21a2 2 0 0 1-3.46 0"/>
           </svg>
-          <span class="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-background-primary bg-red-500 text-[0.65rem] font-semibold text-white">
+          <span class="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-bg-primary bg-red-500 text-[0.65rem] font-semibold text-white">
             3
           </span>
         </button>
         <button
-          class="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-background-tertiary/80 hover:text-text-primary"
+          class="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
         >
           <div class="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-accent-primary to-accent-secondary text-white">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -109,7 +109,7 @@
     >
       <div
         v-if="searchOpen"
-        class="fixed inset-0 z-[200] flex items-start justify-center bg-black/80 pt-[10vh] backdrop-blur-lg"
+        class="fixed inset-0 z-[200] flex items-start justify-center bg-black/90 pt-[10vh] backdrop-blur-xl"
         @click="toggleSearch"
       >
         <div
@@ -119,12 +119,12 @@
           <input
             type="text"
             placeholder="Cari manhwa favorit Anda..."
-            class="w-full rounded-2xl border-2 border-border bg-background-elevated px-6 py-5 pr-14 text-lg text-text-primary shadow-[0_20px_25px_-5px_rgba(0,0,0,0.6)] shadow-ambient transition duration-300 ease-standard placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.6),0_0_0_4px_rgba(139,92,246,0.3)]"
+            class="w-full rounded-2xl border-2 border-border-color bg-bg-elevated px-6 py-5 pr-14 text-lg text-text-primary shadow-[0_20px_25px_-5px_rgba(0,0,0,0.6)] transition duration-300 ease-standard placeholder:text-text-muted focus:border-accent-primary focus:outline-none focus:shadow-[0_20px_25px_-5px_rgba(0,0,0,0.6),0_0_0_4px_rgba(139,92,246,0.3)]"
             v-model="searchQuery"
             ref="searchInputRef"
           />
           <button
-            class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-background-tertiary/80 hover:text-text-primary"
+            class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
             @click="toggleSearch"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -148,7 +148,7 @@ const linkClasses = (isActive: boolean) => [
   linkBaseClass,
   isActive
     ? 'bg-[rgba(139,92,246,0.1)] text-accent-primary'
-    : 'text-text-secondary hover:bg-background-tertiary/80 hover:text-text-primary',
+    : 'text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary',
 ]
 
 const emit = defineEmits<{
@@ -158,6 +158,7 @@ const emit = defineEmits<{
 const searchOpen = ref(false)
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
+const skipEmit = ref(false) // Flag to skip emit when closing externally
 
 const toggleSearch = () => {
   searchOpen.value = !searchOpen.value
@@ -176,11 +177,37 @@ const toggleSearch = () => {
   }
 }
 
+// Expose method to close search from parent
+const closeSearch = () => {
+  if (searchOpen.value) {
+    skipEmit.value = true // Skip emit to prevent navigation
+    searchOpen.value = false
+    searchQuery.value = ''
+    console.log('🔒 [NavBar] Search closed externally (no emit)')
+    
+    // Reset flag after a short delay
+    nextTick(() => {
+      skipEmit.value = false
+    })
+  }
+}
+
+defineExpose({
+  closeSearch
+})
+
 // Watch for changes in search query with debounce
 let searchTimeout: number | undefined
 watch(searchQuery, (newQuery) => {
   console.log(`⌨️ [NavBar] Search query changed: "${newQuery}"`)
   clearTimeout(searchTimeout)
+  
+  // Skip emit if closing externally
+  if (skipEmit.value) {
+    console.log('⏭️ [NavBar] Skipping emit (external close)')
+    return
+  }
+  
   searchTimeout = window.setTimeout(() => {
     console.log(`⏱️ [NavBar] Debounce complete, emitting: "${newQuery}"`)
     emit('search', newQuery)

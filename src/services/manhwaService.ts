@@ -1,8 +1,8 @@
 import { supabase, BUCKET_NAME } from '../lib/supabase'
 import type { ManhwaMetadata, ChaptersData, ManhwaCardData, ChapterDetail } from '../types/manhwa'
-import { cacheService } from './cacheService'
 import { indexedDBCache } from './indexedDBCache'
-import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy' // ← Tambahkan ini
+import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy'
+import { cleanManhwaTitle } from '../utils/textUtils'
 
 /**
  * Service untuk mengakses data manhwa dari Supabase Storage
@@ -50,14 +50,15 @@ export class ManhwaService {
   }
 
   /**
-   * Mendapatkan metadata manhwa (with caching)
+   * Mendapatkan metadata manhwa (with IndexedDB caching)
    */
   static async getMetadata(slug: string): Promise<ManhwaMetadata | null> {
     const cacheKey = `metadata-${slug}`
     
-    // Check cache first
-    const cached = cacheService.get<ManhwaMetadata>(cacheKey)
+    // Check IndexedDB cache first
+    const cached = await indexedDBCache.get<ManhwaMetadata>(cacheKey)
     if (cached) {
+      console.log(`✅ Using cached metadata for: ${slug}`)
       return cached
     }
 
@@ -80,8 +81,8 @@ export class ManhwaService {
       const text = await data.text()
       const metadata = JSON.parse(text)
       
-      // Cache for 5 minutes
-      cacheService.set(cacheKey, metadata, 5 * 60 * 1000)
+      // Cache in IndexedDB for 30 minutes
+      await indexedDBCache.set(cacheKey, metadata, 30 * 60 * 1000)
       
       console.log(`✅ Metadata loaded for: ${metadata.title}`)
       return metadata
@@ -95,13 +96,13 @@ export class ManhwaService {
   }
 
   /**
-   * Mendapatkan semua chapters untuk manhwa tertentu (with caching & proxy)
+   * Mendapatkan semua chapters untuk manhwa tertentu (with IndexedDB caching & proxy)
    */
   static async getChapters(slug: string): Promise<ChaptersData | null> {
     const cacheKey = `chapters-${slug}`
     
-    // Check cache first
-    const cached = cacheService.get<ChaptersData>(cacheKey)
+    // Check IndexedDB cache first
+    const cached = await indexedDBCache.get<ChaptersData>(cacheKey)
     if (cached) {
       console.log(`💾 Using cached chapters for: ${slug}`)
       return cached
@@ -127,8 +128,8 @@ export class ManhwaService {
       // ✨ Apply proxy to all image URLs
       const proxiedData = proxyChaptersData(chaptersData)
       
-      // Cache the proxied data for 5 minutes
-      cacheService.set(cacheKey, proxiedData, 5 * 60 * 1000)
+      // Cache in IndexedDB for 1 hour
+      await indexedDBCache.set(cacheKey, proxiedData, 60 * 60 * 1000)
       console.log(`✅ Chapters cached for: ${slug} (with proxy)`)
       
       return proxiedData
@@ -148,8 +149,8 @@ export class ManhwaService {
   static async getChapter(manhwaSlug: string, chapterSlug: string): Promise<ChapterDetail | null> {
     const cacheKey = `chapter-${manhwaSlug}-${chapterSlug}`
     
-    // Check cache first
-    const cached = cacheService.get<ChapterDetail>(cacheKey)
+    // Check IndexedDB cache first
+    const cached = await indexedDBCache.get<ChapterDetail>(cacheKey)
     if (cached) {
       console.log(`💾 Using cached chapter: ${manhwaSlug}/${chapterSlug}`)
       return cached
@@ -177,8 +178,8 @@ export class ManhwaService {
       // ✨ Apply proxy as safety check (images already proxied from getChapters)
       const proxiedChapter = proxyChapterImages(chapter)
       
-      // Cache for 10 minutes (longer since chapter content doesn't change often)
-      cacheService.set(cacheKey, proxiedChapter, 10 * 60 * 1000)
+      // Cache in IndexedDB for 2 hours (chapter content rarely changes)
+      await indexedDBCache.set(cacheKey, proxiedChapter, 2 * 60 * 60 * 1000)
       
       console.log(`✅ Chapter loaded: ${proxiedChapter.title} (${proxiedChapter.images?.length || 0} images)`)
       return proxiedChapter
@@ -261,7 +262,7 @@ export class ManhwaService {
 
           return {
             slug: metadata.slug,
-            title: metadata.title,
+            title: cleanManhwaTitle(metadata.title), // Fix encoding issues
             genre: metadata.genres?.join(', ') || 'Action, Fantasy',
             genres: metadata.genres,
             type: type,
@@ -296,8 +297,8 @@ export class ManhwaService {
     try {
       const cacheKey = `manhwa-cards-${limit || 'all'}-${skipChapters ? 'no-chapters' : 'with-chapters'}`
       
-      // Check cache first
-      const cached = cacheService.get<ManhwaCardData[]>(cacheKey)
+      // Check IndexedDB cache first
+      const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
       if (cached) {
         console.log(`🔍 Using cached manhwa cards (${cached.length} items)`)
         return cached
@@ -334,8 +335,8 @@ export class ManhwaService {
       }, {} as Record<string, number>)
       console.log(`📊 Status distribution:`, statusCount)
 
-      // Cache for 3 minutes
-      cacheService.set(cacheKey, manhwaCards, 3 * 60 * 1000)
+      // Cache in IndexedDB for 15 minutes
+      await indexedDBCache.set(cacheKey, manhwaCards, 15 * 60 * 1000)
 
       console.log(`✅ Total manhwa cards created: ${manhwaCards.length}`)
       return manhwaCards
@@ -471,93 +472,85 @@ export class ManhwaService {
       
       return chapter?.images || []
     } catch (error) {
-      console.error(`Error fetching chapter images for ${slug}/${chapterSlug}:`, error)
       return []
     }
   }
 
   /**
-   * Get manhwa sorted by latest chapter update time
-   * Returns manhwa with the most recent chapter releases first
+   * Get manhwa sorted by Last Modified timestamp from Supabase Storage
+   * Returns manhwa with the most recent updates first (based on file modification time)
    */
   static async getHotUpdates(limit: number = 15): Promise<ManhwaCardData[]> {
     try {
       const cacheKey = `hot-updates-${limit}`
       
-      // Check cache first
-      const cached = cacheService.get<ManhwaCardData[]>(cacheKey)
+      // Check IndexedDB cache first
+      const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
       if (cached) {
         console.log(`🔥 Using cached hot updates (${cached.length} items)`)
         return cached
       }
 
-      console.log('🔥 Fetching hot updates based on latest chapter releases...')
+      console.log('🔥 Fetching hot updates based on Supabase Last Modified...')
       
-      // Get all manhwa with chapters
-      const allManhwa = await this.getManhwaCards(undefined, false)
+      // Get comics list
+      const comicsList = await this.getComicsList()
+      if (comicsList.length === 0) {
+        console.warn('⚠️ Comics list is empty')
+        return []
+      }
+
+      // Get file metadata with Last Modified timestamps from Supabase
+      console.log('📅 Fetching Last Modified timestamps from Supabase Storage...')
+      const filesWithTimestamps: Array<{ slug: string; lastModified: Date }> = []
       
-      // Filter manhwa that have chapters with release dates
-      const manhwaWithDates = allManhwa.filter(manhwa => 
-        manhwa.latestChapters && 
-        manhwa.latestChapters.length > 0 && 
-        manhwa.latestChapters[0] &&
-        manhwa.latestChapters[0].waktu_rilis
-      )
-      
-      // Sort by latest chapter release date (most recent first)
-      const sorted = manhwaWithDates.sort((a, b) => {
-        const dateA = a.latestChapters?.[0]?.waktu_rilis || ''
-        const dateB = b.latestChapters?.[0]?.waktu_rilis || ''
+      // Fetch metadata.json Last Modified for each comic (in batches)
+      const batchSize = 10
+      for (let i = 0; i < comicsList.length; i += batchSize) {
+        const batch = comicsList.slice(i, i + batchSize)
         
-        // Parse Indonesian date format or ISO format
-        const parseDate = (dateStr: string): Date => {
-          // Try ISO format first
-          const isoDate = new Date(dateStr)
-          if (!isNaN(isoDate.getTime())) {
-            return isoDate
-          }
-          
-          // Try Indonesian format: "1 hari yang lalu", "2 minggu yang lalu", etc.
-          const now = new Date()
-          const match = dateStr.match(/(\d+)\s+(detik|menit|jam|hari|minggu|bulan|tahun)/i)
-          
-          if (match && match[1] && match[2]) {
-            const value = parseInt(match[1])
-            const unit = match[2].toLowerCase()
-            
-            switch (unit) {
-              case 'detik':
-                return new Date(now.getTime() - value * 1000)
-              case 'menit':
-                return new Date(now.getTime() - value * 60 * 1000)
-              case 'jam':
-                return new Date(now.getTime() - value * 60 * 60 * 1000)
-              case 'hari':
-                return new Date(now.getTime() - value * 24 * 60 * 60 * 1000)
-              case 'minggu':
-                return new Date(now.getTime() - value * 7 * 24 * 60 * 60 * 1000)
-              case 'bulan':
-                return new Date(now.getTime() - value * 30 * 24 * 60 * 60 * 1000)
-              case 'tahun':
-                return new Date(now.getTime() - value * 365 * 24 * 60 * 60 * 1000)
-              default:
-                return new Date(0)
+        const batchPromises = batch.map(async (slug) => {
+          try {
+            const { data, error } = await supabase.storage
+              .from(BUCKET_NAME)
+              .list(slug, {
+                limit: 1,
+                search: 'metadata.json'
+              })
+
+            if (!error && data && data.length > 0 && data[0] && data[0].updated_at) {
+              return {
+                slug,
+                lastModified: new Date(data[0].updated_at)
+              }
             }
+          } catch (error) {
+            // Silently skip files that can't be accessed
           }
-          
-          return new Date(0)
-        }
-        
-        const timeA = parseDate(dateA).getTime()
-        const timeB = parseDate(dateB).getTime()
-        
-        return timeB - timeA // Most recent first
-      })
+          return null
+        })
+
+        const batchResults = await Promise.all(batchPromises)
+        filesWithTimestamps.push(...batchResults.filter((item): item is { slug: string; lastModified: Date } => item !== null))
+      }
+
+      console.log(`📊 Found ${filesWithTimestamps.length} manhwa with timestamps`)
+
+      // Sort by Last Modified (most recent first)
+      const sortedByDate = filesWithTimestamps.sort((a, b) => 
+        b.lastModified.getTime() - a.lastModified.getTime()
+      )
+
+      // Take top N most recently updated
+      const topSlugs = sortedByDate.slice(0, limit).map(item => item.slug)
       
-      const hotUpdates = sorted.slice(0, limit)
+      console.log('🔝 Top updated manhwa:', topSlugs.slice(0, 5))
+
+      // Get full manhwa data for these slugs
+      const hotUpdates = await this.processBatch(topSlugs, false, 5)
       
-      // Cache for 2 minutes (shorter cache for hot updates)
-      cacheService.set(cacheKey, hotUpdates, 2 * 60 * 1000)
+      // Cache in IndexedDB for 5 minutes (hot updates change frequently)
+      await indexedDBCache.set(cacheKey, hotUpdates, 5 * 60 * 1000)
       
       console.log(`✅ Hot updates loaded: ${hotUpdates.length} manhwa`)
       return hotUpdates
@@ -571,8 +564,15 @@ export class ManhwaService {
    * Clear all cache - useful for debugging
    */
   static async clearCache(): Promise<void> {
-    cacheService.clearAll()
     await indexedDBCache.clearAll()
-    console.log('🗑️ All cache cleared (memory + IndexedDB)')
+    console.log('🗑️ All cache cleared (IndexedDB)')
+  }
+
+  /**
+   * Cleanup expired cache entries
+   */
+  static async cleanupCache(): Promise<void> {
+    await indexedDBCache.cleanupExpired()
+    console.log('🧹 Expired cache cleaned up')
   }
 }

@@ -1,9 +1,8 @@
 /**
  * Cache Manager Utility
- * Provides helper functions for managing both in-memory and IndexedDB cache
+ * Provides helper functions for managing IndexedDB cache
  */
 
-import { cacheService } from '../services/cacheService'
 import { indexedDBCache } from '../services/indexedDBCache'
 
 export class CacheManager {
@@ -11,19 +10,14 @@ export class CacheManager {
    * Get cache statistics
    */
   static async getStats() {
-    const memorySize = cacheService.size()
     const indexedDBSize = await indexedDBCache.size()
     const indexedDBKeys = await indexedDBCache.getAllKeys()
     
     return {
-      memory: {
-        size: memorySize,
-        type: 'In-Memory Cache'
-      },
       indexedDB: {
         size: indexedDBSize,
         keys: indexedDBKeys,
-        type: 'IndexedDB Cache'
+        type: 'IndexedDB Persistent Cache'
       }
     }
   }
@@ -32,25 +26,16 @@ export class CacheManager {
    * Clear all caches
    */
   static async clearAll() {
-    cacheService.clearAll()
     await indexedDBCache.clearAll()
-    console.log('🗑️ All caches cleared')
+    console.log('🗑️ All caches cleared (IndexedDB)')
   }
 
   /**
-   * Clear only IndexedDB cache
+   * Clear IndexedDB cache (alias for clearAll)
    */
   static async clearIndexedDB() {
     await indexedDBCache.clearAll()
     console.log('🗑️ IndexedDB cache cleared')
-  }
-
-  /**
-   * Clear only in-memory cache
-   */
-  static clearMemory() {
-    cacheService.clearAll()
-    console.log('🗑️ Memory cache cleared')
   }
 
   /**
@@ -67,7 +52,6 @@ export class CacheManager {
   static async logStatus() {
     const stats = await this.getStats()
     console.group('📊 Cache Status')
-    console.log('Memory Cache:', stats.memory.size, 'items')
     console.log('IndexedDB Cache:', stats.indexedDB.size, 'items')
     console.log('IndexedDB Keys:', stats.indexedDB.keys)
     console.groupEnd()

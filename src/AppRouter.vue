@@ -1,9 +1,9 @@
 <template>
   <div class="app-container">
-    <NavigationBar @search="handleSearch" />
+    <NavigationBar ref="navBarRef" @search="handleSearch" />
     
     <main class="main-content">
-      <RouterView ref="routerViewRef" />
+      <RouterView ref="routerViewRef" :navBarRef="navBarRef" />
     </main>
     
     <footer class="app-footer">
@@ -90,6 +90,7 @@ import NavigationBar from './components/NavigationBar.vue'
 
 const router = useRouter()
 const routerViewRef = ref<any>(null)
+const navBarRef = ref<InstanceType<typeof NavigationBar> | null>(null)
 
 // Handle search from NavigationBar
 const handleSearch = (query: string) => {

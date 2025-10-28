@@ -23,6 +23,7 @@ export default {
         'gradient-shift': 'gradient-shift 10s ease-in-out infinite',
         'fire-flicker': 'fire-flicker 2s ease-in-out infinite',
         'fade-in-scale': 'fade-in-scale 0.5s ease-out backwards',
+        'search-slide': 'search-slide 0.3s ease-out',
       },
       keyframes: {
         spin: {
@@ -45,11 +46,25 @@ export default {
             opacity: '1',
             transform: 'scale(1)'
           }
+        },
+        'search-slide': {
+          from: {
+            opacity: '0',
+            transform: 'translateY(-20px) scale(0.95)'
+          },
+          to: {
+            opacity: '1',
+            transform: 'translateY(0) scale(1)'
+          }
         }
       },
       transitionDuration: {
         'fast': '150ms',
         'base': '300ms',
+      },
+      zIndex: {
+        '100': '100',
+        '200': '200',
       }
     },
   },

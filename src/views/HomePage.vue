@@ -277,6 +277,12 @@ import HeroSection from '../components/HeroSection.vue'
 import ManhwaCard from '../components/ManhwaCard.vue'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaCardData } from '../types/manhwa'
+import type NavigationBar from '../components/NavigationBar.vue'
+
+// Props
+const props = defineProps<{
+  navBarRef?: InstanceType<typeof NavigationBar> | null
+}>()
 
 const router = useRouter()
 const route = useRoute()
@@ -384,6 +390,12 @@ const visiblePopularPages = computed(() => getVisiblePages(popularPage.value, po
 
 const goToDetail = (slug: string) => {
   console.log(`🔗 Navigating to: ${slug}`)
+  
+  // Close search overlay if open
+  if (props.navBarRef) {
+    props.navBarRef.closeSearch()
+  }
+  
   router.push({ name: 'detail', params: { slug } })
 }
 
