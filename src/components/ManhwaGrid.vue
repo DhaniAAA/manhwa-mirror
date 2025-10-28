@@ -65,7 +65,6 @@
           </svg>
         </button>
 
-<<<<<<< HEAD
         <div class="pagination-numbers">
           <template v-for="(page, index) in visiblePages" :key="index">
             <button
@@ -80,17 +79,6 @@
               {{ page }}
             </span>
           </template>
-=======
-        <div class="flex gap-2">
-          <button
-            v-for="page in visiblePages"
-            :key="page"
-            :class="[paginationNumberClasses, page === currentPage ? 'border-accent-primary bg-accent-primary text-white' : '']"
-            @click="goToPage(page)"
-          >
-            {{ page }}
-          </button>
->>>>>>> 55df43e16ee1a1ffed61a42e163f41533e501fb8
         </div>
 
         <button
@@ -274,7 +262,6 @@ watch(paginatedManhwa, (cards) => {
   ensureChaptersForGrid(cards)
 })
 </script>
-<<<<<<< HEAD
 
 <style scoped>
 .manhwa-grid-section {
@@ -544,5 +531,3 @@ watch(paginatedManhwa, (cards) => {
   }
 }
 </style>
-=======
->>>>>>> 55df43e16ee1a1ffed61a42e163f41533e501fb8
