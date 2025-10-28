@@ -125,8 +125,7 @@ const itemsPerPage = 24
 
 const paginationButtonClasses =
   'flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-background-secondary text-text-primary transition duration-150 ease-standard hover:border-accent-primary hover:bg-background-tertiary/80 hover:text-accent-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-background-secondary'
-const paginationNumberClasses =
-  'flex h-10 min-w-[40px] items-center justify-center rounded-lg border border-border bg-background-secondary px-3 text-sm font-medium text-text-primary transition duration-150 ease-standard hover:border-accent-primary hover:bg-background-tertiary/80 hover:text-accent-primary'
+// Removed unused paginationNumberClasses - using inline classes in template
 
 // Computed
 const totalManhwa = computed(() => allManhwa.value.length)

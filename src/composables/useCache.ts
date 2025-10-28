@@ -37,17 +37,9 @@ export function useCache() {
   }
 
   /**
-   * Clear only memory cache
+   * Clear only memory cache (removed - now using IndexedDB only)
    */
-  const clearMemory = () => {
-    isClearing.value = true
-    try {
-      CacheManager.clearMemory()
-      refreshStats()
-    } finally {
-      isClearing.value = false
-    }
-  }
+  // Removed clearMemory - CacheManager no longer has in-memory cache
 
   /**
    * Cleanup expired cache entries
@@ -76,7 +68,6 @@ export function useCache() {
     stats,
     clearAllCache,
     clearIndexedDB,
-    clearMemory,
     cleanupExpired,
     refreshStats,
     logStatus

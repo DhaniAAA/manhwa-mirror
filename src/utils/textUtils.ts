@@ -4,12 +4,30 @@
  */
 
 /**
+ * Fix Mojibake - UTF-8 text incorrectly decoded as Windows-1252
+ */
+export function fixMojibake(text: string): string {
+  return text
+    .replace(/â€™/g, "'")
+    .replace(/â€˜/g, "'")
+    .replace(/â€œ/g, '"')
+    .replace(/â€/g, '"')
+    .replace(/â€"/g, '—')
+    .replace(/â€"/g, '–')
+    .replace(/â€¦/g, '…')
+    .replace(/Iâ€™m/g, "I'm")
+    .replace(/donâ€™t/g, "don't")
+    .replace(/canâ€™t/g, "can't")
+    .replace(/wonâ€™t/g, "won't")
+    .replace(/itâ€™s/g, "it's")
+}
+
+/**
  * Clean and normalize manhwa title
- * Remove "Bahasa Indonesia" suffix from title
  */
 export function cleanManhwaTitle(title: string): string {
-  return title
-    .replace(/\s+Bahasa Indonesia$/i, '') // Remove "Bahasa Indonesia" suffix
+  return fixMojibake(title)
+    .replace(/\s+Bahasa Indonesia$/i, '')
     .trim()
 }
 

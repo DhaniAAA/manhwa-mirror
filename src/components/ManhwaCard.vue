@@ -87,31 +87,7 @@
 import { ref } from 'vue'
 import LazyImage from './LazyImage.vue'
 
-const typeBadgeClass = (type: string) => {
-  switch (type.toLowerCase()) {
-    case 'manhua':
-      return 'bg-[rgba(239,68,68,0.95)]'
-    case 'manga':
-      return 'bg-[rgba(59,130,246,0.95)]'
-    case 'manhwa':
-      return 'bg-[rgba(139,92,246,0.95)]'
-    default:
-      return 'bg-[rgba(139,92,246,0.95)]'
-  }
-}
-
-const statusBadgeClass = (status: string) => {
-  switch (status.toLowerCase()) {
-    case 'ongoing':
-      return 'bg-[rgba(34,197,94,0.95)]'
-    case 'complete':
-      return 'bg-[rgba(58,0,112,0.95)]'
-    case 'hiatus':
-      return 'bg-[rgba(251,146,60,0.95)]'
-    default:
-      return 'bg-[rgba(139,92,246,0.95)]'
-  }
-}
+// Removed unused badge class functions - using inline classes in template
 
 const props = defineProps<{
   slug?: string
