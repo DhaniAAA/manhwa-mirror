@@ -61,9 +61,19 @@
           </div>
         </div>
         
+        <!-- Back to Detail Button (before images) -->
+        <div v-if="!loading && !error" class="back-to-detail-container">
+          <a :href="`/detail/${manhwaSlug}`" class="back-to-detail-btn">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            <span>Kembali ke Detail {{ manhwaTitle }}</span>
+          </a>
+        </div>
+        
         <!-- Images -->
         <div 
-          v-else
+          v-if="!loading && !error"
           v-for="(image, index) in chapterImages" 
           :key="index"
           class="page-item"
@@ -590,6 +600,47 @@ onMounted(async () => {
 .pages-container {
   width: 100%;
   margin: 0 auto;
+}
+
+/* Back to Detail Button */
+.back-to-detail-container {
+  width: 100%;
+  padding: 1rem 0 2rem;
+  display: flex;
+  justify-content: center;
+}
+
+.back-to-detail-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border-color);
+  border-radius: 0.5rem;
+  color: var(--text-primary);
+  font-size: 0.875rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  cursor: pointer;
+}
+
+.back-to-detail-btn:hover {
+  background: var(--bg-tertiary);
+  border-color: var(--accent-primary);
+  color: var(--accent-primary);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
+}
+
+.back-to-detail-btn svg {
+  flex-shrink: 0;
+  transition: transform var(--transition-fast);
+}
+
+.back-to-detail-btn:hover svg {
+  transform: translateX(-4px);
 }
 
 .page-item {
