@@ -248,20 +248,61 @@
           </div>
 
           <!-- Chapter List -->
-          <div v-if="!loadingChapters && sortedChapters.length > 0" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            <div 
-              v-for="chapter in sortedChapters" 
-              :key="chapter.slug"
-              class="flex items-center justify-between p-5 bg-bg-secondary border border-border-color rounded-xl cursor-pointer transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:translate-x-2"
-              @click="readChapter(chapter)"
-            >
-              <div class="flex-1">
-                <h4 class="font-semibold text-text-primary mb-1">{{ chapter.title }}</h4>
-                <span class="text-sm text-text-muted">{{ chapter.waktu_rilis || 'Baru saja' }}</span>
+          <div v-if="!loadingChapters && sortedChapters.length > 0">
+            <!-- Mobile: 2 columns, compact layout -->
+            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-2 md:gap-3">
+              <div 
+                v-for="chapter in paginatedChapters" 
+                :key="chapter.slug"
+                class="flex flex-col p-3 md:p-4 bg-bg-secondary border border-border-color rounded-lg cursor-pointer transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:scale-105 group"
+                @click="readChapter(chapter)"
+              >
+                <h4 class="font-semibold text-text-primary text-sm md:text-base mb-1 line-clamp-2 group-hover:text-accent-primary transition-colors">{{ chapter.title }}</h4>
+                <span class="text-xs text-text-muted mt-auto">{{ chapter.waktu_rilis || 'Baru' }}</span>
               </div>
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-text-muted transition-colors group-hover:text-accent-primary">
-                <polyline points="9 18 15 12 9 6"/>
-              </svg>
+            </div>
+
+            <!-- Pagination Controls -->
+            <div v-if="totalPages > 1" class="flex items-center justify-center gap-2 mt-6">
+              <button 
+                @click="currentPage--"
+                :disabled="currentPage === 1"
+                class="px-4 py-2 rounded-lg bg-bg-secondary border border-border-color text-text-primary text-sm font-medium transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="15 18 9 12 15 6"/>
+                </svg>
+              </button>
+
+              <div class="flex items-center gap-1">
+                <button
+                  v-for="page in visiblePages"
+                  :key="page"
+                  @click="currentPage = page"
+                  class="w-10 h-10 rounded-lg text-sm font-medium transition-all duration-200"
+                  :class="{
+                    'bg-accent-primary text-white': currentPage === page,
+                    'bg-bg-secondary border border-border-color text-text-primary hover:bg-bg-tertiary hover:border-accent-primary': currentPage !== page
+                  }"
+                >
+                  {{ page }}
+                </button>
+              </div>
+
+              <button 
+                @click="currentPage++"
+                :disabled="currentPage === totalPages"
+                class="px-4 py-2 rounded-lg bg-bg-secondary border border-border-color text-text-primary text-sm font-medium transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <polyline points="9 18 15 12 9 6"/>
+                </svg>
+              </button>
+            </div>
+
+            <!-- Page Info -->
+            <div class="text-center text-sm text-text-muted mt-4">
+              Showing {{ startIndex + 1 }}-{{ Math.min(endIndex, sortedChapters.length) }} of {{ sortedChapters.length }} chapters
             </div>
           </div>
 
@@ -318,12 +359,47 @@ const loadingChapters = ref(false)
 const sortAscending = ref(false)
 const lastReadChapter = ref<number | null>(null)
 const selectedChapter = ref('')
+const currentPage = ref(1)
+const itemsPerPage = ref(20) // Show 20 chapters per page
 
 // Computed
 const sortedChapters = computed(() => {
   if (!props.chapters) return []
   const sorted = [...props.chapters]
   return sortAscending.value ? sorted : sorted.reverse()
+})
+
+const totalPages = computed(() => {
+  return Math.ceil(sortedChapters.value.length / itemsPerPage.value)
+})
+
+const startIndex = computed(() => {
+  return (currentPage.value - 1) * itemsPerPage.value
+})
+
+const endIndex = computed(() => {
+  return startIndex.value + itemsPerPage.value
+})
+
+const paginatedChapters = computed(() => {
+  return sortedChapters.value.slice(startIndex.value, endIndex.value)
+})
+
+const visiblePages = computed(() => {
+  const pages: number[] = []
+  const maxVisible = 5
+  let start = Math.max(1, currentPage.value - Math.floor(maxVisible / 2))
+  let end = Math.min(totalPages.value, start + maxVisible - 1)
+  
+  if (end - start + 1 < maxVisible) {
+    start = Math.max(1, end - maxVisible + 1)
+  }
+  
+  for (let i = start; i <= end; i++) {
+    pages.push(i)
+  }
+  
+  return pages
 })
 
 // Methods
@@ -333,6 +409,7 @@ const toggleBookmark = () => {
 
 const toggleSort = () => {
   sortAscending.value = !sortAscending.value
+  currentPage.value = 1 // Reset to first page when sorting
 }
 
 const startReading = () => {

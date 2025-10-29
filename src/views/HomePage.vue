@@ -307,7 +307,7 @@ const isLoadingMore = ref(false)
 // Pagination state
 const latestPage = ref(1)
 const popularPage = ref(1)
-const itemsPerPage = 15
+const itemsPerPage = 18
 
 // Total pages
 const latestTotalPages = computed(() => Math.ceil(latestManhwa.value.length / itemsPerPage))
