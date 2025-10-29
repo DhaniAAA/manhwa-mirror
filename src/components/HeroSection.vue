@@ -101,6 +101,9 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaCardData } from '../types/manhwa'
+import koreaFlag from '../assets/bendera/south-korea.png'
+import chinaFlag from '../assets/bendera/china.png'
+import japanFlag from '../assets/bendera/japan.png'
 
 const router = useRouter()
 const hotUpdates = ref<ManhwaCardData[]>([])
@@ -118,9 +121,9 @@ const shortenChapterTitle = (title: string): string => {
 // Get country flag image based on type
 const getCountryFlagImage = (type: string): string => {
   const typeMap: Record<string, string> = {
-    'manhwa': '/src/assets/bendera/south-korea.png',
-    'manhua': '/src/assets/bendera/china.png',
-    'manga': '/src/assets/bendera/japan.png'
+    'manhwa': koreaFlag,
+    'manhua': chinaFlag,
+    'manga': japanFlag
   }
   return typeMap[type.toLowerCase()] || ''
 }

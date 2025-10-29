@@ -2,9 +2,10 @@ import { defineConfig } from 'vite'
 import vue from '@vitejs/plugin-vue'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import { imageProxyPlugin } from './vite-plugins/imageProxyPlugin'
+import viteCompression from 'vite-plugin-compression'
 
 // https://vite.dev/config/
-export default defineConfig({
+export default defineConfig(({ mode }) => ({
   plugins: [
     vue({
       template: {
@@ -16,8 +17,8 @@ export default defineConfig({
     }),
     // Image proxy plugin for development
     imageProxyPlugin(),
-    // Modern image optimization plugin (more secure, actively maintained)
-    ViteImageOptimizer({
+    // Modern image optimization plugin (only in production)
+    ...(mode === 'production' ? [ViteImageOptimizer({
       // JPEG optimization with progressive rendering
       jpg: {
         quality: 80,
@@ -39,17 +40,48 @@ export default defineConfig({
       avif: {
         quality: 75
       }
-    })
+    })] : []),
+    // Gzip compression (production only)
+    ...(mode === 'production' ? [viteCompression({
+      algorithm: 'gzip',
+      ext: '.gz',
+      threshold: 10240, // Only compress files > 10kb
+      deleteOriginFile: false
+    })] : []),
+    // Brotli compression (production only, better compression than gzip)
+    ...(mode === 'production' ? [viteCompression({
+      algorithm: 'brotliCompress',
+      ext: '.br',
+      threshold: 10240,
+      deleteOriginFile: false
+    })] : [])
   ],
   build: {
     // Optimize chunk splitting for better caching
     rollupOptions: {
       output: {
-        manualChunks: {
-          // Vendor chunk for better caching
-          'vendor': ['vue', 'vue-router'],
-          // Supabase in separate chunk
-          'supabase': ['@supabase/supabase-js']
+        manualChunks: (id) => {
+          // Vendor chunk for core dependencies (rarely changes)
+          if (id.includes('node_modules')) {
+            // Vue core
+            if (id.includes('vue') || id.includes('vue-router')) {
+              return 'vendor-vue'
+            }
+            // Supabase (large library)
+            if (id.includes('@supabase')) {
+              return 'vendor-supabase'
+            }
+            // Other node_modules
+            return 'vendor-other'
+          }
+          // Component chunks (lazy loaded)
+          if (id.includes('/components/')) {
+            return 'components'
+          }
+          // Views chunks (lazy loaded)
+          if (id.includes('/views/')) {
+            return 'views'
+          }
         }
       }
     },
@@ -67,8 +99,9 @@ export default defineConfig({
     target: 'es2015',
     // Optimize asset inlining
     assetsInlineLimit: 4096, // Inline assets < 4kb
-    // Enable tree-shaking for unused code removal
+    // Tree shaking configuration
     reportCompressedSize: false, // Faster builds
+    sourcemap: false, // Disable sourcemaps in production for smaller size
     // CSS minification
     cssMinify: true
   },
@@ -83,8 +116,17 @@ export default defineConfig({
       // Remove unused CSS in production
     }
   },
-  //ESBuild options for all environments
-  // esbuild: {
-  //   drop: ['console', 'debugger'] // Remove console.log and debugger in production
-  // }
-})
+  // ESBuild options for tree shaking and optimization
+  esbuild: {
+    // Remove console.log and debugger in production
+    drop: mode === 'production' ? ['console', 'debugger'] : [],
+    // Enable tree shaking
+    treeShaking: true,
+    // Minify identifiers
+    minifyIdentifiers: mode === 'production',
+    // Minify syntax
+    minifySyntax: mode === 'production',
+    // Minify whitespace
+    minifyWhitespace: mode === 'production'
+  }
+}))

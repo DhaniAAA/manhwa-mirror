@@ -84,9 +84,11 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import NavigationBar from './components/NavigationBar.vue'
+
+// Lazy load NavigationBar (not needed in reader route)
+const NavigationBar = defineAsyncComponent(() => import('./components/NavigationBar.vue'))
 
 const router = useRouter()
 const route = useRoute()

@@ -271,13 +271,15 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch, nextTick } from 'vue'
+import { ref, computed, onMounted, watch, nextTick, defineAsyncComponent } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
-import HeroSection from '../components/HeroSection.vue'
-import ManhwaCard from '../components/ManhwaCard.vue'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaCardData } from '../types/manhwa'
 import type NavigationBar from '../components/NavigationBar.vue'
+
+// Lazy load heavy components
+const HeroSection = defineAsyncComponent(() => import('../components/HeroSection.vue'))
+const ManhwaCard = defineAsyncComponent(() => import('../components/ManhwaCard.vue'))
 
 // Props
 const props = defineProps<{

@@ -80,6 +80,9 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LazyImage from './LazyImage.vue'
+import koreaFlag from '../assets/bendera/south-korea.png'
+import chinaFlag from '../assets/bendera/china.png'
+import japanFlag from '../assets/bendera/japan.png'
 
 // Removed unused badge class functions - using inline classes in template
 
@@ -148,9 +151,9 @@ const shortenChapterTitle = (title: string): string => {
 // Get country flag image based on type
 const getCountryFlagImage = (type: string): string => {
   const typeMap: Record<string, string> = {
-    'manhwa': '/src/assets/bendera/south-korea.png',
-    'manhua': '/src/assets/bendera/china.png',
-    'manga': '/src/assets/bendera/japan.png'
+    'manhwa': koreaFlag,
+    'manhua': chinaFlag,
+    'manga': japanFlag
   }
   return typeMap[type.toLowerCase()] || ''
 }
