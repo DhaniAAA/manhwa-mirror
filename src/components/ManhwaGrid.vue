@@ -1,5 +1,5 @@
 <template>
-  <section class="bg-background-primary py-16">
+  <section class="bg-bg-primary py-16">
     <div class="container">
       <!-- Header -->
       <div class="mb-12 text-center">
@@ -9,7 +9,7 @@
 
       <!-- Loading State -->
       <div v-if="loading" class="flex min-h-[400px] flex-col items-center justify-center gap-4 text-text-secondary">
-        <div class="h-12 w-12 animate-spin rounded-full border-4 border-background-tertiary border-t-accent-primary"></div>
+        <div class="h-12 w-12 animate-spin rounded-full border-4 border-bg-tertiary border-t-accent-primary"></div>
         <p>Mencari manhwa...</p>
       </div>
 
@@ -65,17 +65,19 @@
           </svg>
         </button>
 
-        <div class="pagination-numbers">
+        <div class="flex flex-wrap gap-2 justify-center">
           <template v-for="(page, index) in visiblePages" :key="index">
             <button
               v-if="typeof page === 'number'"
-              class="pagination-number"
-              :class="{ active: page === currentPage }"
+              class="relative min-w-[44px] h-11 px-3.5 rounded-lg border-2 font-semibold text-[15px] transition-all duration-200 overflow-hidden"
+              :class="page === currentPage 
+                ? 'bg-gradient-to-br from-accent-primary to-purple-700 border-accent-primary text-white shadow-lg shadow-accent-primary/40 scale-105 font-bold' 
+                : 'bg-bg-secondary border-border-color text-text-primary hover:bg-bg-tertiary hover:border-accent-primary hover:text-accent-primary hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-primary/20'"
               @click="goToPage(page)"
             >
               {{ page }}
             </button>
-            <span v-else class="pagination-ellipsis">
+            <span v-else class="flex items-center justify-center min-w-[44px] h-11 text-text-muted text-xl font-semibold select-none">
               {{ page }}
             </span>
           </template>
@@ -124,7 +126,7 @@ const currentPage = ref(1)
 const itemsPerPage = 24
 
 const paginationButtonClasses =
-  'flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-background-secondary text-text-primary transition duration-150 ease-standard hover:border-accent-primary hover:bg-background-tertiary/80 hover:text-accent-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-background-secondary'
+  'flex h-10 w-10 items-center justify-center rounded-lg border border-border-color bg-bg-secondary text-text-primary transition duration-150 hover:border-accent-primary hover:bg-bg-tertiary/80 hover:text-accent-primary disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-bg-secondary'
 // Removed unused paginationNumberClasses - using inline classes in template
 
 // Computed
@@ -263,270 +265,6 @@ watch(paginatedManhwa, (cards) => {
 </script>
 
 <style scoped>
-.manhwa-grid-section {
-  padding: 4rem 0;
-  background: var(--bg-primary);
-}
-
-.section-header {
-  text-align: center;
-  margin-bottom: 3rem;
-}
-
-.section-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.section-subtitle {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-}
-
-/* Grid */
-.manhwa-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-/* Loading & Error States */
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: var(--text-secondary);
-  gap: 1rem;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--bg-tertiary);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-state svg {
-  color: var(--accent-primary);
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
-  margin-bottom: 2rem;
-  flex-wrap: wrap;
-}
-
-.pagination-btn {
-  width: 44px;
-  height: 44px;
-  border: 2px solid var(--border-color);
-  border-radius: 0.625rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.pagination-btn::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(139, 92, 246, 0.1);
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-
-.pagination-btn:hover:not(:disabled)::before {
-  width: 100%;
-  height: 100%;
-}
-
-.pagination-btn:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-}
-
-.pagination-btn:active:not(:disabled) {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(139, 92, 246, 0.2);
-}
-
-.pagination-btn:disabled {
-  opacity: 0.3;
-  cursor: not-allowed;
-  background: var(--bg-primary);
-}
-
-.pagination-btn svg {
-  position: relative;
-  z-index: 1;
-}
-
-.pagination-numbers {
-  display: flex;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-  justify-content: center;
-}
-
-.pagination-number {
-  min-width: 44px;
-  height: 44px;
-  padding: 0 0.875rem;
-  border: 2px solid var(--border-color);
-  border-radius: 0.625rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.9375rem;
-  font-weight: 600;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-}
-
-.pagination-number::before {
-  content: '';
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 0;
-  height: 0;
-  border-radius: 50%;
-  background: rgba(139, 92, 246, 0.1);
-  transform: translate(-50%, -50%);
-  transition: width 0.3s, height 0.3s;
-}
-
-.pagination-number:hover:not(.active)::before {
-  width: 100%;
-  height: 100%;
-}
-
-.pagination-number:hover:not(.active) {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-}
-
-.pagination-number:active:not(.active) {
-  transform: translateY(0);
-}
-
-.pagination-number.active {
-  background: linear-gradient(135deg, var(--accent-primary) 0%, #7c3aed 100%);
-  border-color: var(--accent-primary);
-  color: white;
-  box-shadow: 0 4px 16px rgba(139, 92, 246, 0.4);
-  transform: scale(1.05);
-  font-weight: 700;
-}
-
-.pagination-number.active::after {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: linear-gradient(135deg, rgba(255, 255, 255, 0.2) 0%, transparent 100%);
-  pointer-events: none;
-}
-
-/* Pagination Ellipsis */
-.pagination-ellipsis {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-width: 44px;
-  height: 44px;
-  color: var(--text-muted);
-  font-size: 1.25rem;
-  font-weight: 600;
-  user-select: none;
-}
-
-/* Page Info */
-.page-info {
-  text-align: center;
-  font-size: 0.875rem;
-  color: var(--text-muted);
-}
-
-/* Responsive */
-@media (max-width: 1024px) {
-  .manhwa-grid {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-    gap: 1.25rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .section-title {
-    font-size: 2rem;
-  }
-
-  .manhwa-grid {
-    grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
-    gap: 1rem;
-  }
-
-  .pagination {
-    gap: 0.375rem;
-  }
-
-  .pagination-btn,
-  .pagination-number {
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    font-size: 0.875rem;
-  }
-  
-  .pagination-numbers {
-    gap: 0.375rem;
-  }
-  
-  .pagination-btn:hover:not(:disabled),
-  .pagination-number:hover:not(.active) {
-    transform: translateY(-1px);
-  }
-}
-
-@media (max-width: 480px) {
-  .manhwa-grid {
-    grid-template-columns: repeat(2, 1fr);
-  }
-}
+/* All styles migrated to Tailwind CSS! */
+/* No custom CSS needed - everything is inline with Tailwind utilities */
 </style>

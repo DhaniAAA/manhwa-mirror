@@ -17,6 +17,7 @@ export default {
         'accent-primary': '#8b5cf6',
         'accent-secondary': '#a855f7',
         'border-color': '#2a2a3a',
+        'bg-divider': '#2a2a3a',
       },
       animation: {
         'spin': 'spin 1s linear infinite',

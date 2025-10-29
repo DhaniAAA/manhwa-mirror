@@ -1,10 +1,10 @@
 <template>
-  <div class="reader-container" :class="{ 'fullscreen': isFullscreen }">
+  <div class="fixed inset-0 z-[9999] flex flex-col" :class="isFullscreen ? 'bg-black' : 'bg-bg-primary'">
     <!-- Reader Header -->
-    <div class="reader-header" :class="{ 'hidden': hideControls }">
-      <div class="container">
-        <div class="header-content">
-          <button class="back-btn" @click="$emit('close')">
+    <div class="fixed top-0 left-0 right-0 z-[10000] bg-bg-primary/95 backdrop-blur-xl border-b border-border-color transition-transform duration-300" :class="hideControls ? '-translate-y-full' : 'translate-y-0'">
+      <div class="container mx-auto px-4">
+        <div class="flex items-center justify-between h-[60px] gap-8">
+          <button class="flex items-center gap-2 px-4 py-2 rounded-lg bg-transparent text-text-secondary text-sm font-medium transition-all duration-200 hover:bg-bg-tertiary hover:text-text-primary" @click="$emit('close')">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="19" y1="12" x2="5" y2="12"/>
               <polyline points="12 19 5 12 12 5"/>
@@ -12,13 +12,13 @@
             <span>Kembali</span>
           </button>
           
-          <div class="reader-info">
-            <h2 class="reader-title">{{ manhwaTitle }}</h2>
-            <span class="reader-chapter">Chapter {{ currentChapter }}</span>
+          <div class="flex-1 text-center hidden md:block">
+            <h2 class="text-base font-semibold text-text-primary mb-1">{{ manhwaTitle }}</h2>
+            <span class="text-[13px] text-text-muted">Chapter {{ currentChapter }}</span>
           </div>
           
-          <div class="reader-actions">
-            <button class="action-btn" @click="toggleFullscreen">
+          <div class="flex gap-2">
+            <button class="w-10 h-10 rounded-lg bg-transparent text-text-secondary flex items-center justify-center transition-all duration-200 hover:bg-bg-tertiary hover:text-text-primary" @click="toggleFullscreen">
               <svg v-if="!isFullscreen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/>
               </svg>
@@ -26,7 +26,7 @@
                 <path d="M8 3v3a2 2 0 0 1-2 2H3m18 0h-3a2 2 0 0 1-2-2V3m0 18v-3a2 2 0 0 1 2-2h3M3 16h3a2 2 0 0 1 2 2v3"/>
               </svg>
             </button>
-            <button class="action-btn" @click="toggleSettings">
+            <button class="w-10 h-10 rounded-lg bg-transparent text-text-secondary flex items-center justify-center transition-all duration-200 hover:bg-bg-tertiary hover:text-text-primary" @click="toggleSettings">
               <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <circle cx="12" cy="12" r="3"/>
                 <path d="M12 1v6m0 6v6m5.66-15.66l-4.24 4.24m-2.83 2.83l-4.24 4.24m12.73 0l-4.24-4.24m-2.83-2.83L1.34 1.34"/>
@@ -38,83 +38,84 @@
     </div>
 
     <!-- Reader Content -->
-    <div class="reader-content" @click="toggleControls">
-      <div class="pages-container" :style="{ maxWidth: `${pageWidth}px` }">
+    <div class="flex-1 overflow-y-auto pt-20 pb-24 px-4 flex justify-center" ref="contentContainer">
+      <div class="w-full mx-auto" :style="{ maxWidth: `${pageWidth}px` }">
         <!-- Loading State -->
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
+        <div v-if="loading" class="flex flex-col items-center justify-center min-h-[400px] text-text-secondary gap-4">
+          <div class="w-12 h-12 border-4 border-bg-tertiary border-t-accent-primary rounded-full animate-spin"></div>
           <p>Memuat chapter...</p>
         </div>
         
         <!-- Error State -->
-        <div v-else-if="error" class="error-state">
+        <div v-else-if="error" class="flex flex-col items-center justify-center min-h-[400px] text-text-secondary gap-4">
           <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <circle cx="12" cy="12" r="10"/>
             <line x1="12" y1="8" x2="12" y2="12"/>
             <line x1="12" y1="16" x2="12.01" y2="16"/>
           </svg>
-          <p class="error-message">{{ error }}</p>
-          <div v-if="error.includes('CORS') || error.includes('fetch')" class="error-hint">
-            <p class="hint-title">💡 Possible CORS Issue</p>
-            <p class="hint-text">Please check Supabase Storage bucket CORS configuration.</p>
-            <p class="hint-text">Make sure the bucket is public or has proper CORS settings.</p>
+          <p class="text-base font-medium text-text-primary">{{ error }}</p>
+          <div v-if="error.includes('CORS') || error.includes('fetch')" class="mt-4 p-6 bg-bg-secondary border border-border-color rounded-xl max-w-[500px] text-left">
+            <p class="text-[15px] font-semibold text-accent-primary mb-3">💡 Possible CORS Issue</p>
+            <p class="text-sm text-text-secondary leading-relaxed mb-2">Please check Supabase Storage bucket CORS configuration.</p>
+            <p class="text-sm text-text-secondary leading-relaxed">Make sure the bucket is public or has proper CORS settings.</p>
           </div>
         </div>
         
         <!-- Back to Detail Button (before images) -->
-        <div v-if="!loading && !error" class="back-to-detail-container">
-          <a :href="`/detail/${manhwaSlug}`" class="back-to-detail-btn">
+        <!-- <div v-if="!loading && !error" class="w-full py-4 pb-8 flex justify-center">
+          <a :href="`/detail/${manhwaSlug}`" class="inline-flex items-center gap-2 px-6 py-3 bg-bg-secondary border border-border-color rounded-lg text-text-primary text-sm font-medium no-underline transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:text-accent-primary hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-primary/20">
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polyline points="15 18 9 12 15 6"/>
             </svg>
             <span>Kembali ke Detail {{ manhwaTitle }}</span>
           </a>
-        </div>
+        </div> -->
         
         <!-- Images -->
         <div 
           v-if="!loading && !error"
           v-for="(image, index) in chapterImages" 
           :key="index"
-          class="page-item"
+          class="w-full relative m-0 p-0 leading-[0] animate-[fadeIn_0.3s_ease-out]"
           :style="{ marginBottom: `${pageGap}px` }"
         >
           <!-- Loading skeleton -->
-          <div v-if="!loadedImages.has(index)" class="image-skeleton">
-            <div class="skeleton-shimmer"></div>
-            <span class="skeleton-text">Loading page {{ index + 1 }}...</span>
+          <div v-if="!loadedImages.has(index)" class="w-full aspect-[2/3] bg-gradient-to-br from-bg-secondary to-bg-tertiary rounded-lg flex flex-col items-center justify-center relative overflow-hidden border border-border-color">
+            <div class="absolute top-0 -left-full w-full h-full bg-gradient-to-r from-transparent via-white/5 to-transparent animate-[shimmer_2s_infinite]"></div>
+            <span class="text-sm text-text-muted z-10">Loading page {{ index + 1 }}...</span>
           </div>
           
           <img 
             :src="image" 
             :alt="`Page ${index + 1}`"
-            class="page-image"
-            :class="{ 'loaded': loadedImages.has(index) }"
+            class="w-full h-auto block rounded-none shadow-none m-0 p-0 transition-opacity duration-300 cursor-pointer"
+            :class="loadedImages.has(index) ? 'opacity-100' : 'opacity-0'"
             :loading="index < 3 ? 'eager' : 'lazy'"
             :fetchpriority="index < 3 ? 'high' : 'auto'"
             @error="handleImageError(index)"
             @load="handleImageLoad(index)"
+            @click="toggleControls"
           />
         </div>
       </div>
     </div>
 
     <!-- Reader Footer -->
-    <div class="reader-footer" :class="{ 'hidden': hideControls }">
-      <div class="container">
-        <div class="footer-content">
-          <div class="chapter-nav">
-            <button class="nav-btn" :disabled="currentChapter <= 1" @click="previousChapter">
+    <div class="fixed bottom-0 left-0 right-0 z-[10000] bg-bg-primary/95 backdrop-blur-xl border-t border-border-color transition-transform duration-300" :class="hideControls ? 'translate-y-full' : 'translate-y-0'">
+      <div class="container mx-auto px-4">
+        <div class="py-4">
+          <div class="flex items-center justify-between gap-4 mb-4">
+            <button class="flex items-center gap-2 px-5 py-2.5 border border-border-color rounded-lg bg-bg-secondary text-text-primary text-sm font-medium transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:text-accent-primary disabled:opacity-40 disabled:cursor-not-allowed" :disabled="currentChapter <= 1" @click="previousChapter">
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
-              <span>Chapter Sebelumnya</span>
+              <span class="hidden md:inline">Chapter Sebelumnya</span>
             </button>
             
-            <div class="chapter-select">
+            <div class="flex-1 max-w-[200px]">
               <select 
                 v-model="currentChapter" 
-                class="chapter-dropdown"
+                class="w-full px-4 py-2.5 border border-border-color rounded-lg bg-bg-secondary text-text-primary text-sm cursor-pointer transition-all duration-200 hover:border-accent-primary focus:outline-none focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/10"
                 @change="onChapterSelect"
               >
                 <option v-for="ch in totalChapters" :key="ch" :value="ch">
@@ -123,30 +124,44 @@
               </select>
             </div>
             
-            <button class="nav-btn" :disabled="currentChapter >= totalChapters" @click="nextChapter">
-              <span>Chapter Selanjutnya</span>
+            <button class="flex items-center gap-2 px-5 py-2.5 border border-border-color rounded-lg bg-bg-secondary text-text-primary text-sm font-medium transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:text-accent-primary disabled:opacity-40 disabled:cursor-not-allowed" :disabled="currentChapter >= totalChapters" @click="nextChapter">
+              <span class="hidden md:inline">Chapter Selanjutnya</span>
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
           </div>
           
-          <div class="progress-info">
-            <span class="progress-text">{{ currentPage }} / {{ totalPages }}</span>
-            <div class="progress-bar-container">
-              <div class="progress-bar-fill" :style="{ width: `${readProgress}%` }"></div>
+          <div class="flex items-center gap-4">
+            <span class="text-sm text-text-muted min-w-[80px]">{{ currentPage }} / {{ totalPages }}</span>
+            <div class="flex-1 h-1.5 bg-bg-tertiary rounded-full overflow-hidden">
+              <div class="h-full bg-gradient-to-r from-accent-primary to-accent-secondary rounded-full transition-all duration-300" :style="{ width: `${readProgress}%` }"></div>
             </div>
           </div>
         </div>
       </div>
     </div>
 
+        <!-- Scroll to Top Button -->
+    <Transition name="fade">
+      <button
+        v-if="showScrollTop"
+        @click="scrollToTop"
+        class="fixed bottom-6 right-6 w-12 h-12 rounded-full bg-accent-primary text-white flex items-center justify-center shadow-lg z-[10001] hover:bg-accent-secondary transition-all duration-200 hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent-primary/50"
+        aria-label="Kembali ke atas"
+      >
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <polyline points="18 15 12 9 6 15"/>
+        </svg>
+      </button>
+    </Transition>
+
     <!-- Settings Panel -->
     <Transition name="slide-left">
-      <div v-if="showSettings" class="settings-panel">
-        <div class="settings-header">
-          <h3>Pengaturan Pembaca</h3>
-          <button class="close-settings" @click="toggleSettings">
+      <div v-if="showSettings" class="fixed top-0 right-0 bottom-0 w-full md:w-80 bg-bg-secondary border-l border-border-color z-[10002] flex flex-col shadow-[-4px_0_12px_rgba(0,0,0,0.3)]">
+        <div class="flex items-center justify-between p-6 border-b border-border-color">
+          <h3 class="text-lg font-semibold text-text-primary">Pengaturan Pembaca</h3>
+          <button class="w-8 h-8 rounded-lg bg-transparent text-text-secondary flex items-center justify-center transition-all duration-200 hover:bg-bg-tertiary hover:text-text-primary" @click="toggleSettings">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18"/>
               <line x1="6" y1="6" x2="18" y2="18"/>
@@ -154,46 +169,46 @@
           </button>
         </div>
         
-        <div class="settings-content">
-          <div class="setting-group">
-            <label class="setting-label">Lebar Halaman</label>
+        <div class="flex-1 overflow-y-auto p-6">
+          <div class="mb-8">
+            <label class="block text-sm font-medium text-text-primary mb-3">Lebar Halaman</label>
             <input 
               type="range" 
               v-model="pageWidth" 
               min="600" 
               max="1200" 
               step="50"
-              class="setting-slider"
+              class="w-full h-1.5 rounded-full bg-bg-tertiary outline-none appearance-none mb-2 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
             />
-            <span class="setting-value">{{ pageWidth }}px</span>
+            <span class="block text-xs text-text-muted text-right">{{ pageWidth }}px</span>
           </div>
           
-          <div class="setting-group">
-            <label class="setting-label">Jarak Halaman</label>
+          <div class="mb-8">
+            <label class="block text-sm font-medium text-text-primary mb-3">Jarak Halaman</label>
             <input 
               type="range" 
               v-model="pageGap" 
               min="0" 
               max="40" 
               step="5"
-              class="setting-slider"
+              class="w-full h-1.5 rounded-full bg-bg-tertiary outline-none appearance-none mb-2 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-[18px] [&::-webkit-slider-thumb]:h-[18px] [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent-primary [&::-webkit-slider-thumb]:cursor-pointer [&::-webkit-slider-thumb]:transition-transform [&::-webkit-slider-thumb]:hover:scale-110"
             />
-            <span class="setting-value">{{ pageGap }}px</span>
+            <span class="block text-xs text-text-muted text-right">{{ pageGap }}px</span>
           </div>
           
-          <div class="setting-group">
-            <label class="setting-label">Mode Baca</label>
-            <div class="setting-options">
+          <div class="mb-8">
+            <label class="block text-sm font-medium text-text-primary mb-3">Mode Baca</label>
+            <div class="flex gap-2">
               <button 
-                class="option-btn" 
-                :class="{ active: readMode === 'vertical' }"
+                class="flex-1 px-2.5 py-2.5 border rounded-lg text-sm font-medium transition-all duration-200" 
+                :class="readMode === 'vertical' ? 'bg-accent-primary border-accent-primary text-white' : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'"
                 @click="readMode = 'vertical'"
               >
                 Vertikal
               </button>
               <button 
-                class="option-btn" 
-                :class="{ active: readMode === 'horizontal' }"
+                class="flex-1 px-2.5 py-2.5 border rounded-lg text-sm font-medium transition-all duration-200" 
+                :class="readMode === 'horizontal' ? 'bg-accent-primary border-accent-primary text-white' : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'"
                 @click="readMode = 'horizontal'"
               >
                 Horizontal
@@ -207,8 +222,27 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { ManhwaService } from '../services/manhwaService'
+
+// Tambahkan di antara deklarasi ref lainnya
+const showScrollTop = ref(false)
+
+// Fungsi scroll ke atas
+const scrollToTop = () => {
+  if (contentContainer.value) {
+    contentContainer.value.scrollTo({
+      top: 0,
+      behavior: 'smooth'
+    })
+  }
+}
+
+// Update status tombol saat scroll
+const updateScrollTopButton = () => {
+  if (!contentContainer.value) return
+  showScrollTop.value = contentContainer.value.scrollTop > 400 // Muncul setelah scroll 400px
+}
 
 const props = defineProps<{
   manhwaTitle: string
@@ -239,16 +273,103 @@ const totalPages = computed(() => chapterImages.value.length)
 const isSyncingFromRoute = ref(false)
 
 const isFullscreen = ref(false)
-const hideControls = ref(false)
+const hideControls = ref(true) // Default hidden saat reading
 const showSettings = ref(false)
 
 const pageWidth = ref(800)
 const pageGap = ref(0)  // No gap between images for seamless reading
 const readMode = ref('vertical')
 
+const contentContainer = ref<HTMLElement | null>(null)
+let scrollTimeout: number | null = null
+
 const readProgress = computed(() => {
   if (totalPages.value === 0) return 0
   return (currentPage.value / totalPages.value) * 100
+})
+
+// Update current page based on scroll position
+const updateCurrentPage = () => {
+  if (!contentContainer.value) return
+
+  const container = contentContainer.value
+  const scrollTop = container.scrollTop
+  const scrollHeight = container.scrollHeight - container.clientHeight
+
+  if (scrollHeight <= 0) {
+    currentPage.value = 1
+    return
+  }
+
+  const scrollRatio = scrollTop / scrollHeight
+  const calculatedPage = Math.ceil(scrollRatio * totalPages.value)
+  currentPage.value = Math.max(1, Math.min(calculatedPage || 1, totalPages.value))
+}
+
+// Auto-hide controls when scrolling
+// Ganti fungsi handleScroll-mu dengan yang ini:
+const handleScroll = () => {
+  if (!contentContainer.value) return
+
+  // Update scroll to top button
+  updateScrollTopButton()
+
+  // Hanya lakukan logika auto-hide jika kontrol saat ini *sedang terlihat*
+  if (!hideControls.value) {
+    // Sembunyikan kontrol karena pengguna sedang scroll
+    hideControls.value = true
+  }
+
+  // Reset timeout (bersihkan timeout lama jika ada)
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
+
+  // Atur timeout untuk menampilkan kontrol kembali setelah 2 detik tidak scroll
+  scrollTimeout = window.setTimeout(() => {
+    hideControls.value = false // Tampilkan kembali kontrol setelah jeda
+  }, 2000) // 2000 milidetik = 2 detik
+
+  // Update halaman saat ini
+  updateCurrentPage()
+}
+
+onMounted(async () => {
+  const pathParts = window.location.pathname.split('/')
+  if (!resolvedManhwaSlug.value) {
+    resolvedManhwaSlug.value = pathParts[2] || ''
+  }
+
+  const manhwaSlug = resolvedManhwaSlug.value
+  const initialChapterSlug = props.chapterSlug || pathParts[4]
+
+  if (!manhwaSlug) {
+    error.value = 'Invalid manhwa URL'
+    return
+  }
+
+  await loadTotalChapters(manhwaSlug)
+
+  if (initialChapterSlug) {
+    await syncChapterFromSlug(initialChapterSlug)
+  } else {
+    error.value = 'Invalid chapter URL'
+  }
+
+  // Tunggu DOM siap, lalu pasang listener
+  await nextTick()
+  if (contentContainer.value) {
+    contentContainer.value.addEventListener('scroll', handleScroll, { passive: true })
+  }
+})
+
+onUnmounted(() => {
+  if (contentContainer.value) {
+    contentContainer.value.removeEventListener('scroll', handleScroll)
+  }
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
 })
 
 const onChapterSelect = () => {
@@ -484,219 +605,26 @@ onMounted(async () => {
   } else {
     error.value = 'Invalid chapter URL'
   }
+
+  // Add scroll listener with auto-hide
+  if (contentContainer.value) {
+    contentContainer.value.addEventListener('scroll', handleScroll)
+  }
+})
+
+// Cleanup on unmount
+onUnmounted(() => {
+  if (contentContainer.value) {
+    contentContainer.value.removeEventListener('scroll', handleScroll)
+  }
+  if (scrollTimeout) {
+    clearTimeout(scrollTimeout)
+  }
 })
 </script>
 
 <style scoped>
-.reader-container {
-  position: fixed;
-  inset: 0;
-  background: var(--bg-primary);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-}
-
-.reader-container.fullscreen {
-  background: #000;
-}
-
-/* Reader Header */
-.reader-header {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: rgba(10, 10, 15, 0.95);
-  backdrop-filter: blur(20px);
-  border-bottom: 1px solid var(--border-color);
-  transition: transform var(--transition-base);
-}
-
-.reader-header.hidden {
-  transform: translateY(-100%);
-}
-
-.header-content {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  height: 60px;
-  gap: 2rem;
-}
-
-.back-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  border: none;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--text-secondary);
-  font-size: 0.9rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.back-btn:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.reader-info {
-  flex: 1;
-  text-align: center;
-}
-
-.reader-title {
-  font-size: 1rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.25rem;
-}
-
-.reader-chapter {
-  font-size: 0.85rem;
-  color: var(--text-muted);
-}
-
-.reader-actions {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.action-btn {
-  width: 40px;
-  height: 40px;
-  border: none;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-}
-
-.action-btn:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-/* Reader Content */
-.reader-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 80px 1rem 100px;
-  display: flex;
-  justify-content: center;
-}
-
-.pages-container {
-  width: 100%;
-  margin: 0 auto;
-}
-
-/* Back to Detail Button */
-.back-to-detail-container {
-  width: 100%;
-  padding: 1rem 0 2rem;
-  display: flex;
-  justify-content: center;
-}
-
-.back-to-detail-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.5rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  text-decoration: none;
-  transition: all var(--transition-fast);
-  cursor: pointer;
-}
-
-.back-to-detail-btn:hover {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(139, 92, 246, 0.2);
-}
-
-.back-to-detail-btn svg {
-  flex-shrink: 0;
-  transition: transform var(--transition-fast);
-}
-
-.back-to-detail-btn:hover svg {
-  transform: translateX(-4px);
-}
-
-.page-item {
-  width: 100%;
-  position: relative;
-  animation: fadeIn 0.3s ease-out;
-  margin: 0;  /* No margin for seamless connection */
-  padding: 0;  /* No padding for seamless connection */
-  line-height: 0;  /* Remove line-height spacing */
-}
-
-.page-image {
-  width: 100%;
-  height: auto;
-  display: block;
-  border-radius: 0;  /* No border radius for seamless connection */
-  box-shadow: none;  /* No shadow for seamless connection */
-  opacity: 0;
-  transition: opacity 0.3s ease-in;
-  margin: 0;  /* Ensure no margin */
-  padding: 0;  /* Ensure no padding */
-}
-
-.page-image.loaded {
-  opacity: 1;
-}
-
-.image-skeleton {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-  border-radius: 0.5rem;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  position: relative;
-  overflow: hidden;
-  border: 1px solid var(--border-color);
-}
-
-.skeleton-shimmer {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    transparent,
-    rgba(255, 255, 255, 0.05),
-    transparent
-  );
-  animation: shimmer 2s infinite;
-}
-
+/* Custom animations that can't be done with Tailwind */
 @keyframes shimmer {
   0% {
     left: -100%;
@@ -717,340 +645,10 @@ onMounted(async () => {
   }
 }
 
-.skeleton-text {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  z-index: 1;
-}
-
-.loading-state,
-.error-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  min-height: 400px;
-  color: var(--text-secondary);
-  gap: 1rem;
-}
-
-.error-message {
-  font-size: 1rem;
-  font-weight: 500;
-  color: var(--text-primary);
-}
-
-.error-hint {
-  margin-top: 1rem;
-  padding: 1.5rem;
-  background: var(--bg-secondary);
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  max-width: 500px;
-  text-align: left;
-}
-
-.hint-title {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: var(--accent-primary);
-  margin-bottom: 0.75rem;
-}
-
-.hint-text {
-  font-size: 0.875rem;
-  color: var(--text-secondary);
-  line-height: 1.6;
-  margin-bottom: 0.5rem;
-}
-
-.hint-text:last-child {
-  margin-bottom: 0;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--bg-tertiary);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.error-state svg {
-  color: var(--accent-primary);
-}
-
-.error-state p {
-  text-align: center;
-  max-width: 400px;
-}
-
-.page-placeholder {
-  width: 100%;
-  aspect-ratio: 2/3;
-  background: linear-gradient(135deg, var(--bg-secondary), var(--bg-tertiary));
-  border-radius: 0.5rem;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
-}
-
-.page-number {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-muted);
-}
-
-/* Reader Footer */
-.reader-footer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  z-index: 100;
-  background: rgba(10, 10, 15, 0.95);
-  backdrop-filter: blur(20px);
-  border-top: 1px solid var(--border-color);
-  transition: transform var(--transition-base);
-}
-
-.reader-footer.hidden {
-  transform: translateY(100%);
-}
-
-.footer-content {
-  padding: 1rem 0;
-}
-
-.chapter-nav {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 1rem;
-  margin-bottom: 1rem;
-}
-
-.nav-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.625rem 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.nav-btn:hover:not(:disabled) {
-  background: var(--bg-tertiary);
-  border-color: var(--accent-primary);
-  color: var(--accent-primary);
-}
-
-.nav-btn:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.chapter-select {
-  flex: 1;
-  max-width: 200px;
-}
-
-.chapter-dropdown {
-  width: 100%;
-  padding: 0.625rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  color: var(--text-primary);
-  font-size: 0.875rem;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.chapter-dropdown:hover {
-  border-color: var(--accent-primary);
-}
-
-.chapter-dropdown:focus {
-  outline: none;
-  border-color: var(--accent-primary);
-  box-shadow: 0 0 0 3px var(--accent-glow);
-}
-
-.progress-info {
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-}
-
-.progress-text {
-  font-size: 0.875rem;
-  color: var(--text-muted);
-  min-width: 80px;
-}
-
-.progress-bar-container {
-  flex: 1;
-  height: 6px;
-  background: var(--bg-tertiary);
-  border-radius: 3px;
-  overflow: hidden;
-}
-
-.progress-bar-fill {
-  height: 100%;
-  background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
-  border-radius: 3px;
-  transition: width var(--transition-base);
-}
-
-/* Settings Panel */
-.settings-panel {
-  position: fixed;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  width: 320px;
-  background: var(--bg-secondary);
-  border-left: 1px solid var(--border-color);
-  z-index: 200;
-  display: flex;
-  flex-direction: column;
-  box-shadow: -4px 0 12px rgba(0, 0, 0, 0.3);
-}
-
-.settings-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 1.5rem;
-  border-bottom: 1px solid var(--border-color);
-}
-
-.settings-header h3 {
-  font-size: 1.125rem;
-  font-weight: 600;
-  color: var(--text-primary);
-}
-
-.close-settings {
-  width: 32px;
-  height: 32px;
-  border: none;
-  border-radius: 0.5rem;
-  background: transparent;
-  color: var(--text-secondary);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all var(--transition-fast);
-}
-
-.close-settings:hover {
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.settings-content {
-  flex: 1;
-  overflow-y: auto;
-  padding: 1.5rem;
-}
-
-.setting-group {
-  margin-bottom: 2rem;
-}
-
-.setting-label {
-  display: block;
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--text-primary);
-  margin-bottom: 0.75rem;
-}
-
-.setting-slider {
-  width: 100%;
-  height: 6px;
-  border-radius: 3px;
-  background: var(--bg-tertiary);
-  outline: none;
-  appearance: none;
-  -webkit-appearance: none;
-  margin-bottom: 0.5rem;
-}
-
-.setting-slider::-webkit-slider-thumb {
-  appearance: none;
-  -webkit-appearance: none;
-  width: 18px;
-  height: 18px;
-  border-radius: 50%;
-  background: var(--accent-primary);
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.setting-slider::-webkit-slider-thumb:hover {
-  transform: scale(1.2);
-}
-
-.setting-value {
-  display: block;
-  font-size: 0.8rem;
-  color: var(--text-muted);
-  text-align: right;
-}
-
-.setting-options {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.option-btn {
-  flex: 1;
-  padding: 0.625rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-tertiary);
-  color: var(--text-secondary);
-  font-size: 0.875rem;
-  font-weight: 500;
-  font-family: inherit;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.option-btn:hover {
-  border-color: var(--accent-primary);
-  color: var(--text-primary);
-}
-
-.option-btn.active {
-  background: var(--accent-primary);
-  border-color: var(--accent-primary);
-  color: white;
-}
-
-/* Transitions */
+/* Transitions for Settings Panel */
 .slide-left-enter-active,
 .slide-left-leave-active {
-  transition: transform var(--transition-base);
+  transition: transform 0.3s ease;
 }
 
 .slide-left-enter-from,
@@ -1058,22 +656,14 @@ onMounted(async () => {
   transform: translateX(100%);
 }
 
-/* Responsive */
-@media (max-width: 768px) {
-  .settings-panel {
-    width: 100%;
-  }
-  
-  .reader-info {
-    display: none;
-  }
-  
-  .chapter-nav {
-    flex-wrap: wrap;
-  }
-  
-  .nav-btn span {
-    display: none;
-  }
+/* Fade transition for Scroll to Top button */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

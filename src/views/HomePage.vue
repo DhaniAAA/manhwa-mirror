@@ -67,9 +67,9 @@
             </div>
           </div>
           <div class="flex items-center gap-3">
-            <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
+            <!-- <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
               Halaman {{ latestPage }} dari {{ latestTotalPages }}
-            </div>
+            </div> -->
             <div v-if="isLoadingMore" class="flex items-center gap-2 px-3 py-2 text-xs font-medium border rounded-lg bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/20 dark:border-violet-800 dark:text-violet-400">
               <div class="w-3 h-3 border-2 rounded-full border-violet-300 dark:border-violet-700 border-t-violet-600 dark:border-t-violet-400 animate-spin"></div>
               <span>Memuat...</span>
@@ -173,9 +173,9 @@
       <div class="container px-4 mx-auto">
         <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
           <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Manhwa Populer</h2>
-          <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
+          <!-- <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
             Halaman {{ popularPage }} dari {{ popularTotalPages }}
-          </div>
+          </div> -->
         </div>
         
         <div v-if="loadingPopular" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">

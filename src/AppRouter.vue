@@ -1,12 +1,12 @@
 <template>
   <div class="app-container">
-    <NavigationBar ref="navBarRef" @search="handleSearch" />
+    <NavigationBar v-if="!isReaderRoute" ref="navBarRef" @search="handleSearch" />
     
-    <main class="main-content">
+    <main class="main-content" :class="{ 'reader-active': isReaderRoute }">
       <RouterView ref="routerViewRef" :navBarRef="navBarRef" />
     </main>
     
-    <footer class="app-footer">
+    <footer v-if="!isReaderRoute" class="app-footer">
       <div class="container">
         <div class="footer-content">
           <div class="footer-brand">
@@ -84,13 +84,19 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { ref, computed } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
 import NavigationBar from './components/NavigationBar.vue'
 
 const router = useRouter()
+const route = useRoute()
 const routerViewRef = ref<any>(null)
 const navBarRef = ref<InstanceType<typeof NavigationBar> | null>(null)
+
+// Check if current route is reader
+const isReaderRoute = computed(() => {
+  return route.path.includes('/baca/') && route.path.includes('/read/')
+})
 
 // Handle search from NavigationBar
 const handleSearch = (query: string) => {
@@ -150,6 +156,11 @@ const openSocial = (platform: string) => {
 .main-content {
   position: relative;
   z-index: 1;
+}
+
+.main-content.reader-active {
+  padding: 0;
+  margin: 0;
 }
 
 /* Footer */

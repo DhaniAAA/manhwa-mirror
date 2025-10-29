@@ -76,7 +76,7 @@
         class="flex items-center justify-between px-3 py-2 border-b border-white/5 text-xs transition-all duration-fast cursor-pointer last:border-b-0 hover:bg-accent-primary/15 hover:translate-x-1 group"
         @click="handleChapterClick($event, chapter)"
       >
-        <span class="text-xs text-text-secondary font-medium overflow-hidden text-ellipsis whitespace-nowrap flex-1 group-hover:text-accent-primary">{{ chapter.title }}</span>
+        <span class="text-xs text-text-secondary font-medium overflow-hidden text-ellipsis whitespace-nowrap flex-1 group-hover:text-accent-primary">{{ shortenChapterTitle(chapter.title) }}</span>
         <span class="text-[0.75rem] text-text-muted whitespace-nowrap flex-shrink-0">{{ chapter.waktu_rilis || 'Baru' }}</span>
       </div>
     </div>
@@ -144,6 +144,11 @@ const handleChapterClick = (event: Event, chapter: { title: string; waktu_rilis?
 
 const handleImageError = () => {
   console.warn(`Failed to load cover image for: ${props.title}`)
+}
+
+// Shorten chapter title: "Chapter 275" -> "Chp 275"
+const shortenChapterTitle = (title: string): string => {
+  return title.replace(/Chapter\s+/gi, 'Chp ')
 }
 </script>
 

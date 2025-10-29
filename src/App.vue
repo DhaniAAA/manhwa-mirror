@@ -177,9 +177,9 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
 
 <template>
   <div class="app-container">
-    <NavigationBar />
+    <NavigationBar v-if="!showReader" />
     
-    <main class="main-content">
+    <main v-if="!showReader" class="main-content">
       <HeroSection />
       
       <ManhwaSection
@@ -210,7 +210,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
       />
     </main>
     
-    <footer class="app-footer">
+    <footer v-if="!showReader" class="app-footer">
       <div class="container">
         <div class="footer-content">
           <div class="footer-brand">

@@ -91,7 +91,7 @@
                 <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                   <polyline points="9 18 15 12 9 6"/>
                 </svg>
-                <span class="truncate">{{ item.latestChapters[0]?.title || 'Latest Chapter' }}</span>
+                <span class="truncate">{{ item.latestChapters[0]?.title ? shortenChapterTitle(item.latestChapters[0].title) : 'Latest Chapter' }}</span>
               </div>
             </div>
           </div>
@@ -113,6 +113,11 @@ const loading = ref(true)
 
 const goToDetail = (slug: string) => {
   router.push({ name: 'detail', params: { slug } })
+}
+
+// Shorten chapter title: "Chapter " -> "Chp "
+const shortenChapterTitle = (title: string): string => {
+  return title.replace(/Chapter\s+/gi, 'Chp ')
 }
 
 onMounted(async () => {
