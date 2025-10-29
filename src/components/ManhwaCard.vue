@@ -12,20 +12,14 @@
           @error="handleImageError"
         />
 
-        <!-- Type Badge (manhwa/manhua/manga) -->
-        <div v-if="type" class="absolute top-2 left-2 px-3 py-1.5 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold text-white uppercase tracking-wider z-10 shadow-[0_2px_8px_rgba(0,0,0,0.3)]" :class="{
-          'bg-purple-500/95': type.toLowerCase() === 'manhwa',
-          'bg-red-500/95': type.toLowerCase() === 'manhua',
-          'bg-blue-500/95': type.toLowerCase() === 'manga'
-        }">
-          {{ type.toUpperCase() }}
-        </div>
+        <!-- Country Flag Badge (manhwa/manhua/manga) -->
+        <img v-if="type" :src="getCountryFlagImage(type)" :alt="type" :title="type" class="absolute top-2 left-2 w-8 h-8 z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover" />
 
         <!-- Status Badge (Ongoing/Complete) -->
-        <div v-if="status" class="absolute top-11 left-2 px-3 py-1.5 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold text-white uppercase tracking-wider z-10 shadow-[0_2px_8px_rgba(0,0,0,0.3)]" :class="{
-          'bg-green-500/95': status.toLowerCase() === 'ongoing',
-          'bg-purple-900/95': status.toLowerCase() === 'complete',
-          'bg-orange-400/95': status.toLowerCase() === 'hiatus'
+        <div v-if="status" class="absolute bottom-2 left-2 px-3 py-1.5 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold uppercase tracking-wider z-10 shadow-[0_2px_8px_rgba(0,0,0,0.3)]" :class="{
+          'bg-green-500 text-white': status.toLowerCase() === 'ongoing',
+          'bg-blue-600 text-white': status.toLowerCase() === 'completed',
+          'bg-orange-400 text-white': status.toLowerCase() === 'hiatus'
         }">
           {{ status }}
         </div>
@@ -149,6 +143,16 @@ const handleImageError = () => {
 // Shorten chapter title: "Chapter 275" -> "Chp 275"
 const shortenChapterTitle = (title: string): string => {
   return title.replace(/Chapter\s+/gi, 'Chp ')
+}
+
+// Get country flag image based on type
+const getCountryFlagImage = (type: string): string => {
+  const typeMap: Record<string, string> = {
+    'manhwa': '/src/assets/bendera/south-korea.png',
+    'manhua': '/src/assets/bendera/china.png',
+    'manga': '/src/assets/bendera/japan.png'
+  }
+  return typeMap[type.toLowerCase()] || ''
 }
 </script>
 

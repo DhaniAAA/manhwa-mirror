@@ -57,13 +57,8 @@
                 :decoding="index < 3 ? 'sync' : 'async'"
               />
               
-              <!-- NEW Badge -->
-              <div class="absolute top-3 left-3 flex items-center gap-1 px-3 py-1.5 bg-red-500/90 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold text-white uppercase tracking-wider">
-                <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor">
-                  <path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/>
-                </svg>
-                NEW
-              </div>
+              <!-- Country Flag Badge -->
+              <img v-if="item.type" :src="getCountryFlagImage(item.type)" :alt="item.type" :title="item.type" class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover" />
               
               <!-- Overlay -->
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -118,6 +113,16 @@ const goToDetail = (slug: string) => {
 // Shorten chapter title: "Chapter " -> "Chp "
 const shortenChapterTitle = (title: string): string => {
   return title.replace(/Chapter\s+/gi, 'Chp ')
+}
+
+// Get country flag image based on type
+const getCountryFlagImage = (type: string): string => {
+  const typeMap: Record<string, string> = {
+    'manhwa': '/src/assets/bendera/south-korea.png',
+    'manhua': '/src/assets/bendera/china.png',
+    'manga': '/src/assets/bendera/japan.png'
+  }
+  return typeMap[type.toLowerCase()] || ''
 }
 
 onMounted(async () => {

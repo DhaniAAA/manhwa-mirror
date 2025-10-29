@@ -37,8 +37,8 @@ export class ManhwaService {
       const text = await data.text()
       const comics = JSON.parse(text)
       
-      // Cache in IndexedDB for 24 hours (comics list rarely changes)
-      await indexedDBCache.set(cacheKey, comics, 24 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 20 hours (comics list rarely changes)
+      await indexedDBCache.set(cacheKey, comics, 20 * 60 * 60 * 1000)
       
       console.log(`✅ Found ${comics.length} comics in list`)
       console.log(`📋 First 5 comics:`, comics.slice(0, 5))
@@ -81,8 +81,8 @@ export class ManhwaService {
       const text = await data.text()
       const metadata = JSON.parse(text)
       
-      // Cache in IndexedDB for 7 days (metadata jarang berubah)
-      await indexedDBCache.set(cacheKey, metadata, 7 * 24 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 20 hours (metadata jarang berubah)
+      await indexedDBCache.set(cacheKey, metadata, 20 * 60 * 60 * 1000)
       
       console.log(`✅ Metadata loaded for: ${metadata.title}`)
       return metadata
@@ -128,8 +128,8 @@ export class ManhwaService {
       // ✨ Apply proxy to all image URLs
       const proxiedData = proxyChaptersData(chaptersData)
       
-      // Cache in IndexedDB for 24 hours
-      await indexedDBCache.set(cacheKey, proxiedData, 24 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 20 hours
+      await indexedDBCache.set(cacheKey, proxiedData, 20 * 60 * 60 * 1000)
       console.log(`✅ Chapters cached for: ${slug} (with proxy)`)
       
       return proxiedData
@@ -178,8 +178,8 @@ export class ManhwaService {
       // ✨ Apply proxy as safety check (images already proxied from getChapters)
       const proxiedChapter = proxyChapterImages(chapter)
       
-      // Cache in IndexedDB for 7 days (chapter content tidak berubah)
-      await indexedDBCache.set(cacheKey, proxiedChapter, 7 * 24 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 20 hours (chapter content tidak berubah)
+      await indexedDBCache.set(cacheKey, proxiedChapter, 20 * 60 * 60 * 1000)
       
       console.log(`✅ Chapter loaded: ${proxiedChapter.title} (${proxiedChapter.images?.length || 0} images)`)
       return proxiedChapter
