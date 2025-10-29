@@ -37,8 +37,8 @@ export class ManhwaService {
       const text = await data.text()
       const comics = JSON.parse(text)
       
-      // Cache in IndexedDB for 1 hour (persistent across page reloads)
-      await indexedDBCache.set(cacheKey, comics, 60 * 60 * 1000)
+      // Cache in IndexedDB for 24 hours (comics list rarely changes)
+      await indexedDBCache.set(cacheKey, comics, 24 * 60 * 60 * 1000)
       
       console.log(`✅ Found ${comics.length} comics in list`)
       console.log(`📋 First 5 comics:`, comics.slice(0, 5))
@@ -81,8 +81,8 @@ export class ManhwaService {
       const text = await data.text()
       const metadata = JSON.parse(text)
       
-      // Cache in IndexedDB for 30 minutes
-      await indexedDBCache.set(cacheKey, metadata, 30 * 60 * 1000)
+      // Cache in IndexedDB for 7 days (metadata jarang berubah)
+      await indexedDBCache.set(cacheKey, metadata, 7 * 24 * 60 * 60 * 1000)
       
       console.log(`✅ Metadata loaded for: ${metadata.title}`)
       return metadata
@@ -128,8 +128,8 @@ export class ManhwaService {
       // ✨ Apply proxy to all image URLs
       const proxiedData = proxyChaptersData(chaptersData)
       
-      // Cache in IndexedDB for 1 hour
-      await indexedDBCache.set(cacheKey, proxiedData, 60 * 60 * 1000)
+      // Cache in IndexedDB for 24 hours
+      await indexedDBCache.set(cacheKey, proxiedData, 24 * 60 * 60 * 1000)
       console.log(`✅ Chapters cached for: ${slug} (with proxy)`)
       
       return proxiedData
@@ -178,8 +178,8 @@ export class ManhwaService {
       // ✨ Apply proxy as safety check (images already proxied from getChapters)
       const proxiedChapter = proxyChapterImages(chapter)
       
-      // Cache in IndexedDB for 2 hours (chapter content rarely changes)
-      await indexedDBCache.set(cacheKey, proxiedChapter, 2 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 7 days (chapter content tidak berubah)
+      await indexedDBCache.set(cacheKey, proxiedChapter, 7 * 24 * 60 * 60 * 1000)
       
       console.log(`✅ Chapter loaded: ${proxiedChapter.title} (${proxiedChapter.images?.length || 0} images)`)
       return proxiedChapter
@@ -206,7 +206,7 @@ export class ManhwaService {
   private static async processBatch(
     slugs: string[], 
     skipChapters: boolean,
-    batchSize: number = 10
+    batchSize: number = 20
   ): Promise<ManhwaCardData[]> {
     const results: ManhwaCardData[] = []
     
@@ -316,8 +316,8 @@ export class ManhwaService {
       const comics = limit ? comicsList.slice(0, limit) : comicsList
       console.log(`📋 Processing ${comics.length} comics in parallel batches`)
 
-      // Process in parallel batches (10 at a time)
-      const manhwaCards = await this.processBatch(comics, skipChapters, 10)
+      // Process in parallel batches (20 at a time for faster loading)
+      const manhwaCards = await this.processBatch(comics, skipChapters, 20)
 
       // Log type distribution for debugging
       const typeCount = manhwaCards.reduce((acc, card) => {
@@ -335,8 +335,8 @@ export class ManhwaService {
       }, {} as Record<string, number>)
       console.log(`📊 Status distribution:`, statusCount)
 
-      // Cache in IndexedDB for 15 minutes
-      await indexedDBCache.set(cacheKey, manhwaCards, 15 * 60 * 1000)
+      // Cache in IndexedDB for 6 hours
+      await indexedDBCache.set(cacheKey, manhwaCards, 6 * 60 * 60 * 1000)
 
       console.log(`✅ Total manhwa cards created: ${manhwaCards.length}`)
       return manhwaCards
@@ -505,9 +505,11 @@ export class ManhwaService {
       const filesWithTimestamps: Array<{ slug: string; lastModified: Date }> = []
       
       // Fetch metadata.json Last Modified for each comic (in batches)
-      const batchSize = 10
-      for (let i = 0; i < comicsList.length; i += batchSize) {
-        const batch = comicsList.slice(i, i + batchSize)
+      // Only check first 100 comics for faster performance
+      const comicsToCheck = comicsList.slice(0, 50)
+      const batchSize = 20
+      for (let i = 0; i < comicsToCheck.length; i += batchSize) {
+        const batch = comicsToCheck.slice(i, i + batchSize)
         
         const batchPromises = batch.map(async (slug) => {
           try {
@@ -546,11 +548,11 @@ export class ManhwaService {
       
       console.log('🔝 Top updated manhwa:', topSlugs.slice(0, 5))
 
-      // Get full manhwa data for these slugs
-      const hotUpdates = await this.processBatch(topSlugs, false, 5)
+      // Get full manhwa data for these slugs (batch size 10 for faster loading)
+      const hotUpdates = await this.processBatch(topSlugs, false, 10)
       
-      // Cache in IndexedDB for 5 minutes (hot updates change frequently)
-      await indexedDBCache.set(cacheKey, hotUpdates, 5 * 60 * 1000)
+      // Cache in IndexedDB for 1 hour (hot updates)
+      await indexedDBCache.set(cacheKey, hotUpdates, 60 * 60 * 1000)
       
       console.log(`✅ Hot updates loaded: ${hotUpdates.length} manhwa`)
       return hotUpdates

@@ -233,7 +233,7 @@ const hideControls = ref(false)
 const showSettings = ref(false)
 
 const pageWidth = ref(800)
-const pageGap = ref(20)
+const pageGap = ref(0)  // No gap between images for seamless reading
 const readMode = ref('vertical')
 
 const readProgress = computed(() => {
@@ -596,16 +596,21 @@ onMounted(async () => {
   width: 100%;
   position: relative;
   animation: fadeIn 0.3s ease-out;
+  margin: 0;  /* No margin for seamless connection */
+  padding: 0;  /* No padding for seamless connection */
+  line-height: 0;  /* Remove line-height spacing */
 }
 
 .page-image {
   width: 100%;
   height: auto;
   display: block;
-  border-radius: 0.5rem;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  border-radius: 0;  /* No border radius for seamless connection */
+  box-shadow: none;  /* No shadow for seamless connection */
   opacity: 0;
   transition: opacity 0.3s ease-in;
+  margin: 0;  /* Ensure no margin */
+  padding: 0;  /* Ensure no padding */
 }
 
 .page-image.loaded {
