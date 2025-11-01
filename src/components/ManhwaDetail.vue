@@ -93,12 +93,13 @@
             
             <!-- Meta Stats -->
             <div class="flex flex-wrap items-center gap-6 p-6 bg-bg-secondary rounded-2xl border border-border-color mb-8">
-              <div class="flex flex-col items-center gap-2">
+              <div class="flex flex-col items-center gap-1">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" class="text-accent-primary">
                   <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
                 </svg>
-                <span class="text-2xl font-bold text-text-primary">{{ rating || '9.5' }}</span>
-                <span class="text-xs text-text-muted uppercase tracking-wider">Rating</span>
+                <span class="text-2xl font-bold text-text-primary">{{ averageRatingDisplay }}</span>
+                <span class="text-xs text-text-muted uppercase tracking-wider">Rating Komunitas</span>
+                <span class="text-[0.7rem] text-text-muted">{{ communityReviewCount }} ulasan</span>
               </div>
               
               <div class="w-px h-10 bg-divider hidden md:block"></div>
@@ -321,6 +322,19 @@
             <p>Belum ada chapter tersedia</p>
           </div>
         </div>
+
+        <RatingSection
+          class="mt-16"
+          :manhwa-slug="slug"
+          @auth="handleAuthRequest"
+          @stats="handleRatingStats"
+        />
+
+        <CommentSection
+          class="mt-16"
+          :manhwa-slug="slug"
+          @auth="handleAuthRequest"
+        />
       </div>
     </div>
   </div>
@@ -351,6 +365,7 @@ const props = defineProps<{
 const emit = defineEmits<{
   close: []
   readChapter: [chapter: Chapter]
+  authRequest: []
 }>()
 
 const isVisible = ref(false)
@@ -361,8 +376,14 @@ const lastReadChapter = ref<number | null>(null)
 const selectedChapter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(20) // Show 20 chapters per page
+const communityAverage = ref(props.rating ? Number(props.rating) : 0)
+const communityReviewCount = ref(0)
 
 // Computed
+const averageRatingDisplay = computed(() => {
+  return communityAverage.value > 0 ? communityAverage.value.toFixed(1) : props.rating || '9.5'
+})
+
 const sortedChapters = computed(() => {
   if (!props.chapters) return []
   const sorted = [...props.chapters]
@@ -444,6 +465,15 @@ const handleImageError = (event: Event) => {
   console.warn('Failed to load cover image, using placeholder')
   const img = event.target as HTMLImageElement
   img.style.display = 'none'
+}
+
+const handleRatingStats = (payload: { average: number; total: number; userRating: number | null }) => {
+  communityAverage.value = payload.average
+  communityReviewCount.value = payload.total
+}
+
+const handleAuthRequest = () => {
+  emit('authRequest')
 }
 
 // Lifecycle

@@ -61,16 +61,6 @@
           </div>
         </div>
         
-        <!-- Back to Detail Button (before images) -->
-        <!-- <div v-if="!loading && !error" class="w-full py-4 pb-8 flex justify-center">
-          <a :href="`/detail/${manhwaSlug}`" class="inline-flex items-center gap-2 px-6 py-3 bg-bg-secondary border border-border-color rounded-lg text-text-primary text-sm font-medium no-underline transition-all duration-200 hover:bg-bg-tertiary hover:border-accent-primary hover:text-accent-primary hover:-translate-y-0.5 hover:shadow-lg hover:shadow-accent-primary/20">
-            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-              <polyline points="15 18 9 12 15 6"/>
-            </svg>
-            <span>Kembali ke Detail {{ manhwaTitle }}</span>
-          </a>
-        </div> -->
-        
         <!-- Images -->
         <div 
           v-if="!loading && !error"
@@ -118,7 +108,8 @@
                 class="w-full px-4 py-2.5 border border-border-color rounded-lg bg-bg-secondary text-text-primary text-sm cursor-pointer transition-all duration-200 hover:border-accent-primary focus:outline-none focus:border-accent-primary focus:ring-4 focus:ring-accent-primary/10"
                 @change="onChapterSelect"
               >
-                <option v-for="ch in totalChapters" :key="ch" :value="ch">
+                <!-- FIX: Use availableChapters which is just [1, 2, 3...] for the options -->
+                <option v-for="ch in availableChapters" :key="ch" :value="ch">
                   Chapter {{ ch }}
                 </option>
               </select>
@@ -225,6 +216,14 @@
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { ManhwaService } from '../services/manhwaService'
 
+type ChapterSummary = {
+  slug: string
+}
+
+type ChaptersResponse = {
+  chapters: ChapterSummary[]
+}
+
 // Tambahkan di antara deklarasi ref lainnya
 const showScrollTop = ref(false)
 
@@ -261,7 +260,7 @@ const error = ref<string | null>(null)
 const chapterImages = ref<string[]>([])
 const loadedImages = ref(new Set<number>()) // Track loaded images
 const availableChapters = ref<number[]>([]) // Store all available chapter numbers
-const chaptersData = ref<any>(null) // Store full chapters data
+const chaptersData = ref<ChaptersResponse | null>(null) // Store full chapters data
 const resolvedManhwaSlug = ref(props.manhwaSlug || '')
 const activeChapterSlug = ref<string | null>(null)
 
@@ -307,7 +306,6 @@ const updateCurrentPage = () => {
 }
 
 // Auto-hide controls when scrolling
-// Ganti fungsi handleScroll-mu dengan yang ini:
 const handleScroll = () => {
   if (!contentContainer.value) return
 
@@ -334,6 +332,7 @@ const handleScroll = () => {
   updateCurrentPage()
 }
 
+// *** THIS IS THE ONLY onMounted HOOK NOW ***
 onMounted(async () => {
   const pathParts = window.location.pathname.split('/')
   if (!resolvedManhwaSlug.value) {
@@ -348,9 +347,11 @@ onMounted(async () => {
     return
   }
 
+  // Load and sort chapters *first*
   await loadTotalChapters(manhwaSlug)
 
-  if (initialChapterSlug) {
+  // Now sync from slug, which relies on the sorted list
+  if (typeof initialChapterSlug === 'string') {
     await syncChapterFromSlug(initialChapterSlug)
   } else {
     error.value = 'Invalid chapter URL'
@@ -363,6 +364,7 @@ onMounted(async () => {
   }
 })
 
+// *** THIS IS THE ONLY onUnmounted HOOK NOW ***
 onUnmounted(() => {
   if (contentContainer.value) {
     contentContainer.value.removeEventListener('scroll', handleScroll)
@@ -409,7 +411,7 @@ const nextChapter = () => {
 
 // Watch for chapter changes
 watch(currentChapter, async (newChapter, oldChapter) => {
-  if (isSyncingFromRoute.value || newChapter === oldChapter) {
+  if (isSyncingFromRoute.value || newChapter === oldChapter || !newChapter) {
     return
   }
 
@@ -417,15 +419,16 @@ watch(currentChapter, async (newChapter, oldChapter) => {
     console.log(`🔄 Chapter changed: ${oldChapter} → ${newChapter}`)
 
     // Get chapter slug from stored data
-    let chapterSlug = `chapter-${String(newChapter).padStart(2, '0')}`
+    let chapterSlug = `chapter-${String(newChapter).padStart(2, '0')}` // Default fallback
 
     // If we have chapters data, use the actual slug
     if (chaptersData.value && chaptersData.value.chapters) {
-      const chapterIndex = newChapter - 1
+      const chapterIndex = newChapter - 1 // 0-based index
       if (chaptersData.value.chapters[chapterIndex]) {
         chapterSlug = chaptersData.value.chapters[chapterIndex].slug
         console.log(`📖 Using actual chapter slug: ${chapterSlug}`)
       } else {
+        // This warning should no longer appear if sorting is correct
         console.warn(`⚠️ Chapter ${newChapter} not found in data, using generated slug: ${chapterSlug}`)
       }
     }
@@ -437,10 +440,12 @@ watch(currentChapter, async (newChapter, oldChapter) => {
     emit('chapterChange', newChapter)
 
     // Scroll to top
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    contentContainer.value?.scrollTo({ top: 0, behavior: 'smooth' })
+
   }
 })
 
+// *** FIX 2: Updated syncChapterFromSlug ***
 const syncChapterFromSlug = async (chapterSlug?: string) => {
   if (!chapterSlug) {
     error.value = 'Invalid chapter URL'
@@ -448,23 +453,41 @@ const syncChapterFromSlug = async (chapterSlug?: string) => {
   }
 
   const manhwaSlug = resolvedManhwaSlug.value || props.manhwaSlug
-
   if (!manhwaSlug) {
     error.value = 'Invalid manhwa URL'
     return
   }
 
   isSyncingFromRoute.value = true
-
   try {
-    await loadChapterImages(manhwaSlug, chapterSlug)
-
-    const chapterMatch = chapterSlug.match(/chapter-(\d+)/)
-    if (chapterMatch && chapterMatch[1]) {
-      currentChapter.value = parseInt(chapterMatch[1], 10)
+    // Ensure chapters are loaded (they should be from onMounted, but as a safeguard)
+    if (!chaptersData.value?.chapters) {
+      console.log('syncChapterFromSlug: chapters not loaded, awaiting...')
+      await loadTotalChapters(manhwaSlug) // This will sort them
     }
 
-    window.scrollTo({ top: 0, behavior: 'smooth' })
+    await loadChapterImages(manhwaSlug, chapterSlug)
+
+    // NEW LOGIC: Find chapter number from slug
+    const sortedChapters: ChapterSummary[] = chaptersData.value?.chapters ?? []
+    const chapterIndex = sortedChapters.findIndex(ch => ch.slug === chapterSlug)
+
+    if (chapterIndex !== -1) {
+      currentChapter.value = chapterIndex + 1 // +1 because index is 0-based
+      console.log(`syncChapterFromSlug: Synced to chapter ${currentChapter.value} from slug ${chapterSlug}`)
+    } else {
+      // Fallback to old regex logic if not found (less reliable)
+      console.warn(`syncChapterFromSlug: Slug ${chapterSlug} not found in chapters list. Falling back to regex.`)
+      const chapterMatch = chapterSlug.match(/chapter-(\d+(\.\d+)?)/) // Support chapter-1.5
+      if (chapterMatch && chapterMatch[1]) {
+        currentChapter.value = parseFloat(chapterMatch[1])
+      }
+    }
+    
+    contentContainer.value?.scrollTo({ top: 0, behavior: 'smooth' })
+  } catch (err) {
+    console.error(`syncChapterFromSlug: Failed to sync:`, err)
+    // Error is already set by loadChapterImages
   } finally {
     isSyncingFromRoute.value = false
   }
@@ -477,40 +500,47 @@ watch(
       error.value = 'Invalid chapter URL'
       return
     }
-
     if (newSlug === activeChapterSlug.value) {
       return
     }
-
     await syncChapterFromSlug(newSlug)
   }
 )
 
+// *** FIX 1: Updated loadTotalChapters with SORTING ***
 const loadTotalChapters = async (manhwaSlug: string) => {
   try {
     console.log(`📊 Loading total chapters for: ${manhwaSlug}`)
-
-    // Get all chapters data
     const data = await ManhwaService.getChapters(manhwaSlug)
-    
-    if (data && data.chapters) {
-      // Store full chapters data
-      chaptersData.value = data
+
+    // Helper to extract number from slug for sorting
+    const extractNum = (slug: string) => {
+      // Matches chapter-123 or chapter-123-end or chapter-123.5
+      const match = slug.match(/chapter-(\d+(\.\d+)?)/i)
+      return match && match[1] ? parseFloat(match[1]) : Number.NEGATIVE_INFINITY
+    }
+
+    if (data?.chapters?.length) {
+      // Sort chapters ascending (Chapter 1, Chapter 2, ...)
+      const sorted = [...data.chapters].sort((a, b) => extractNum(a.slug) - extractNum(b.slug))
       
-      totalChapters.value = data.total_chapters || data.chapters.length
-      
-      // Store available chapter slugs for reference
-      availableChapters.value = data.chapters.map((_, index) => index + 1)
+      chaptersData.value = { ...data, chapters: sorted }
+      totalChapters.value = sorted.length
+      availableChapters.value = sorted.map((_, i) => i + 1) // [1, 2, 3...]
       
       console.log(`✅ Total chapters available: ${totalChapters.value}`)
-      console.log(`📋 First 10 chapter slugs:`, data.chapters.map(ch => ch.slug).slice(0, 10))
+      console.log(`📋 First 10 sorted chapter slugs:`, sorted.map(ch => ch.slug).slice(0, 10))
     } else {
-      console.warn('⚠️ No chapters data found, using default')
-      totalChapters.value = 150 // Fallback
+      console.warn('⚠️ No chapters data found')
+      chaptersData.value = { chapters: [] }
+      totalChapters.value = 0
+      availableChapters.value = []
     }
   } catch (err) {
     console.error('❌ Error loading total chapters:', err)
-    totalChapters.value = 150 // Fallback
+    chaptersData.value = { chapters: [] }
+    totalChapters.value = 0
+    availableChapters.value = []
   }
 }
 
@@ -524,8 +554,9 @@ const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
 
     const chapterData = await ManhwaService.getChapter(manhwaSlug, chapterSlug)
 
-    if (!chapterData) {
-      throw new Error('Chapter not found')
+    if (!chapterData || !chapterData.images || chapterData.images.length === 0) {
+      // Check for empty array too
+      throw new Error('Chapter not found or is empty')
     }
 
     chapterImages.value = chapterData.images || []
@@ -561,7 +592,7 @@ const handleImageError = (index: number) => {
 
 const handleImageLoad = (index: number) => {
   loadedImages.value.add(index)
-  console.log(`✅ Loaded image ${index + 1}/${totalPages.value}`)
+  // console.log(`✅ Loaded image ${index + 1}/${totalPages.value}`) // Too noisy
   
   // Preload next few images
   preloadNextImages(index)
@@ -582,45 +613,9 @@ const preloadNextImages = (currentIndex: number) => {
   }
 }
 
-// Load chapter on mount
-onMounted(async () => {
-  // Extract slug from URL or props
-  const pathParts = window.location.pathname.split('/')
-  if (!resolvedManhwaSlug.value) {
-    resolvedManhwaSlug.value = pathParts[2] || '' // /baca/:slug/read/:chapterSlug
-  }
+// *** FIX 3: REMOVED DUPLICATE onMounted and onUnmounted HOOKS ***
+// (The hooks from lines 593-627 in the old file are gone)
 
-  const manhwaSlug = resolvedManhwaSlug.value
-  const initialChapterSlug = props.chapterSlug || pathParts[4]
-
-  if (!manhwaSlug) {
-    error.value = 'Invalid manhwa URL'
-    return
-  }
-
-  await loadTotalChapters(manhwaSlug)
-
-  if (initialChapterSlug) {
-    await syncChapterFromSlug(initialChapterSlug)
-  } else {
-    error.value = 'Invalid chapter URL'
-  }
-
-  // Add scroll listener with auto-hide
-  if (contentContainer.value) {
-    contentContainer.value.addEventListener('scroll', handleScroll)
-  }
-})
-
-// Cleanup on unmount
-onUnmounted(() => {
-  if (contentContainer.value) {
-    contentContainer.value.removeEventListener('scroll', handleScroll)
-  }
-  if (scrollTimeout) {
-    clearTimeout(scrollTimeout)
-  }
-})
 </script>
 
 <style scoped>
@@ -667,3 +662,4 @@ onUnmounted(() => {
   opacity: 0;
 }
 </style>
+

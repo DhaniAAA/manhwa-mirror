@@ -1,73 +1,75 @@
-// Types untuk data structure Supabase bucket
-
 export interface ChapterImage {
-  url: string
+  url: string;
 }
 
 export interface Chapter {
-  slug: string
-  title: string
-  url: string
-  waktu_rilis?: string
-  total_images: number
-  images: string[]
+  slug: string;
+  title: string;
+  url: string;
+  waktu_rilis?: string;
+  total_images: number;
+  images: string[];
 }
 
 export interface ChapterDetail {
-  slug: string
-  title: string
-  url?: string
-  total_images: number
-  images: string[]
+  slug: string;
+  title: string;
+  url?: string;
+  total_images: number;
+  images: string[];
 }
 
 export interface ManhwaMetadata {
-  slug: string
-  title: string
-  total_chapters: number
-  cover_url?: string
-  description?: string
-  author?: string
-  artist?: string
-  status?: string
-  type?: string
-  genres?: string[]
-  release_year?: string
-  rating?: string
-  lastUpdate?: string
-  chapters: Chapter[]
+  slug: string;
+  title: string;
+  total_chapters: number;
+  cover_url?: string;
+  description?: string;
+  author?: string;
+  artist?: string;
+  status?: string;
+  type?: string;
+  genres?: string[];
+  release_year?: string;
+  rating?: string;
+  lastUpdate?: string;
+  chapters: Chapter[];
 }
 
 export interface ChaptersData {
-  slug: string
-  title: string
-  total_chapters: number
-  chapters: Chapter[]
+  slug: string;
+  title: string;
+  total_chapters: number;
+  chapters: Chapter[];
 }
 
 // Types untuk UI components
 export interface ManhwaCardData {
-  slug: string
-  title: string
-  genre?: string
-  genres?: string[]
-  type?: string
-  rating?: string
-  chapters?: number
-  total_chapters?: number
-  badge?: string
-  status?: string
-  progress?: number
-  lastUpdate?: string
-  coverImage?: string
-  cover_url?: string
-  latestChapters?: Array<{ title: string; waktu_rilis?: string; slug?: string }>
+  slug: string;
+  title: string;
+  genre?: string;
+  genres?: string[];
+  type?: string;
+  rating?: string;
+  chapters?: number;
+  total_chapters?: number;
+  badge?: string;
+  status?: string;
+  progress?: number;
+  lastUpdate?: string;
+  coverImage?: string;
+  cover_url?: string;
+  latestChapters?: Array<{
+    title: string;
+    waktu_rilis?: string;
+    slug?: string;
+  }>;
 }
 
 export interface ManhwaDetail extends ManhwaCardData {
-  description?: string
-  author?: string
-  artist?: string
-  status?: string
-  tags?: string[]
+  description?: string;
+  author?: string;
+  artist?: string;
+  status?: string;
+  tags?: string[];
 }
