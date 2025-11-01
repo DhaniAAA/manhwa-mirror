@@ -32,6 +32,12 @@
                         di-host di sini.
                     </li>
                     <li>
+                        Gambar Tidak Muncul
+                        <strong class="text-text-primary">Refresh/Reload Halaman</strong> ini terjadi karena server
+                        Lambat untuk Load. <strong class="text-text-primary"> Jika terasa Lambat Pakai VPN atau
+                            CloudFlare</strong>
+                    </li>
+                    <li>
                         Chapter terbaru otomatis update setiap hari, jika ingin melihat sumber codenya
                         bisa di
                         <a href="https://github.com/DhaniAAA/Scrape" target="_blank" rel="noopener noreferrer"
