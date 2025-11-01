@@ -18,6 +18,7 @@
       :chapters="chaptersData?.chapters || []"
       @close="goBack"
       @readChapter="goToReader"
+      @authRequest="promptAuth"
     />
     
     <div v-else-if="loading" class="loading-container">
@@ -89,6 +90,14 @@ const goToReader = (chapter: Chapter) => {
 
 const retry = async () => {
   await loadManhwaDetail(slug)
+}
+
+const promptAuth = () => {
+  router.replace({
+    name: 'detail',
+    params: route.params,
+    query: { ...route.query, openAuth: '1' }
+  })
 }
 </script>
 

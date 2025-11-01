@@ -1,26 +1,29 @@
 <template>
-  <div class="popular-page">
+  <div class="min-h-screen bg-[var(--bg-primary)] pt-[70px]">
     <!-- Page Header -->
-    <section class="page-hero">
+    <section class="border-b border-[var(--border-color)] bg-gradient-to-br from-[rgba(139,92,246,0.1)] to-[rgba(167,139,250,0.05)] py-10 sm:py-12">
       <div class="container">
-        <div class="hero-content">
-          <div class="hero-icon">
-            <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <div class="mb-8 flex flex-col items-start gap-6 sm:flex-row sm:items-center">
+          <div class="flex h-16 w-16 items-center justify-center rounded-2xl bg-gradient-to-br from-[var(--accent-primary)] to-[var(--accent-secondary)] text-white [box-shadow:var(--shadow-lg),var(--glow-accent)] sm:h-20 sm:w-20">
+            <svg class="h-8 w-8 sm:h-12 sm:w-12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
             </svg>
           </div>
           <div>
-            <h1 class="hero-title">Manhwa Populer</h1>
-            <p class="hero-description">Manhwa paling populer dan paling banyak dibaca</p>
+            <h1 class="text-3xl font-bold text-[var(--text-primary)] sm:text-4xl md:text-5xl">Manhwa Populer</h1>
+            <p class="text-base text-[var(--text-secondary)] sm:text-lg">Manhwa paling populer dan paling banyak dibaca</p>
           </div>
         </div>
         
         <!-- Filter Options -->
-        <div class="filter-options">
+        <div class="flex gap-2 overflow-x-auto pb-2 sm:gap-3">
           <button 
             v-for="option in filterOptions" 
             :key="option.value"
-            :class="['filter-btn', { active: filterBy === option.value }]"
+            :class="[
+              'flex items-center gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-200 whitespace-nowrap hover:border-[var(--accent-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] sm:px-5 sm:py-3 sm:text-base',
+              filterBy === option.value && 'border-[var(--accent-primary)] bg-[rgba(139,92,246,0.1)] text-[var(--accent-primary)]'
+            ]"
             @click="filterBy = option.value"
           >
             <component :is="option.icon" />
@@ -31,32 +34,32 @@
     </section>
     
     <!-- Popular Content -->
-    <section class="popular-content">
+    <section class="py-12">
       <div class="container">
-        <div class="section-header">
-          <h2 class="section-title">
+        <div class="mb-8 flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+          <h2 class="text-3xl font-bold text-[var(--text-primary)]">
             {{ filterTitle }}
           </h2>
-          <div class="page-info">
+          <div class="text-sm text-[var(--text-secondary)] md:text-base">
             Halaman {{ currentPage }} dari {{ totalPages }}
           </div>
         </div>
         
-        <div v-if="loading" class="loading-state">
-          <div class="spinner"></div>
-          <p>Memuat manhwa populer...</p>
+        <div v-if="loading" class="flex flex-col items-center justify-center gap-4 px-8 py-16 text-center">
+          <div class="h-12 w-12 animate-spin rounded-full border-4 border-[var(--border-color)] border-t-[var(--accent-primary)]"></div>
+          <p class="text-base text-[var(--text-secondary)]">Memuat manhwa populer...</p>
         </div>
         
-        <div v-else-if="displayedManhwa.length === 0" class="empty-state">
-          <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+        <div v-else-if="displayedManhwa.length === 0" class="flex flex-col items-center justify-center px-8 py-16 text-center">
+          <svg class="mb-6 h-20 w-20 text-[var(--text-muted)] opacity-50" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
             <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
           </svg>
-          <h3>Belum Ada Data</h3>
-          <p>Belum ada manhwa populer saat ini</p>
+          <h3 class="mb-2 text-2xl font-semibold text-[var(--text-primary)]">Belum Ada Data</h3>
+          <p class="text-[var(--text-secondary)]">Belum ada manhwa populer saat ini</p>
         </div>
         
         <div v-else>
-          <div class="manhwa-grid">
+          <div class="mb-12 grid gap-4 [grid-template-columns:repeat(auto-fill,minmax(150px,1fr))] sm:gap-6 sm:[grid-template-columns:repeat(auto-fill,minmax(200px,1fr))]">
             <ManhwaCard
               v-for="(manhwa, index) in displayedManhwa"
               :key="manhwa.slug"
@@ -77,23 +80,26 @@
           </div>
           
           <!-- Pagination -->
-          <div v-if="totalPages > 1" class="pagination">
+          <div v-if="totalPages > 1" class="mt-12 flex flex-wrap items-center justify-center gap-3 sm:gap-4">
             <button 
-              class="page-btn" 
+              class="flex items-center gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:border-[var(--accent-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:py-3 sm:text-base" 
               :disabled="currentPage === 1"
               @click="changePage(currentPage - 1)"
             >
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="15 18 9 12 15 6"/>
               </svg>
               Sebelumnya
             </button>
             
-            <div class="page-numbers">
+            <div class="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
               <button
                 v-for="page in visiblePages"
                 :key="page"
-                :class="['page-number', { active: page === currentPage }]"
+                :class="[
+                  'flex h-10 w-10 items-center justify-center rounded-lg border border-[var(--border-color)] bg-[var(--bg-secondary)] font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:border-[var(--accent-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)]',
+                  page === currentPage && 'border-[var(--accent-primary)] bg-[var(--accent-primary)] text-white'
+                ]"
                 @click="changePage(page)"
               >
                 {{ page }}
@@ -101,12 +107,12 @@
             </div>
             
             <button 
-              class="page-btn" 
+              class="flex items-center gap-2 rounded-xl border border-[var(--border-color)] bg-[var(--bg-secondary)] px-4 py-2.5 text-sm font-medium text-[var(--text-secondary)] transition-colors duration-200 hover:border-[var(--accent-primary)] hover:bg-[var(--bg-tertiary)] hover:text-[var(--text-primary)] disabled:cursor-not-allowed disabled:opacity-50 sm:px-5 sm:py-3 sm:text-base" 
               :disabled="currentPage === totalPages"
               @click="changePage(currentPage + 1)"
             >
               Selanjutnya
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                 <polyline points="9 18 15 12 9 6"/>
               </svg>
             </button>
@@ -250,272 +256,3 @@ const goToChapter = (slug: string, chapterSlug: string) => {
   router.push(`/baca/${slug}/read/${chapterSlug}`)
 }
 </script>
-
-<style scoped>
-.popular-page {
-  min-height: 100vh;
-  padding-top: 70px;
-}
-
-/* Page Hero */
-.page-hero {
-  background: linear-gradient(135deg, rgba(139, 92, 246, 0.1) 0%, rgba(167, 139, 250, 0.05) 100%);
-  border-bottom: 1px solid var(--border-color);
-  padding: 3rem 0 2rem;
-}
-
-.hero-content {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 2rem;
-}
-
-.hero-icon {
-  width: 80px;
-  height: 80px;
-  border-radius: 1rem;
-  background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: white;
-  box-shadow: var(--shadow-lg), var(--glow-accent);
-}
-
-.hero-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.hero-description {
-  font-size: 1.125rem;
-  color: var(--text-secondary);
-}
-
-/* Filter Options */
-.filter-options {
-  display: flex;
-  gap: 0.75rem;
-  overflow-x: auto;
-  padding-bottom: 0.5rem;
-}
-
-.filter-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-  white-space: nowrap;
-}
-
-.filter-btn:hover {
-  border-color: var(--accent-primary);
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.filter-btn.active {
-  border-color: var(--accent-primary);
-  background: rgba(139, 92, 246, 0.1);
-  color: var(--accent-primary);
-}
-
-/* Popular Content */
-.popular-content {
-  padding: 3rem 0;
-}
-
-.section-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: 2rem;
-}
-
-.section-title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: var(--text-primary);
-}
-
-.page-info {
-  color: var(--text-secondary);
-  font-size: 0.95rem;
-}
-
-.manhwa-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-  gap: 1.5rem;
-  margin-bottom: 3rem;
-}
-
-/* Pagination */
-.pagination {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 3rem;
-}
-
-.page-btn {
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.75rem 1.25rem;
-  border: 1px solid var(--border-color);
-  border-radius: 0.75rem;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.page-btn:hover:not(:disabled) {
-  border-color: var(--accent-primary);
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.page-btn:disabled {
-  opacity: 0.5;
-  cursor: not-allowed;
-}
-
-.page-numbers {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.page-number {
-  width: 40px;
-  height: 40px;
-  border: 1px solid var(--border-color);
-  border-radius: 0.5rem;
-  background: var(--bg-secondary);
-  color: var(--text-secondary);
-  font-weight: 500;
-  cursor: pointer;
-  transition: all var(--transition-fast);
-}
-
-.page-number:hover {
-  border-color: var(--accent-primary);
-  background: var(--bg-tertiary);
-  color: var(--text-primary);
-}
-
-.page-number.active {
-  border-color: var(--accent-primary);
-  background: var(--accent-primary);
-  color: white;
-}
-
-/* Loading State */
-.loading-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  gap: 1rem;
-}
-
-.spinner {
-  width: 48px;
-  height: 48px;
-  border: 4px solid var(--border-color);
-  border-top-color: var(--accent-primary);
-  border-radius: 50%;
-  animation: spin 1s linear infinite;
-}
-
-@keyframes spin {
-  to { transform: rotate(360deg); }
-}
-
-.loading-state p {
-  color: var(--text-secondary);
-  font-size: 1rem;
-}
-
-/* Empty State */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 4rem 2rem;
-  text-align: center;
-}
-
-.empty-state svg {
-  color: var(--text-muted);
-  margin-bottom: 1.5rem;
-  opacity: 0.5;
-}
-
-.empty-state h3 {
-  font-size: 1.5rem;
-  font-weight: 600;
-  color: var(--text-primary);
-  margin-bottom: 0.5rem;
-}
-
-.empty-state p {
-  color: var(--text-secondary);
-}
-
-/* Responsive */
-@media (max-width: 768px) {
-  .hero-title {
-    font-size: 2rem;
-  }
-  
-  .hero-icon {
-    width: 60px;
-    height: 60px;
-  }
-  
-  .hero-icon svg {
-    width: 32px;
-    height: 32px;
-  }
-  
-  .manhwa-grid {
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-  }
-  
-  .filter-options {
-    gap: 0.5rem;
-  }
-  
-  .filter-btn {
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-  }
-  
-  .pagination {
-    flex-wrap: wrap;
-    gap: 0.5rem;
-  }
-  
-  .page-btn {
-    padding: 0.625rem 1rem;
-    font-size: 0.875rem;
-  }
-}
-</style>
