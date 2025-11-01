@@ -48,7 +48,7 @@ build
 *.sw?
 *.swp
 *~
-
+.vscode
 # OS files
 Thumbs.db
 Desktop.ini

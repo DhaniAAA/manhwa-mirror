@@ -22,26 +22,29 @@
                 <h3 class="mb-2 text-lg font-semibold text-text-primary">
                     Selamat Datang di Manhwa Mirror!
                 </h3>
-                <p class="text-sm leading-relaxed text-text-secondary">
-                    Proyek ini adalah
-                    <strong class="text-text-primary">sumber terbuka (open-source)</strong> dan
-                    dibuat untuk tujuan pembelajaran. Data diambil dari sumber publik dan tidak
-                    di-host di sini.
-                </p>
-                <p class="text-sm leading-relaxed text-text-secondary">
-                    Chapter terbaru otomatis update setiap hari, jika ingin melihat sumber codenya
-                    bisa di
-                    <a href="https://github.com/DhaniAAA/Scrape" target="_blank" rel="noopener noreferrer"
-                        class="font-medium text-accent-primary hover:underline">
-                        GitHub
-                    </a>
-                </p>
-                <p class="mt-2 text-sm leading-relaxed text-text-secondary">
-                    Jangan ragu untuk berkontribusi atau melihat kode sumbernya di
-                    <a href="https://github.com/DhaniAAA/manhwa-mirror" target="_blank" rel="noopener noreferrer"
-                        class="font-medium text-accent-primary hover:underline">
-                        GitHub </a>.
-                </p>
+                <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-text-secondary">
+                    <li>
+                        Proyek ini adalah
+                        <strong class="text-text-primary">sumber terbuka (open-source)</strong> dan
+                        dibuat untuk tujuan pembelajaran. Data diambil dari sumber publik dan tidak
+                        di-host di sini.
+                    </li>
+                    <li>
+                        Chapter terbaru otomatis update setiap hari, jika ingin melihat sumber codenya
+                        bisa di
+                        <a href="https://github.com/DhaniAAA/Scrape" target="_blank" rel="noopener noreferrer"
+                            class="font-medium text-accent-primary hover:underline">
+                            GitHub Scraper
+                        </a>.
+                    </li>
+                    <li>
+                        Jangan ragu untuk berkontribusi atau melihat kode sumber web ini di
+                        <a href="https://github.com/DhaniAAA/manhwa-mirror" target="_blank" rel="noopener noreferrer"
+                            class="font-medium text-accent-primary hover:underline">
+                            GitHub Web
+                        </a>.
+                    </li>
+                </ul>
             </div>
         </div>
     </div>
