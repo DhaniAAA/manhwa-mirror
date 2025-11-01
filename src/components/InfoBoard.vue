@@ -1,7 +1,8 @@
 <template>
     <div v-if="isVisible"
         class="relative my-12 rounded-2xl border border-border-color bg-bg-secondary p-6 transition-all duration-300 animate-fade-in-scale">
-        <button
+
+        <button @click="closeBoard"
             class="absolute top-4 right-4 flex h-8 w-8 items-center justify-center rounded-lg bg-bg-tertiary text-text-secondary transition-colors hover:text-text-primary"
             aria-label="Tutup informasi">
             <svg fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="h-5 w-5">
@@ -22,6 +23,7 @@
                 <h3 class="mb-2 text-lg font-semibold text-text-primary">
                     Selamat Datang di Manhwa Mirror!
                 </h3>
+
                 <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-text-secondary">
                     <li>
                         Proyek ini adalah
@@ -50,32 +52,43 @@
     </div>
 </template>
 
-<script setup lang="ts">
-import { ref, onMounted } from "vue";
+<script lang="ts">
+// Diubah dari <script setup> ke <script> standar
+import { defineComponent, ref, onMounted } from 'vue'
 
 // Kunci untuk menyimpan status di localStorage
-const INFO_BOARD_DISMISSED_KEY = "info_board_dismissed_v1";
+const INFO_BOARD_DISMISSED_KEY = 'info_board_dismissed_v1'
 
-const isVisible = ref(false);
+export default defineComponent({
+    setup() {
+        const isVisible = ref(false)
 
-onMounted(() => {
-    // Cek apakah pengguna sudah menutup papan ini sebelumnya
-    const dismissed = localStorage.getItem(INFO_BOARD_DISMISSED_KEY);
-    if (dismissed !== "true") {
-        // Jika belum, tampilkan papan informasi
-        isVisible.value = true;
+        onMounted(() => {
+            // Cek apakah pengguna sudah menutup papan ini sebelumnya
+            const dismissed = localStorage.getItem(INFO_BOARD_DISMISSED_KEY)
+            if (dismissed !== 'true') {
+                // Jika belum, tampilkan papan informasi
+                isVisible.value = true
+            }
+        })
+
+        const closeBoard = () => {
+            isVisible.value = false
+            // Simpan preferensi pengguna agar tidak muncul lagi
+            try {
+                localStorage.setItem(INFO_BOARD_DISMISSED_KEY, 'true')
+            } catch (error) {
+                console.error('Gagal menyimpan preferensi info board:', error)
+            }
+        }
+
+        // Mengembalikan secara eksplisit agar TypeScript tahu ini digunakan
+        return {
+            isVisible,
+            closeBoard
+        }
     }
-});
-
-const closeBoard = () => {
-    isVisible.value = false;
-    // Simpan preferensi pengguna agar tidak muncul lagi
-    try {
-        localStorage.setItem(INFO_BOARD_DISMISSED_KEY, "true");
-    } catch (error) {
-        console.error("Gagal menyimpan preferensi info board:", error);
-    }
-};
+})
 </script>
 
 <style scoped>
