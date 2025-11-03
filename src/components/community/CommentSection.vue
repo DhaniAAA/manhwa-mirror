@@ -87,8 +87,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted, watch } from 'vue'
-import { useAuth } from '../composables/useAuth'
-import { useCommunity } from '../composables/useCommunity'
+import { useAuth } from '../../composables/useAuth'
+import { useCommunity } from '../../composables/useCommunity'
 import CommentItem from './CommentItem.vue'
 
 interface Props {

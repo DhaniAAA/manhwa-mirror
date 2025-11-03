@@ -43,7 +43,7 @@
 <script setup lang="ts">
 import { onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ManhwaDetail from '../components/ManhwaDetail.vue'
+import ManhwaDetail from './ManhwaDetail.vue'
 import { useManhwaDetail } from '../composables/useManhwaDetail'
 import { useMeta } from '../composables/useMeta'
 import type { Chapter } from '../types/manhwa'

@@ -13,7 +13,7 @@
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
-import ManhwaReader from '../components/ManhwaReader.vue'
+import ManhwaReader from './ManhwaReader.vue'
 import { useManhwaDetail } from '../composables/useManhwaDetail'
 
 const route = useRoute()

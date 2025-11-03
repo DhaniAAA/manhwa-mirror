@@ -107,7 +107,7 @@ import { useRouter, useRoute } from "vue-router";
 // import { useSupabaseAuth } from "./composables/useSupabaseAuth";
 
 // Lazy load NavigationBar (not needed in reader route)
-const NavigationBar = defineAsyncComponent(() => import("./components/NavigationBar.vue"));
+const NavigationBar = defineAsyncComponent(() => import("./components/shared/NavigationBar.vue"));
 
 const router = useRouter();
 const route = useRoute();

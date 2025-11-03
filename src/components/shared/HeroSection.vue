@@ -12,7 +12,7 @@
         <div class="flex items-center gap-4">
           <div class="text-4xl animate-fire-flicker">🔥</div>
           <div>
-            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Hot Komik Update</h1>
+            <h1 class="text-3xl font-bold bg-gradient-to-r from-purple-500 to-pink-500 bg-clip-text text-transparent">Update Terbaru</h1>
             <p class="text-sm text-gray-400 mt-1">Manhwa terbaru yang baru saja dirilis</p>
           </div>
         </div>
@@ -57,7 +57,16 @@
 
               <!-- Country Flag Badge -->
               <img v-if="item.type" :src="getCountryFlagImage(item.type)" :alt="item.type" :title="item.type" class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover" />
-
+              
+              <div v-if="item.status"
+                      class="absolute bottom-2 left-2 px-3 py-1.5 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold uppercase tracking-wider z-10 shadow-[0_2px_8px_rgba(0,0,0,0.3)]"
+                      :class="{
+                        'bg-green-500 text-white': item.status.toLowerCase() === 'ongoing',
+                        'bg-blue-600 text-white': item.status.toLowerCase() === 'completed',
+                        'bg-orange-400 text-white': item.status.toLowerCase() === 'hiatus'
+                      }">
+                      {{ item.status }}
+                </div>
               <!-- Overlay -->
               <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
             </div>
@@ -97,11 +106,11 @@
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
 import { useRouter } from "vue-router";
-import { ManhwaService } from "../services/manhwaService";
-import type { ManhwaCardData } from "../types/manhwa";
-import koreaFlag from "../assets/bendera/south-korea.png";
-import chinaFlag from "../assets/bendera/china.png";
-import japanFlag from "../assets/bendera/japan.png";
+import { ManhwaService } from "../../services/manhwaService";
+import type { ManhwaCardData } from "../../types/manhwa";
+import koreaFlag from "../../assets/bendera/south-korea.png";
+import chinaFlag from "../../assets/bendera/china.png";
+import japanFlag from "../../assets/bendera/japan.png";
 
 const router = useRouter();
 const hotUpdates = ref<ManhwaCardData[]>([]);

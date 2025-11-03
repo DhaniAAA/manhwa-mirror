@@ -1,6 +1,6 @@
 import { supabase, BUCKET_NAME } from '../lib/supabase'
 import type { ManhwaMetadata, ChaptersData, ManhwaCardData, ChapterDetail } from '../types/manhwa'
-import { indexedDBCache } from './indexedDBCache'
+import { indexedDBCache } from '../utils/indexedDBCache'
 import { proxyChaptersData, proxyChapterImages } from '../utils/imageProxy'
 import { cleanManhwaTitle } from '../utils/textUtils'
 
@@ -478,20 +478,20 @@ export class ManhwaService {
 
   /**
    * Get manhwa sorted by Last Modified timestamp from Supabase Storage
-   * Returns manhwa with the most recent updates first (based on file modification time)
+   * Returns manhwa with the most recent updates first (based on latest chapter update time)
    */
   static async getHotUpdates(limit: number = 15): Promise<ManhwaCardData[]> {
     try {
       const cacheKey = `hot-updates-${limit}`
       
-      // Check IndexedDB cache first
+      // Check IndexedDB cache first (cache for 15 minutes only for fresh updates)
       const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
       if (cached && cached.length > 0) {
         console.log(`🔥 Using cached hot updates (${cached.length} items)`)
         return cached
       }
 
-      console.log('🔥 Fetching hot updates...')
+      console.log('🔥 Fetching hot updates based on latest chapter releases...')
       
       // Get comics list
       const comicsList = await this.getComicsList()
@@ -502,46 +502,99 @@ export class ManhwaService {
 
       console.log(`📚 Found ${comicsList.length} total comics`)
 
-      // Strategy: Get random selection and sort by rating
-      // This is more reliable than timestamp-based sorting
-      const randomSelection = comicsList
-        .sort(() => Math.random() - 0.5) // Shuffle
-        .slice(0, Math.min(30, comicsList.length)) // Take 30 random
-
-      console.log(`🎲 Selected ${randomSelection.length} random manhwa to check`)
-
-      // Get full data for selected manhwa
-      const manhwaData = await this.processBatch(randomSelection, false, 10)
+      // Get all manhwa with their latest chapter info
+      const manhwaWithTimestamps: Array<ManhwaCardData & { lastUpdateTime?: number }> = []
       
-      // Filter out any failed loads and sort by rating
-      const validManhwa = manhwaData.filter(m => m.title && m.cover_url)
-      
-      if (validManhwa.length === 0) {
-        console.warn('⚠️ No valid manhwa data loaded')
-        // Fallback: try first N comics directly
-        const fallbackSlugs = comicsList.slice(0, limit)
-        const fallbackData = await this.processBatch(fallbackSlugs, false, 5)
-        return fallbackData.filter(m => m.title && m.cover_url).slice(0, limit)
+      // Process in batches to get chapter data
+      const batchSize = 20
+      for (let i = 0; i < Math.min(comicsList.length, 50); i += batchSize) {
+        const batch = comicsList.slice(i, i + batchSize)
+        
+        const batchPromises = batch.map(async (slug) => {
+          try {
+            // Get metadata
+            const metadata = await this.getMetadata(slug)
+            if (!metadata) return null
+
+            // Get chapters to find latest update
+            const chaptersData = await this.getChapters(slug)
+            let latestChapters: Array<{ title: string; waktu_rilis?: string; slug?: string }> = []
+            let lastUpdateTime = 0
+            
+            if (chaptersData?.chapters && chaptersData.chapters.length > 0) {
+              // Get last 2 chapters
+              latestChapters = chaptersData.chapters
+                .slice(-2)
+                .reverse()
+                .map(ch => ({
+                  title: ch.title,
+                  waktu_rilis: ch.waktu_rilis || undefined,
+                  slug: ch.slug
+                }))
+              
+              // Get the most recent chapter's timestamp
+              const latestChapter = chaptersData.chapters[chaptersData.chapters.length - 1]
+              if (latestChapter && latestChapter.waktu_rilis) {
+                lastUpdateTime = new Date(latestChapter.waktu_rilis).getTime()
+              }
+            }
+
+            // Get type from metadata
+            const metadataObj = (metadata as any).metadata || {}
+            let type = metadata.type || metadataObj.Type
+            
+            const card: ManhwaCardData & { lastUpdateTime?: number } = {
+              slug,
+              title: metadata.title,
+              cover_url: metadata.cover_url,
+              rating: metadata.rating,
+              type: type || 'manhwa',
+              status: metadata.status,
+              latestChapters,
+              lastUpdateTime
+            }
+
+            return card
+          } catch (error) {
+            console.warn(`⚠️ Failed to load ${slug}:`, error)
+            return null
+          }
+        })
+
+        const batchResults = await Promise.all(batchPromises)
+        const validResults = batchResults.filter((m): m is ManhwaCardData & { lastUpdateTime?: number } => 
+          m !== null && !!m.title && !!m.cover_url
+        )
+        manhwaWithTimestamps.push(...validResults)
       }
 
-      // Sort by rating (highest first) and take top N
-      const sorted = validManhwa.sort((a, b) => {
-        const ratingA = parseFloat(a.rating || '0')
-        const ratingB = parseFloat(b.rating || '0')
-        return ratingB - ratingA
+      if (manhwaWithTimestamps.length === 0) {
+        console.warn('⚠️ No valid manhwa data loaded')
+        return []
+      }
+
+      // Sort by lastUpdateTime (most recent first)
+      const sorted = manhwaWithTimestamps.sort((a, b) => {
+        const timeA = a.lastUpdateTime || 0
+        const timeB = b.lastUpdateTime || 0
+        return timeB - timeA // Descending (newest first)
       })
 
+      // Take top N with most recent updates
       const hotUpdates = sorted.slice(0, limit)
       
-      // Cache in IndexedDB for 30 minutes
-      await indexedDBCache.set(cacheKey, hotUpdates, 30 * 60 * 1000)
+      // Remove lastUpdateTime before returning (not needed in UI)
+      const cleanedUpdates = hotUpdates.map(({ lastUpdateTime, ...rest }) => rest)
       
-      console.log(`✅ Hot updates loaded: ${hotUpdates.length} manhwa`)
-      return hotUpdates
+      // Cache in IndexedDB for 15 minutes (shorter cache for fresh updates)
+      await indexedDBCache.set(cacheKey, cleanedUpdates, 15 * 60 * 1000)
+      
+      console.log(`✅ Hot updates loaded: ${cleanedUpdates.length} manhwa (sorted by latest chapter)`)
+      return cleanedUpdates
     } catch (error) {
       console.error('❌ Error getting hot updates:', error)
       
-      // Last resort fallback: try to get any manhwa
+      // Fallback: try to get any manhwa
       try {
         console.log('🔄 Attempting fallback...')
         const comicsList = await this.getComicsList()
@@ -569,5 +622,12 @@ export class ManhwaService {
   static async cleanupCache(): Promise<void> {
     await indexedDBCache.cleanupExpired()
     console.log('🧹 Expired cache cleaned up')
+  }
+
+  /**
+   * Get all manhwa with full metadata (for recommendations)
+   */
+  static async getAllManhwa(): Promise<ManhwaCardData[]> {
+    return await this.getManhwaCards()
   }
 }

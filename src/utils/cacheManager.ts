@@ -3,7 +3,7 @@
  * Provides helper functions for managing IndexedDB cache
  */
 
-import { indexedDBCache } from '../services/indexedDBCache'
+import { indexedDBCache } from './indexedDBCache'
 
 export class CacheManager {
   /**

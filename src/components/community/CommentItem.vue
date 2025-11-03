@@ -39,21 +39,21 @@
         </p>
 
         <!-- Reactions -->
-        <div class="flex items-center gap-4 mb-2">
+        <div class="flex flex-wrap items-center gap-2 sm:gap-3 mb-2">
           <button
             v-for="(count, type) in comment.reaction_counts"
-            :key="type"
-            v-show="type !== 'total'"
-            @click="$emit('react', comment.id, type)"
+            :key="String(type)"
+            v-show="String(type) !== 'total'"
+            @click="$emit('react', comment.id, String(type))"
             :class="[
-              'flex items-center gap-1 px-2 py-1 rounded-lg text-xs font-medium transition-colors',
-              comment.user_reaction === type
+              'flex items-center gap-1 px-2 py-1 sm:px-2.5 sm:py-1.5 rounded-lg text-xs sm:text-sm font-medium transition-colors touch-manipulation',
+              comment.user_reaction === String(type)
                 ? 'bg-violet-100 dark:bg-violet-900/30 text-violet-600 dark:text-violet-400'
-                : 'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-500'
+                : 'bg-slate-100 dark:bg-slate-600 text-slate-600 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-500 active:scale-95'
             ]"
           >
-            <span>{{ getReactionEmoji(type as string) }}</span>
-            <span v-if="count > 0">{{ count }}</span>
+            <span class="text-sm sm:text-base">{{ getReactionEmoji(String(type)) }}</span>
+            <span v-if="count > 0" class="min-w-[1ch]">{{ count }}</span>
           </button>
         </div>
 
@@ -103,7 +103,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import type { CommentWithProfile } from '../types/community'
+import type { CommentWithProfile } from '../../types/community'
 
 interface Props {
   comment: CommentWithProfile

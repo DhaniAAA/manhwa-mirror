@@ -281,10 +281,10 @@ import { useRouter, useRoute } from "vue-router";
 import { ManhwaService } from "../services/manhwaService";
 import type { ManhwaCardData } from "../types/manhwa";
 import type NavigationBar from "../components/NavigationBar.vue";
-import InfoBoard from "../components/InfoBoard.vue";
+import InfoBoard from "../components/shared/InfoBoard.vue";
 // Lazy load heavy components
-const HeroSection = defineAsyncComponent(() => import("../components/HeroSection.vue"));
-const ManhwaCard = defineAsyncComponent(() => import("../components/ManhwaCard.vue"));
+const HeroSection = defineAsyncComponent(() => import("../components/shared/HeroSection.vue"));
+const ManhwaCard = defineAsyncComponent(() => import("../components/manhwa/ManhwaCard.vue"));
 
 // Props
 const props = defineProps<{

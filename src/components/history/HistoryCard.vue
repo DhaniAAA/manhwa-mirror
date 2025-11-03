@@ -55,7 +55,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ReadingHistoryItem } from '../services/readingHistoryService'
+import type { ReadingHistoryItem } from '../../services/readingHistoryService'
 
 defineProps<{
   item: ReadingHistoryItem

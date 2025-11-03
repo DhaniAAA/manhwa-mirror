@@ -9,7 +9,7 @@
 <script setup lang="ts">
 import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import UserProfile from '../components/UserProfile.vue'
+import UserProfile from '../components/community/UserProfile.vue'
 
 const route = useRoute()
 const username = computed(() => route.params.username as string)

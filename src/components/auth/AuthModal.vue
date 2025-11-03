@@ -124,7 +124,7 @@
 
 <script setup lang="ts">
 import { ref, reactive, watch } from 'vue'
-import { useAuth } from '../composables/useAuth'
+import { useAuth } from '../../composables/useAuth'
 
 interface Props {
   isOpen: boolean

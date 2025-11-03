@@ -90,8 +90,8 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
-import { ReadingHistoryService } from '../services/readingHistoryService'
-import { useAuth } from '../composables/useAuth'
+import { ReadingHistoryService } from '../../services/readingHistoryService'
+import { useAuth } from '../../composables/useAuth'
 
 const emit = defineEmits<{
   requestAuth: []

@@ -3,9 +3,15 @@ import vue from '@vitejs/plugin-vue'
 import { ViteImageOptimizer } from 'vite-plugin-image-optimizer'
 import { imageProxyPlugin } from './vite-plugins/imageProxyPlugin'
 import viteCompression from 'vite-plugin-compression'
+import path from 'path'
 
 // https://vite.dev/config/
 export default defineConfig(({ mode }) => ({
+  resolve: {
+    alias: {
+      '@': path.resolve(__dirname, './src')
+    }
+  },
   plugins: [
     vue({
       template: {

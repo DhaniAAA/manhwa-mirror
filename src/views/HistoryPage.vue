@@ -118,8 +118,8 @@ import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import { ReadingHistoryService } from '../services/readingHistoryService'
 import type { ReadingHistoryItem } from '../services/readingHistoryService'
-import HistoryCard from '../components/HistoryCard.vue'
-import HistorySyncSettings from '../components/HistorySyncSettings.vue'
+import HistoryCard from '../components/history/HistoryCard.vue'
+import HistorySyncSettings from '../components/history/HistorySyncSettings.vue'
 
 const router = useRouter()
 const history = ref<ReadingHistoryItem[]>([])

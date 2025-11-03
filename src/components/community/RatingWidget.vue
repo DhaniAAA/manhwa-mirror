@@ -144,9 +144,9 @@
 
 <script setup lang="ts">
 import { ref, watch, onMounted } from 'vue'
-import { useAuth } from '../composables/useAuth'
-import { useCommunity } from '../composables/useCommunity'
-import type { ManhwaStats } from '../types/community'
+import { useAuth } from '../../composables/useAuth'
+import { useCommunity } from '../../composables/useCommunity'
+import type { ManhwaStats } from '../../types/community'
 
 interface Props {
   manhwaSlug: string

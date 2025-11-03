@@ -170,9 +170,9 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed, onMounted, watch } from 'vue'
-import { useAuth } from '../composables/useAuth'
-import { CommunityService } from '../services/communityService'
-import type { Profile } from '../types/community'
+import { useAuth } from '../../composables/useAuth'
+import { CommunityService } from '../../services/communityService'
+import type { Profile } from '../../types/community'
 
 interface Props {
   userId?: string

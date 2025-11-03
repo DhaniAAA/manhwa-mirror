@@ -39,7 +39,7 @@
             <span v-if="isActive" class="absolute inset-x-4 -bottom-px h-0.5 rounded-full bg-accent-primary"></span>
           </a>
         </RouterLink>
-        <RouterLink to="/latest" custom v-slot="{ href, navigate, isActive }">
+        <RouterLink to="/search" custom v-slot="{ href, navigate, isActive }">
           <a :href="href" @click="navigate" :class="linkClasses(isActive)">
             <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <circle cx="12" cy="12" r="10" />
@@ -204,8 +204,8 @@
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
-import { useAuth } from '../composables/useAuth'
-import AuthModal from './AuthModal.vue'
+import { useAuth } from '../../composables/useAuth'
+import AuthModal from '../auth/AuthModal.vue'
 
 const linkBaseClass =
   'group relative flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 ease-standard'

@@ -67,13 +67,16 @@
 
 ---
 
-### 💬 **4. Community Features**
+### 💬 **4. Community Features** ✅
 
 #### Features:
-- **Comments System**: Diskusi per chapter
-- **Ratings & Reviews**: User bisa rate & review
+- **Comments System**: Diskusi per chapter ✅ **IMPLEMENTED**
+  - Komentar per chapter di halaman reader
+  - Support spoiler tags
+  - Reply & nested comments
+  - Real-time updates
+- **Ratings & Reviews**: User bisa rate & review ✅ **IMPLEMENTED**
 - **Reactions**: Like, love, funny, sad reactions
-- **Spoiler Tags**: Hide spoiler content
 - **Report System**: Report inappropriate content
 - **User Reputation**: Karma/points system
 
@@ -95,7 +98,48 @@
 
 ---
 
-### 🎨 **5. Advanced Reader Features**
+### 📚 **5. Recommendations System** ✅
+
+#### Features:
+- **Smart Recommendations**: Rekomendasi manhwa serupa ✅ **IMPLEMENTED**
+  - Berdasarkan genre yang sama
+  - Berdasarkan type (manhwa/manhua/manga)
+  - Sorted by rating
+  - Tampil di bagian bawah reader setelah komentar
+- **Personalized**: Based on reading history (future)
+- **Similar Titles**: Based on tags and metadata
+
+#### Implementation:
+```typescript
+// Algorithm:
+1. Get current manhwa metadata (type, genres)
+2. Get all available manhwa
+3. Filter by:
+   - Same type (manhwa/manhua/manga)
+   - Common genres
+4. Sort by rating (highest first)
+5. Take top 8 recommendations
+```
+
+#### UI:
+```
+┌─────────────────────────────────────────────────────┐
+│ ⭐ Rekomendasi Untuk Anda                           │
+│ Manhwa serupa yang mungkin Anda suka               │
+├─────────────────────────────────────────────────────┤
+│ [Cover] [Cover] [Cover] [Cover]                     │
+│ Title   Title   Title   Title                       │
+│ Type    Type    Type    Type                        │
+│                                                      │
+│ [Cover] [Cover] [Cover] [Cover]                     │
+│ Title   Title   Title   Title                       │
+│ Type    Type    Type    Type                        │
+└─────────────────────────────────────────────────────┘
+```
+
+---
+
+### 🎨 **6. Advanced Reader Features**
 
 #### Reading Modes:
 - **Vertical Scroll**: Current (default)

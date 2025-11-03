@@ -35,11 +35,11 @@ const routes: RouteRecordRaw[] = [
     },
   },
   {
-    path: "/latest",
-    name: "latest",
-    component: () => import("../views/LatestPage.vue"),
+    path: "/search",
+    name: "search",
+    component: () => import("../views/SearchAdvance.vue"),
     meta: {
-      title: "Rilis Terbaru - Manhwa Mirror",
+      title: "Pencarian Lanjutan - Manhwa Mirror",
     },
   },
   {

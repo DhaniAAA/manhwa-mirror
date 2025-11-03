@@ -79,9 +79,9 @@
                 v-if="status" 
                 class="px-3 py-1.5 rounded-lg text-xs font-semibold uppercase tracking-wider border"
                 :class="{
-                  'bg-green-500/10 text-green-500 border-green-500/20': status.toLowerCase() === 'ongoing',
-                  'bg-purple-500/10 text-purple-500 border-purple-500/20': status.toLowerCase() === 'complete',
-                  'bg-orange-500/10 text-orange-500 border-orange-500/20': status.toLowerCase() === 'hiatus'
+                  'bg-green-500 text-white': status.toLowerCase() === 'ongoing',
+                  'bg-blue-600 text-white': status.toLowerCase() === 'completed',
+                  'bg-orange-400 text-white': status.toLowerCase() === 'hiatus'
                 }"
               >
                 {{ status }}
@@ -344,8 +344,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import type { Chapter } from '../types/manhwa'
-import RatingWidget from './RatingWidget.vue'
-import CommentSection from './CommentSection.vue'
+import RatingWidget from '../components/community/RatingWidget.vue'
+import CommentSection from '../components/community/CommentSection.vue'
 import { CommunityService } from '../services/communityService'
 
 const props = defineProps<{

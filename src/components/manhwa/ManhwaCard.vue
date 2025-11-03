@@ -79,10 +79,10 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import LazyImage from './LazyImage.vue'
-import koreaFlag from '../assets/bendera/south-korea.png'
-import chinaFlag from '../assets/bendera/china.png'
-import japanFlag from '../assets/bendera/japan.png'
+import LazyImage from '../shared/LazyImage.vue'
+import koreaFlag from '../../assets/bendera/south-korea.png'
+import chinaFlag from '../../assets/bendera/china.png'
+import japanFlag from '../../assets/bendera/japan.png'
 
 // Removed unused badge class functions - using inline classes in template
 

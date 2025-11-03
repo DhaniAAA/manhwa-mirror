@@ -98,7 +98,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, h } from 'vue'
 import { useRouter } from 'vue-router'
-import ManhwaCard from '../components/ManhwaCard.vue'
+import ManhwaCard from '../components/manhwa/ManhwaCard.vue'
 import { useManhwa } from '../composables/useManhwa'
 
 const router = useRouter()
