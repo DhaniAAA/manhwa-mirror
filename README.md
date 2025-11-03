@@ -11,17 +11,17 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 
 ## 🆕 Recent Updates
 
-### v11.0.0 - Image Proxy & UX Improvements
-- 🖼️ **Image Proxy System** - Self-hosted image proxy dengan domain tersembunyi (ID mapping)
-- 🔒 **Hidden Domain URLs** - URL menggunakan ID (1, 2, 3) bukan domain asli untuk security
-- 🎯 **Clean URLs** - Path-based URLs tanpa encoding (`/api/image/1/path` bukan `?url=...`)
-- 📱 **3-Column Chapter Grid** - Desktop: 3 columns, Tablet: 2 columns, Mobile: 1 column scrollable
-- 📜 **Scrollable Chapter List** - Max-height 600px di mobile untuk mudah akses footer
-- 🎛️ **Select Chapter Dropdown** - Quick jump ke chapter tertentu tanpa scroll
-- 🎨 **Footer Optimization** - Reduced gap untuk tampilan lebih compact
-- ⚡ **Vite Plugin Dev Proxy** - Development mode proxy untuk testing
-- 🚀 **Serverless Functions** - Vercel & Netlify functions untuk production proxy
-- 🔧 **Custom Scrollbar** - Stylish scrollbar dengan accent color di mobile
+### v12.0.0 - Reading History & Cross-Device Sync
+- 📚 **Reading History** - Auto-track riwayat baca dengan localStorage
+- ☁️ **Cross-Device Sync** - Sync riwayat baca ke semua perangkat via Supabase
+- 🔖 **Continue Reading** - Section khusus untuk manhwa yang belum selesai dibaca
+- 📊 **Progress Tracking** - Visual progress bar untuk setiap manhwa
+- 🗑️ **History Management** - Hapus individual atau clear all history
+- 📡 **Offline Support** - Service Worker untuk caching & offline reading
+- 🔄 **Auto Sync** - Otomatis sync saat baca chapter atau buka history page
+- ⚙️ **Sync Settings** - Toggle enable/disable sync dengan UI yang intuitif
+
+
 
 
 ## 📑 Daftar Isi
@@ -38,23 +38,37 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 
 ## ✨ Fitur Utama
 
+### 🎨 User Interface & Experience
 - 🌙 **Dark Theme Modern** - Skema warna gelap yang nyaman untuk mata dengan pencahayaan ambient yang halus
 - 🎨 **UI/UX Intuitif** - Antarmuka pengguna yang bersih dan mudah digunakan
 - 📖 **Reader Mode** - Pengalaman membaca yang optimal dengan kontrol penuh
 - 🎯 **Responsive Design** - Tampilan sempurna di semua perangkat
-- ⚡ **Performance Optimization** - Loading cepat dengan lazy loading, preloading, dan caching
-- 🖼️ **Image Proxy System** - Self-hosted proxy dengan domain tersembunyi untuk security & control
-- 🔒 **Hidden Domain URLs** - URL menggunakan ID mapping (1, 2, 3) bukan domain asli
 - 📱 **3-Column Chapter Grid** - Responsive grid layout: Desktop 3 cols, Tablet 2 cols, Mobile 1 col
 - 📜 **Scrollable Chapter List** - Max-height container di mobile untuk easy footer access
 - 🎛️ **Quick Chapter Jump** - Select dropdown untuk langsung ke chapter tertentu
-- 🖼️ **Smart Image Loading** - Lazy loading dengan skeleton shimmer dan progressive preloading
+
+### 📚 Reading Features
+- 📚 **Reading History** - Auto-track riwayat baca dengan timestamp dan progress
+- ☁️ **Cross-Device Sync** - Sync riwayat baca ke semua perangkat via Supabase
+- 🔖 **Continue Reading** - Section khusus untuk manhwa yang belum selesai dibaca
+- 📊 **Progress Tracking** - Visual progress bar untuk setiap manhwa (0-100%)
+- 🗑️ **History Management** - Hapus individual atau clear all history
 - 🔖 **Bookmark System** - Simpan dan lanjutkan membaca manhwa favorit
 - 🔍 **Search Function** - Cari manhwa dengan mudah
-- 📊 **Progress Tracking** - Lacak progress bacaan Anda
+
+### ⚡ Performance & Optimization
+- ⚡ **Performance Optimization** - Loading cepat dengan lazy loading, preloading, dan caching
+- 🖼️ **Smart Image Loading** - Lazy loading dengan skeleton shimmer dan progressive preloading
+- 💾 **Advanced Cache System** - Multi-layer caching (localStorage + IndexedDB) untuk performa optimal
+- 📡 **Offline Support** - Service Worker untuk caching & offline reading
+- 🖼️ **Image Proxy System** - Self-hosted proxy dengan domain tersembunyi untuk security & control
+- 🔒 **Hidden Domain URLs** - URL menggunakan ID mapping (1, 2, 3) bukan domain asli
+
+### 🛠️ Technical Features
 - 🗺️ **Vue Router** - Navigasi SPA yang smooth dengan routing
-- 💾 **Advanced Cache System** - Multi-layer caching untuk performa optimal
 - 🔄 **SPA Routing** - No 404 errors on refresh dengan proper Vercel configuration
+- 🔐 **Row Level Security** - User data protection dengan Supabase RLS
+- 🔄 **Auto Sync** - Otomatis sync saat baca chapter atau buka history page
 
 ## 🛠️ Teknologi
 
@@ -95,6 +109,7 @@ VITE_SUPABASE_ANON_KEY=your_supabase_anon_key
 ```
 
 Lihat `.env.example` untuk referensi.
+
 
 ### Development
 
@@ -151,63 +166,77 @@ npm run build
 manhwa-mirror/
 ├── src/
 │   ├── components/
-│   │   ├── NavigationBar.vue      # Navigation bar dengan search
-│   │   ├── HeroSection.vue        # Hero section dengan featured manhwa
-│   │   ├── ManhwaCard.vue         # Card component untuk manhwa
-│   │   ├── ManhwaSection.vue      # Section untuk koleksi manhwa
-│   │   ├── ManhwaGrid.vue         # Grid layout untuk manhwa
-│   │   ├── ManhwaDetail.vue       # Detail page dengan 3-col grid & select chapter
-│   │   ├── ManhwaReader.vue       # Reader interface
-│   │   └── LazyImage.vue          # Lazy loading image component
+│   │   ├── NavigationBar.vue          # Navigation bar dengan search
+│   │   ├── HeroSection.vue            # Hero section dengan featured manhwa
+│   │   ├── ManhwaCard.vue             # Card component untuk manhwa
+│   │   ├── ManhwaSection.vue          # Section untuk koleksi manhwa
+│   │   ├── ManhwaGrid.vue             # Grid layout untuk manhwa
+│   │   ├── ManhwaDetail.vue           # Detail page dengan 3-col grid & select chapter
+│   │   ├── ManhwaReader.vue           # Reader interface dengan history tracking
+│   │   ├── HistoryCard.vue            # Card untuk history item
+│   │   ├── HistorySyncSettings.vue    # Sync settings component
+│   │   └── LazyImage.vue              # Lazy loading image component
 │   ├── views/
-│   │   ├── HomePage.vue           # Home page view
-│   │   ├── DetailPage.vue         # Detail page view
-│   │   └── ReaderPage.vue         # Reader page view
+│   │   ├── HomePage.vue               # Home page view
+│   │   ├── DetailPage.vue             # Detail page view
+│   │   ├── ReaderPage.vue             # Reader page view
+│   │   └── HistoryPage.vue            # Reading history page
 │   ├── composables/
-│   │   ├── useManhwa.ts           # State management composable
-│   │   ├── useManhwaDetail.ts     # Detail page composable
-│   │   └── useImageProxy.ts       # Image proxy composable
+│   │   ├── useManhwa.ts               # State management composable
+│   │   ├── useManhwaDetail.ts         # Detail page composable
+│   │   └── useImageProxy.ts           # Image proxy composable
 │   ├── services/
-│   │   ├── manhwaService.ts       # Supabase data service dengan proxy
-│   │   └── cacheService.ts        # Cache management service
+│   │   ├── manhwaService.ts           # Supabase data service dengan proxy
+│   │   ├── cacheService.ts            # Cache management service
+│   │   └── readingHistoryService.ts   # Reading history & sync service
 │   ├── utils/
-│   │   └── imageProxy.ts          # Image proxy utilities & domain mapping
+│   │   └── imageProxy.ts              # Image proxy utilities & domain mapping
 │   ├── router/
-│   │   └── index.ts               # Vue Router configuration
+│   │   └── index.ts                   # Vue Router configuration
 │   ├── lib/
-│   │   └── supabase.ts            # Supabase client config
+│   │   └── supabase.ts                # Supabase client config
 │   ├── types/
-│   │   └── manhwa.ts              # TypeScript types & interfaces
-│   ├── App.vue                    # Main app component
-│   ├── AppRouter.vue              # Router wrapper component
-│   ├── main.ts                    # Entry point
-│   └── style.css                  # Global styles & theme
+│   │   └── manhwa.ts                  # TypeScript types & interfaces
+│   ├── App.vue                        # Main app component
+│   ├── AppRouter.vue                  # Router wrapper component
+│   ├── main.ts                        # Entry point + Service Worker registration
+│   └── style.css                      # Global styles & theme
+├── public/
+│   ├── sw.js                          # Service Worker untuk offline support
+│   └── offline.html                   # Offline fallback page
 ├── vite-plugins/
-│   └── imageProxyPlugin.ts        # Vite plugin untuk dev proxy
+│   └── imageProxyPlugin.ts            # Vite plugin untuk dev proxy
 ├── api/
-│   └── image-proxy.js             # Vercel serverless function
+│   └── image-proxy.js                 # Vercel serverless function
 ├── netlify/functions/
-│   └── image-proxy.js             # Netlify serverless function
-├── public/                        # Static assets
-├── .env                           # Environment variables (Supabase)
-├── .env.example                   # Environment variables template
-├── vercel.json                    # Vercel deployment & routing config
-├── Panduan.md                     # Panduan struktur data Supabase
-└── index.html                     # HTML template
+│   └── image-proxy.js                 # Netlify serverless function
+├── .env                               # Environment variables (Supabase)
+├── .env.example                       # Environment variables template
+├── vercel.json                        # Vercel deployment & routing config
+├── Panduan.md                         # Panduan struktur data Supabase
+└── index.html                         # HTML template
 ```
 
 ## 🏗️ Arsitektur Aplikasi
 
 ### Routing
-Aplikasi menggunakan Vue Router dengan 3 halaman utama:
+Aplikasi menggunakan Vue Router dengan 4 halaman utama:
 - **Home** (`/`) - Daftar semua manhwa
 - **Detail** (`/detail/:slug`) - Detail manhwa dan daftar chapters
 - **Reader** (`/baca/:slug/read/:chapterSlug`) - Halaman pembaca chapter
+- **History** (`/history`) - Riwayat baca dan sync settings
 
 ### State Management
 Menggunakan Vue 3 Composition API dengan composables:
 - `useManhwa` - Mengelola state daftar manhwa
 - `useManhwaDetail` - Mengelola state detail manhwa dan chapters
+
+### Reading History System
+- **LocalStorage** - Primary storage untuk fast access
+- **Supabase Database** - Cloud storage untuk cross-device sync
+- **Auto Tracking** - Otomatis track saat baca chapter
+- **Merge Strategy** - Conflict resolution berdasarkan timestamp
+- **Non-blocking Sync** - Background sync tidak ganggu UX
 
 ### Image Proxy System
 - **Development** - Vite plugin (`imageProxyPlugin.ts`) untuk proxy di dev mode
@@ -223,6 +252,12 @@ Menggunakan Vue 3 Composition API dengan composables:
   - Chapter detail caching (10 menit)
   - Auto-apply image proxy ke semua URLs
   - CORS error detection & helpful logging
+- **readingHistoryService** - Mengelola riwayat baca & sync
+  - LocalStorage untuk fast access
+  - Supabase sync untuk cross-device
+  - Auto-track saat baca chapter
+  - Merge conflicts resolution
+  - Non-blocking background sync
 - **cacheService** - Mengelola caching data untuk performa optimal
 - **imageProxy** - Utilities untuk URL transformation & domain mapping
 
@@ -274,6 +309,52 @@ Anda dapat mengkustomisasi tema dengan mengubah CSS variables di `src/style.css`
 - Mobile: < 768px
 - Tablet: 768px - 1024px
 - Desktop: > 1024px
+
+## 📚 Reading History & Sync
+
+### Cara Menggunakan
+
+1. **Auto Tracking**
+   - Riwayat otomatis tersimpan saat Anda membaca chapter
+   - Progress dihitung berdasarkan chapter yang dibaca
+
+2. **Lihat Riwayat**
+   - Klik avatar → "Riwayat Baca"
+   - Atau akses `/history`
+
+3. **Continue Reading**
+   - Section khusus untuk manhwa yang belum selesai (progress < 100%)
+   - Klik card untuk langsung lanjut ke chapter terakhir
+
+4. **Enable Sync** (Optional)
+   - Login ke aplikasi
+   - Buka halaman History
+   - Toggle "Sync Across Devices" → ON
+   - Klik "Sync Sekarang"
+
+5. **Cross-Device Sync**
+   - Login dengan akun yang sama di device lain
+   - Enable sync
+   - Riwayat otomatis tersinkronisasi!
+
+### Data Storage
+
+- **LocalStorage**: Primary storage (fast, offline-first)
+- **Supabase Database**: Cloud backup (cross-device sync)
+- **Service Worker**: Cache untuk offline reading
+
+### Troubleshooting
+
+**History tidak muncul?**
+- Cek console browser (F12) untuk error logs
+- Pastikan localStorage tidak penuh
+- Refresh halaman
+
+**Sync tidak jalan?**
+- Pastikan sudah login
+- Pastikan toggle sync enabled
+- Cek koneksi internet
+- Lihat console untuk error messages
 
 ## 📦 Struktur Data Supabase
 

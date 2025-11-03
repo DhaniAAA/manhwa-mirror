@@ -27,7 +27,7 @@ build
 .env.production.local
 # .env.example should be committed (template for other developers)
 .env.example
-
+*.sql
 # Supabase
 .supabase
 

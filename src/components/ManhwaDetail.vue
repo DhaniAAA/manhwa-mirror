@@ -117,12 +117,10 @@
               
               <div class="flex flex-col items-center gap-2">
                 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="text-accent-primary">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
-                  <circle cx="9" cy="7" r="4"/>
-                  <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
-                  <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                  <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                  <circle cx="12" cy="12" r="3"/>
                 </svg>
-                <span class="text-2xl font-bold text-text-primary">{{ views || '2.5M' }}</span>
+                <span class="text-2xl font-bold text-text-primary">{{ viewCountDisplay }}</span>
                 <span class="text-xs text-text-muted uppercase tracking-wider">Views</span>
               </div>
             </div>
@@ -323,18 +321,21 @@
           </div>
         </div>
 
-        <RatingSection
-          class="mt-16"
-          :manhwa-slug="slug"
-          @auth="handleAuthRequest"
-          @stats="handleRatingStats"
-        />
+        <!-- Rating & Reviews -->
+        <div class="mt-16">
+          <RatingWidget
+            :manhwa-slug="slug"
+            @login-required="handleAuthRequest"
+          />
+        </div>
 
-        <CommentSection
-          class="mt-16"
-          :manhwa-slug="slug"
-          @auth="handleAuthRequest"
-        />
+        <!-- Comments -->
+        <div class="mt-16">
+          <CommentSection
+            :manhwa-slug="slug"
+            @login-required="handleAuthRequest"
+          />
+        </div>
       </div>
     </div>
   </div>
@@ -343,6 +344,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, watch } from 'vue'
 import type { Chapter } from '../types/manhwa'
+import RatingWidget from './RatingWidget.vue'
+import CommentSection from './CommentSection.vue'
+import { CommunityService } from '../services/communityService'
 
 const props = defineProps<{
   slug: string
@@ -376,12 +380,23 @@ const lastReadChapter = ref<number | null>(null)
 const selectedChapter = ref('')
 const currentPage = ref(1)
 const itemsPerPage = ref(20) // Show 20 chapters per page
-const communityAverage = ref(props.rating ? Number(props.rating) : 0)
+const communityAverage = ref(4.5) // Default 4.5 if no ratings
 const communityReviewCount = ref(0)
+const viewCount = ref(1000) // Default 1000 views
 
 // Computed
 const averageRatingDisplay = computed(() => {
-  return communityAverage.value > 0 ? communityAverage.value.toFixed(1) : props.rating || '9.5'
+  return communityAverage.value.toFixed(1)
+})
+
+const viewCountDisplay = computed(() => {
+  const count = viewCount.value
+  if (count >= 1000000) {
+    return (count / 1000000).toFixed(1) + 'M'
+  } else if (count >= 1000) {
+    return (count / 1000).toFixed(1) + 'K'
+  }
+  return count.toString()
 })
 
 const sortedChapters = computed(() => {
@@ -467,9 +482,30 @@ const handleImageError = (event: Event) => {
   img.style.display = 'none'
 }
 
-const handleRatingStats = (payload: { average: number; total: number; userRating: number | null }) => {
-  communityAverage.value = payload.average
-  communityReviewCount.value = payload.total
+const loadManhwaStats = async () => {
+  try {
+    const stats = await CommunityService.getManhwaStats(props.slug)
+    if (stats.rating_count > 0) {
+      communityAverage.value = stats.average_rating
+      communityReviewCount.value = stats.rating_count
+    }
+  } catch (error) {
+    console.error('Error loading manhwa stats:', error)
+  }
+}
+
+const incrementViewCount = () => {
+  // Get view count from localStorage
+  const viewsKey = `manhwa-views-${props.slug}`
+  const storedViews = localStorage.getItem(viewsKey)
+  
+  if (storedViews) {
+    viewCount.value = parseInt(storedViews)
+  }
+  
+  // Increment view count
+  viewCount.value++
+  localStorage.setItem(viewsKey, viewCount.value.toString())
 }
 
 const handleAuthRequest = () => {
@@ -477,7 +513,7 @@ const handleAuthRequest = () => {
 }
 
 // Lifecycle
-onMounted(() => {
+onMounted(async () => {
   setTimeout(() => {
     isVisible.value = true
   }, 50)
@@ -494,6 +530,12 @@ onMounted(() => {
   if (lastRead) {
     lastReadChapter.value = parseInt(lastRead)
   }
+  
+  // Load community stats (rating)
+  await loadManhwaStats()
+  
+  // Increment view count
+  incrementViewCount()
 })
 
 // Watch bookmark changes

@@ -60,7 +60,7 @@
         </RouterLink>
       </div>
 
-      <!-- Search (tanpa auth) -->
+      <!-- Search & Auth -->
       <div class="flex items-center gap-2">
         <button
           class="flex h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
@@ -72,16 +72,93 @@
           </svg>
         </button>
 
-        <!-- (Opsional) Notifikasi dummy tetap bisa ditampilkan -->
+        <!-- User Menu -->
+        <div v-if="isAuthenticated" class="relative" ref="userMenuRef">
+          <button
+            @click="toggleUserMenu"
+            class="flex h-10 items-center gap-2 rounded-lg px-3 text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
+          >
+            <img
+              v-if="currentProfile?.avatar_url"
+              :src="currentProfile.avatar_url"
+              alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover"
+            />
+            <div v-else class="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white text-sm font-bold">
+              {{ ((currentProfile?.username || 'U')[0] || 'U').toUpperCase() }}
+            </div>
+          </button>
+
+          <!-- Dropdown Menu -->
+          <Transition
+            enter-active-class="transition-all duration-200 ease-out"
+            leave-active-class="transition-all duration-150 ease-in"
+            enter-from-class="opacity-0 scale-95"
+            leave-to-class="opacity-0 scale-95"
+          >
+            <div
+              v-if="userMenuOpen"
+              class="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50"
+            >
+              <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
+                <p class="text-sm font-medium text-slate-900 dark:text-slate-100">
+                  {{ currentProfile?.username || 'User' }}
+                </p>
+                <p class="text-xs text-slate-600 dark:text-slate-400">
+                  {{ currentUser?.email }}
+                </p>
+              </div>
+              
+              <router-link
+                to="/profile"
+                @click="userMenuOpen = false"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
+                  <circle cx="12" cy="7" r="4" />
+                </svg>
+                Profil Saya
+              </router-link>
+
+              <router-link
+                to="/history"
+                @click="userMenuOpen = false"
+                class="flex items-center gap-3 px-4 py-2 text-sm text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Riwayat Baca
+              </router-link>
+
+              <button
+                @click="handleSignOut"
+                class="w-full flex items-center gap-3 px-4 py-2 text-sm text-red-600 dark:text-red-400 hover:bg-slate-100 dark:hover:bg-slate-700 transition-colors"
+              >
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
+                  <polyline points="16 17 21 12 16 7" />
+                  <line x1="21" y1="12" x2="9" y2="12" />
+                </svg>
+                Keluar
+              </button>
+            </div>
+          </Transition>
+        </div>
+
+        <!-- Login Button -->
         <button
-          class="relative hidden h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary md:flex"
-          :title="notificationTooltip"
+          v-else
+          @click="showAuthModal = true"
+          class="flex items-center gap-2 h-10 px-4 rounded-lg bg-violet-500 hover:bg-violet-600 text-white text-sm font-medium transition-colors"
         >
-          <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9" />
-            <path d="M13.73 21a2 2 0 0 1-3.46 0" />
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
           </svg>
-          <span class="absolute right-1.5 top-1.5 flex h-[18px] w-[18px] items-center justify-center rounded-full border-2 border-bg-primary bg-accent-primary text-[0.65rem] font-semibold text-white"> ! </span>
+          <span class="hidden md:inline">Masuk</span>
         </button>
       </div>
     </div>
@@ -115,11 +192,20 @@
         </div>
       </div>
     </Transition>
+
+    <!-- Auth Modal -->
+    <AuthModal
+      :is-open="showAuthModal"
+      @close="showAuthModal = false"
+      @success="showAuthModal = false"
+    />
   </nav>
 </template>
 
 <script setup lang="ts">
 import { nextTick, onBeforeUnmount, onMounted, ref, watch } from 'vue'
+import { useAuth } from '../composables/useAuth'
+import AuthModal from './AuthModal.vue'
 
 const linkBaseClass =
   'group relative flex items-center gap-2 rounded-lg px-4 py-2.5 text-sm font-medium transition-colors duration-150 ease-standard'
@@ -128,14 +214,34 @@ const linkClasses = (isActive: boolean) => [
   isActive ? 'bg-[rgba(139,92,246,0.1)] text-accent-primary' : 'text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary',
 ]
 
+// ---- Auth ----
+const { isAuthenticated, currentUser, currentProfile, signOut } = useAuth()
+const showAuthModal = ref(false)
+const userMenuOpen = ref(false)
+const userMenuRef = ref<HTMLElement | null>(null)
+
+const toggleUserMenu = () => {
+  userMenuOpen.value = !userMenuOpen.value
+}
+
+const handleSignOut = async () => {
+  await signOut()
+  userMenuOpen.value = false
+}
+
+// Close user menu when clicking outside
+const handleClickOutside = (event: MouseEvent) => {
+  if (userMenuRef.value && !userMenuRef.value.contains(event.target as Node)) {
+    userMenuOpen.value = false
+  }
+}
+
 // ---- Search ----
 const emit = defineEmits<{ search: [query: string] }>()
 const searchOpen = ref(false)
 const searchQuery = ref('')
 const searchInputRef = ref<HTMLInputElement | null>(null)
 const skipEmit = ref(false)
-
-const notificationTooltip = 'Notifikasi komunitas akan segera hadir'
 
 const toggleSearch = () => {
   searchOpen.value = !searchOpen.value
@@ -165,12 +271,12 @@ watch(searchQuery, (val) => {
   searchTimeout = window.setTimeout(() => emit('search', val), 300)
 })
 
-// (Hapus semua logic user menu & auth)
 onMounted(() => {
-  // No-op (dulu: listener klik dokumen untuk user menu)
+  document.addEventListener('click', handleClickOutside)
 })
+
 onBeforeUnmount(() => {
-  // No-op
+  document.removeEventListener('click', handleClickOutside)
 })
 </script>
 

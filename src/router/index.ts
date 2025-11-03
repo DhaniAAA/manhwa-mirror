@@ -50,22 +50,30 @@ const routes: RouteRecordRaw[] = [
       title: "Manhwa Populer - Manhwa Mirror",
     },
   },
-  // {
-  //   path: '/profile',
-  //   name: 'profile',
-  //   component: () => import('../views/ProfilePage.vue'),
-  //   meta: {
-  //     title: 'Profil Saya - Manhwa Mirror'
-  //   }
-  // },
-  // {
-  //   path: '/u/:username',
-  //   name: 'user-profile',
-  //   component: () => import('../views/UserProfilePage.vue'),
-  //   meta: {
-  //     title: 'Profil Pengguna - Manhwa Mirror'
-  //   }
-  // },
+  {
+    path: '/profile',
+    name: 'profile',
+    component: () => import('../views/ProfilePage.vue'),
+    meta: {
+      title: 'Profil Saya - Manhwa Mirror'
+    }
+  },
+  {
+    path: '/u/:username',
+    name: 'user-profile',
+    component: () => import('../views/UserProfilePage.vue'),
+    meta: {
+      title: 'Profil Pengguna - Manhwa Mirror'
+    }
+  },
+  {
+    path: '/history',
+    name: 'history',
+    component: () => import('../views/HistoryPage.vue'),
+    meta: {
+      title: 'Riwayat Baca - Manhwa Mirror'
+    }
+  },
 
   {
     path: "/:pathMatch(.*)*",

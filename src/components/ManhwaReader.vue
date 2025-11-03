@@ -215,6 +215,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { ManhwaService } from '../services/manhwaService'
+import { ReadingHistoryService } from '../services/readingHistoryService'
 
 type ChapterSummary = {
   slug: string
@@ -286,6 +287,45 @@ const readProgress = computed(() => {
   if (totalPages.value === 0) return 0
   return (currentPage.value / totalPages.value) * 100
 })
+
+// Track reading history
+const trackReadingHistory = async () => {
+  if (!props.manhwaTitle || !resolvedManhwaSlug.value || !activeChapterSlug.value) {
+    console.log('⚠️ Skipping history tracking - missing data:', {
+      title: !!props.manhwaTitle,
+      slug: !!resolvedManhwaSlug.value,
+      chapterSlug: !!activeChapterSlug.value
+    })
+    return
+  }
+
+  try {
+    // Get manhwa metadata for cover
+    const metadata = await ManhwaService.getMetadata(resolvedManhwaSlug.value)
+    
+    // Ensure we have valid chapter numbers
+    const total = totalChapters.value || 1
+    const current = currentChapter.value || 1
+    const progress = Math.round((current / total) * 100)
+    
+    const historyItem = {
+      slug: resolvedManhwaSlug.value,
+      title: props.manhwaTitle,
+      coverUrl: metadata?.cover_url || '',
+      lastChapterSlug: activeChapterSlug.value,
+      lastChapterTitle: `Chapter ${current}`,
+      lastReadAt: new Date().toISOString(),
+      progress,
+      totalChapters: total,
+      currentChapter: current
+    }
+    
+    console.log('📝 Tracking reading history:', historyItem)
+    ReadingHistoryService.addToHistory(historyItem)
+  } catch (error) {
+    console.error('❌ Error tracking reading history:', error)
+  }
+}
 
 // Update current page based on scroll position
 const updateCurrentPage = () => {
@@ -468,19 +508,18 @@ const syncChapterFromSlug = async (chapterSlug?: string) => {
 
     await loadChapterImages(manhwaSlug, chapterSlug)
 
-    // NEW LOGIC: Find chapter number from slug
-    const sortedChapters: ChapterSummary[] = chaptersData.value?.chapters ?? []
-    const chapterIndex = sortedChapters.findIndex(ch => ch.slug === chapterSlug)
-
-    if (chapterIndex !== -1) {
-      currentChapter.value = chapterIndex + 1 // +1 because index is 0-based
+    // Extract chapter number from slug (e.g., "chapter-176" -> 176)
+    const chapterMatch = chapterSlug.match(/chapter-(\d+(\.\d+)?)/)
+    if (chapterMatch && chapterMatch[1]) {
+      currentChapter.value = parseFloat(chapterMatch[1])
       console.log(`syncChapterFromSlug: Synced to chapter ${currentChapter.value} from slug ${chapterSlug}`)
     } else {
-      // Fallback to old regex logic if not found (less reliable)
-      console.warn(`syncChapterFromSlug: Slug ${chapterSlug} not found in chapters list. Falling back to regex.`)
-      const chapterMatch = chapterSlug.match(/chapter-(\d+(\.\d+)?)/) // Support chapter-1.5
-      if (chapterMatch && chapterMatch[1]) {
-        currentChapter.value = parseFloat(chapterMatch[1])
+      console.warn(`syncChapterFromSlug: Could not extract chapter number from slug ${chapterSlug}`)
+      // Fallback: try to find in chapters list
+      const sortedChapters: ChapterSummary[] = chaptersData.value?.chapters ?? []
+      const chapterIndex = sortedChapters.findIndex(ch => ch.slug === chapterSlug)
+      if (chapterIndex !== -1) {
+        currentChapter.value = chapterIndex + 1
       }
     }
     
@@ -565,6 +604,11 @@ const loadChapterImages = async (manhwaSlug: string, chapterSlug: string) => {
 
     // Preload first 3 images immediately
     preloadInitialImages()
+    
+    // Track reading history (non-blocking, don't fail if this errors)
+    trackReadingHistory().catch(err => {
+      console.warn('⚠️ Failed to track reading history (non-critical):', err)
+    })
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load chapter'
     console.error('❌ Error loading chapter:', err)

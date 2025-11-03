@@ -486,12 +486,12 @@ export class ManhwaService {
       
       // Check IndexedDB cache first
       const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
-      if (cached) {
+      if (cached && cached.length > 0) {
         console.log(`🔥 Using cached hot updates (${cached.length} items)`)
         return cached
       }
 
-      console.log('🔥 Fetching hot updates based on Supabase Last Modified...')
+      console.log('🔥 Fetching hot updates...')
       
       // Get comics list
       const comicsList = await this.getComicsList()
@@ -500,65 +500,58 @@ export class ManhwaService {
         return []
       }
 
-      // Get file metadata with Last Modified timestamps from Supabase
-      console.log('📅 Fetching Last Modified timestamps from Supabase Storage...')
-      const filesWithTimestamps: Array<{ slug: string; lastModified: Date }> = []
+      console.log(`📚 Found ${comicsList.length} total comics`)
+
+      // Strategy: Get random selection and sort by rating
+      // This is more reliable than timestamp-based sorting
+      const randomSelection = comicsList
+        .sort(() => Math.random() - 0.5) // Shuffle
+        .slice(0, Math.min(30, comicsList.length)) // Take 30 random
+
+      console.log(`🎲 Selected ${randomSelection.length} random manhwa to check`)
+
+      // Get full data for selected manhwa
+      const manhwaData = await this.processBatch(randomSelection, false, 10)
       
-      // Fetch metadata.json Last Modified for each comic (in batches)
-      // Only check first 100 comics for faster performance
-      const comicsToCheck = comicsList.slice(0, 50)
-      const batchSize = 20
-      for (let i = 0; i < comicsToCheck.length; i += batchSize) {
-        const batch = comicsToCheck.slice(i, i + batchSize)
-        
-        const batchPromises = batch.map(async (slug) => {
-          try {
-            const { data, error } = await supabase.storage
-              .from(BUCKET_NAME)
-              .list(slug, {
-                limit: 1,
-                search: 'metadata.json'
-              })
-
-            if (!error && data && data.length > 0 && data[0] && data[0].updated_at) {
-              return {
-                slug,
-                lastModified: new Date(data[0].updated_at)
-              }
-            }
-          } catch (error) {
-            // Silently skip files that can't be accessed
-          }
-          return null
-        })
-
-        const batchResults = await Promise.all(batchPromises)
-        filesWithTimestamps.push(...batchResults.filter((item): item is { slug: string; lastModified: Date } => item !== null))
+      // Filter out any failed loads and sort by rating
+      const validManhwa = manhwaData.filter(m => m.title && m.cover_url)
+      
+      if (validManhwa.length === 0) {
+        console.warn('⚠️ No valid manhwa data loaded')
+        // Fallback: try first N comics directly
+        const fallbackSlugs = comicsList.slice(0, limit)
+        const fallbackData = await this.processBatch(fallbackSlugs, false, 5)
+        return fallbackData.filter(m => m.title && m.cover_url).slice(0, limit)
       }
 
-      console.log(`📊 Found ${filesWithTimestamps.length} manhwa with timestamps`)
+      // Sort by rating (highest first) and take top N
+      const sorted = validManhwa.sort((a, b) => {
+        const ratingA = parseFloat(a.rating || '0')
+        const ratingB = parseFloat(b.rating || '0')
+        return ratingB - ratingA
+      })
 
-      // Sort by Last Modified (most recent first)
-      const sortedByDate = filesWithTimestamps.sort((a, b) => 
-        b.lastModified.getTime() - a.lastModified.getTime()
-      )
-
-      // Take top N most recently updated
-      const topSlugs = sortedByDate.slice(0, limit).map(item => item.slug)
+      const hotUpdates = sorted.slice(0, limit)
       
-      console.log('🔝 Top updated manhwa:', topSlugs.slice(0, 5))
-
-      // Get full manhwa data for these slugs (batch size 10 for faster loading)
-      const hotUpdates = await this.processBatch(topSlugs, false, 10)
-      
-      // Cache in IndexedDB for 1 hour (hot updates)
-      await indexedDBCache.set(cacheKey, hotUpdates, 60 * 60 * 1000)
+      // Cache in IndexedDB for 30 minutes
+      await indexedDBCache.set(cacheKey, hotUpdates, 30 * 60 * 1000)
       
       console.log(`✅ Hot updates loaded: ${hotUpdates.length} manhwa`)
       return hotUpdates
     } catch (error) {
       console.error('❌ Error getting hot updates:', error)
-      return []
+      
+      // Last resort fallback: try to get any manhwa
+      try {
+        console.log('🔄 Attempting fallback...')
+        const comicsList = await this.getComicsList()
+        const fallbackSlugs = comicsList.slice(0, limit)
+        const fallbackData = await this.processBatch(fallbackSlugs, false, 5)
+        return fallbackData.filter(m => m.title && m.cover_url)
+      } catch (fallbackError) {
+        console.error('❌ Fallback also failed:', fallbackError)
+        return []
+      }
     }
   }
 
