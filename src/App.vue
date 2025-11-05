@@ -218,16 +218,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
         <div class="mb-12 grid gap-12 lg:[grid-template-columns:2fr_3fr] lg:gap-16">
           <div class="max-w-md space-y-4">
             <div class="flex items-center gap-3 text-xl font-bold text-[var(--text-primary)]">
-              <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <rect width="32" height="32" rx="8" fill="url(#footer-logo-gradient)"/>
-                <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                <defs>
-                  <linearGradient id="footer-logo-gradient" x1="0" y1="0" x2="32" y2="32">
-                    <stop offset="0%" stop-color="#8b5cf6"/>
-                    <stop offset="100%" stop-color="#a78bfa"/>
-                  </linearGradient>
-                </defs>
-              </svg>
+              <img src="/Logo.png" alt="Manhwa Mirror Logo" width="50" height="50" class="rounded-lg" />
               <span class="bg-gradient-to-r from-[#8b5cf6] to-[#a78bfa] bg-clip-text text-transparent">Manhwa Mirror</span>
             </div>
             <p class="text-[0.95rem] leading-relaxed text-[var(--text-secondary)]">

@@ -4,16 +4,7 @@
       <!-- Logo -->
       <div class="flex items-center">
         <router-link to="/" class="flex items-center gap-3 text-lg font-bold text-text-primary transition-transform duration-150 ease-standard hover:scale-105">
-          <svg width="32" height="32" viewBox="0 0 32 32" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <rect width="32" height="32" rx="8" fill="url(#logo-gradient)" />
-            <path d="M8 12L16 8L24 12V20L16 24L8 20V12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
-            <defs>
-              <linearGradient id="logo-gradient" x1="0" y1="0" x2="32" y2="32">
-                <stop offset="0%" stop-color="#8b5cf6" />
-                <stop offset="100%" stop-color="#a78bfa" />
-              </linearGradient>
-            </defs>
-          </svg>
+          <img src="/Logo.png" alt="Manhwa Mirror Logo" width="50" height="50" class="rounded-lg" />
           <span class="hidden bg-gradient-to-br from-accent-primary to-accent-secondary bg-clip-text text-lg font-semibold text-transparent md:inline"> Manhwa Mirror </span>
         </router-link>
       </div>
