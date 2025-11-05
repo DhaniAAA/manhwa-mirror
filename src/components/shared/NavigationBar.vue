@@ -45,7 +45,7 @@
               <circle cx="12" cy="12" r="10" />
               <path d="M12 6v6l4 2" />
             </svg>
-            <span>Terbaru</span>
+            <span>Cari Disini</span>
             <span v-if="isActive" class="absolute inset-x-4 -bottom-px h-0.5 rounded-full bg-accent-primary"></span>
           </a>
         </RouterLink>

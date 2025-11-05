@@ -21,9 +21,6 @@ Platform web untuk membaca manhwa dengan antarmuka modern, dark theme yang nyama
 - 🔄 **Auto Sync** - Otomatis sync saat baca chapter atau buka history page
 - ⚙️ **Sync Settings** - Toggle enable/disable sync dengan UI yang intuitif
 
-
-
-
 ## 📑 Daftar Isi
 
 - [Fitur Utama](#-fitur-utama)

@@ -2,6 +2,10 @@ import { createApp } from 'vue'
 import './assets/main.css'
 import AppRouter from './AppRouter.vue'
 import router from './router'
+import { cleanOldAuthStorage } from './utils/cleanOldStorage'
+
+// Clean old auth tokens from localStorage/sessionStorage
+cleanOldAuthStorage()
 
 const app = createApp(AppRouter)
 

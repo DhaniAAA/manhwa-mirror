@@ -1,0 +1,12 @@
+[[edge_functions]]
+  path = "/api/auth/*"
+  function = "auth"
+
+[build]
+  publish = "dist"
+  command = "npm run build"
+
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
