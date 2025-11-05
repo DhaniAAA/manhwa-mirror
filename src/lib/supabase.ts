@@ -1,5 +1,4 @@
 import { createClient } from '@supabase/supabase-js'
-import { cookieStorageAdapter } from './cookieStorage'
 
 const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
 const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
@@ -9,25 +8,20 @@ if (!supabaseUrl || !supabaseAnonKey) {
 }
 
 /**
- * Secure Storage Configuration
+ * Supabase Client dengan PKCE Flow + Server-side Session
  * 
- * Menggunakan kombinasi:
- * 1. In-memory storage untuk session aktif
- * 2. HttpOnly cookies via Edge Functions untuk persistensi
- * 
- * Keuntungan keamanan:
- * - Token tidak dapat diakses via JavaScript (XSS protection)
- * - HttpOnly cookies tidak dapat dibaca oleh client-side scripts
- * - Secure flag memastikan cookies hanya dikirim via HTTPS
- * - SameSite=Lax melindungi dari CSRF attacks
+ * - persistSession: false (tidak simpan di Web Storage)
+ * - storage: undefined (tidak gunakan localStorage/sessionStorage)
+ * - flowType: pkce (PKCE flow untuk OAuth)
+ * - Session disimpan di server via HttpOnly cookies (encrypted)
  */
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: cookieStorageAdapter,
-    autoRefreshToken: true,
-    persistSession: true,
+    storage: undefined,
+    autoRefreshToken: false,
+    persistSession: false,
     detectSessionInUrl: true,
-    flowType: 'pkce', // Use PKCE flow for additional security
+    flowType: 'pkce',
   }
 })
 

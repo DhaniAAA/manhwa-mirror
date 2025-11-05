@@ -1,4 +1,5 @@
 import { supabase } from '../lib/supabase'
+import { sessionManager } from '../lib/cookieStorage'
 import type { User, Session, AuthError } from '@supabase/supabase-js'
 
 export interface SignUpData {
@@ -58,6 +59,14 @@ export class AuthService {
         return { user: null, error }
       }
 
+      // Save session to server (encrypted HttpOnly cookie)
+      if (authData.session) {
+        await sessionManager.setSession(
+          authData.session.access_token,
+          authData.session.refresh_token
+        )
+      }
+
       console.log('✅ User signed in:', authData.user?.email)
       return { user: authData.user, error: null }
     } catch (error) {
@@ -71,6 +80,9 @@ export class AuthService {
    */
   static async signOut(): Promise<{ error: AuthError | null }> {
     try {
+      // Clear server session first
+      await sessionManager.clearSession()
+      
       const { error } = await supabase.auth.signOut()
 
       if (error) {
@@ -91,14 +103,25 @@ export class AuthService {
    */
   static async getSession(): Promise<Session | null> {
     try {
-      const { data: { session }, error } = await supabase.auth.getSession()
+      // Get session from server (encrypted cookie)
+      const serverSession = await sessionManager.getSession()
+      
+      if (!serverSession) {
+        return null
+      }
+
+      // Set session in Supabase client
+      const { data, error } = await supabase.auth.setSession({
+        access_token: serverSession.access_token,
+        refresh_token: serverSession.refresh_token,
+      })
 
       if (error) {
         console.error('❌ Get session error:', error)
         return null
       }
 
-      return session
+      return data.session
     } catch (error) {
       console.error('❌ Get session exception:', error)
       return null
