@@ -41,13 +41,14 @@
       <div v-else
         class="relative overflow-x-auto overflow-y-hidden pb-4 scrollbar-thin scrollbar-thumb-purple-500 scrollbar-track-gray-800">
         <div class="flex gap-6 py-2">
-          <div v-for="(item, index) in hotUpdates" :key="item.slug"
+          <router-link v-for="(item, index) in hotUpdates" :key="item.slug"
+            :to="{ name: 'detail', params: { slug: item.slug } }"
             class="flex-none w-[200px] bg-gray-900 rounded-2xl overflow-hidden border border-gray-800 transition-all duration-300 cursor-pointer hover:-translate-y-2 hover:border-purple-500 hover:shadow-2xl hover:shadow-purple-500/30 animate-fade-in-scale"
-            :style="{ animationDelay: `${index * 0.05}s` }" @click="goToDetail(item.slug)">
+            :style="{ animationDelay: `${index * 0.05}s` }">
             <!-- Image Container -->
             <div class="relative aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden group">
               <img v-if="item.cover_url" :src="item.cover_url" :alt="item.title"
-                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 pointer-events-none"
                 :loading="index < 3 ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : 'auto'"
                 :decoding="index < 3 ? 'sync' : 'async'" />
 
@@ -102,7 +103,7 @@
                   shortenChapterTitle(item.latestChapters[0].title) : "Latest Chapter" }}</span>
               </div>
             </div>
-          </div>
+          </router-link>
         </div>
       </div>
     </div>

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-bg-secondary rounded-2xl overflow-hidden border border-border-color transition-all duration-base cursor-pointer h-full flex flex-col hover:-translate-y-2 hover:border-accent-primary hover:shadow-[0_12px_24px_rgba(0,0,0,0.4)]" @click="handleCardClick">
+  <router-link :to="{ name: 'detail', params: { slug: slug } }" class="bg-bg-secondary rounded-2xl overflow-hidden border border-border-color transition-all duration-base cursor-pointer h-full flex flex-col hover:-translate-y-2 hover:border-accent-primary hover:shadow-[0_12px_24px_rgba(0,0,0,0.4)]">
     <div class="relative">
       <div class="relative aspect-[3/4] bg-gradient-to-br from-bg-tertiary to-bg-elevated overflow-hidden">
         <!-- Cover Image with Lazy Loading -->
@@ -7,13 +7,13 @@
           v-if="coverImage"
           :src="coverImage"
           :alt="title"
-          image-class="absolute inset-0 h-full w-full object-cover object-center"
+          image-class="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
           :priority="priority"
           @error="handleImageError"
         />
 
         <!-- Country Flag Badge (manhwa/manhua/manga) -->
-        <img v-if="type" :src="getCountryFlagImage(type)" :alt="type" :title="type" class="absolute top-2 left-2 w-8 h-8 z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover" />
+        <img v-if="type" :src="getCountryFlagImage(type)" :alt="type" :title="type" class="absolute top-2 left-2 w-8 h-8 z-10 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover pointer-events-none" />
 
         <!-- Status Badge (Ongoing/Complete) -->
         <div v-if="status" class="absolute bottom-2 left-2 px-3 py-1.5 backdrop-blur-sm rounded-lg text-[0.7rem] font-bold uppercase tracking-wider z-10 shadow-[0_2px_8px_rgba(0,0,0,0.3)]" :class="{
@@ -74,7 +74,7 @@
         <span class="text-[0.75rem] text-text-muted whitespace-nowrap flex-shrink-0">{{ chapter.waktu_rilis || 'Baru' }}</span>
       </div>
     </div>
-  </div>
+  </router-link>
 </template>
 
 <script setup lang="ts">

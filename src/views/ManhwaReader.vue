@@ -158,13 +158,14 @@
             <div class="p-6">
               
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
-                <div v-for="manhwa in recommendations" :key="manhwa.slug" @click="goToManhwa(manhwa.slug)"
+                <router-link v-for="manhwa in recommendations" :key="manhwa.slug"
+                  :to="{ name: 'detail', params: { slug: manhwa.slug } }"
                   class="group cursor-pointer">
                   <div
                     class="relative aspect-[2/3] rounded-xl overflow-hidden bg-bg-tertiary border border-border-color mb-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-accent-primary">
                     <img v-if="manhwa.cover_url" :src="manhwa.cover_url" :alt="manhwa.title"
                     
-                      class="w-full h-full object-cover" loading="lazy" />
+                      class="w-full h-full object-cover pointer-events-none" loading="lazy" />
                     <div v-else class="w-full h-full flex items-center justify-center text-text-muted">
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
                         stroke-width="2">
@@ -175,7 +176,7 @@
                     </div>
 
                     <!-- Country Flag Badge -->
-                    <img v-if="manhwa.type" :src="getCountryFlagImage(manhwa.type)" :alt="manhwa.type" :title="manhwa.type" class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover" />
+                    <img v-if="manhwa.type" :src="getCountryFlagImage(manhwa.type)" :alt="manhwa.type" :title="manhwa.type" class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover pointer-events-none" />
 
 
                     <!-- Badge -->
@@ -206,7 +207,7 @@
                       {{ manhwa.status }}
                     </div>
                   </div>
-                </div>
+                </router-link>
               </div>
             </div>
           </div>
