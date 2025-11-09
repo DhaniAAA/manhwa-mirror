@@ -67,3 +67,5 @@ coverage
 # Documentation (optional - uncomment if you don't want to commit docs)
 # *.md
 # !README.md
+*.py
+*.json

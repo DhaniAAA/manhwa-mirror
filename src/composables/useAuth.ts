@@ -24,7 +24,11 @@ export function useAuth() {
         currentProfile.value = null
       }
     } catch (error) {
-      console.error('Error loading user:', error)
+      // Only log if it's not a session missing error
+      const err = error as any
+      if (!err?.message?.includes('Auth session missing')) {
+        console.error('Error loading user:', error)
+      }
     } finally {
       loading.value = false
     }

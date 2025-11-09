@@ -136,12 +136,23 @@ export class AuthService {
       const { data: { user }, error } = await supabase.auth.getUser()
 
       if (error) {
+        // AuthSessionMissingError is normal when user is not logged in
+        if (error.message?.includes('Auth session missing')) {
+          // Silent - this is expected when user is not logged in
+          return null
+        }
         console.error('❌ Get user error:', error)
         return null
       }
 
       return user
     } catch (error) {
+      // Check if it's the session missing error
+      const err = error as any
+      if (err?.message?.includes('Auth session missing')) {
+        // Silent - this is expected when user is not logged in
+        return null
+      }
       console.error('❌ Get user exception:', error)
       return null
     }

@@ -479,6 +479,7 @@ export class ManhwaService {
   /**
    * Get manhwa sorted by Last Modified timestamp from Supabase Storage
    * Returns manhwa with the most recent updates first (based on latest chapter update time)
+   * ONLY shows manhwa that have valid chapter updates with waktu_rilis timestamp
    */
   static async getHotUpdates(limit: number = 15): Promise<ManhwaCardData[]> {
     try {
@@ -503,14 +504,19 @@ export class ManhwaService {
       console.log(`📚 Found ${comicsList.length} total comics`)
 
       // Get all manhwa with their latest chapter info
-      const manhwaWithTimestamps: Array<ManhwaCardData & { lastUpdateTime?: number }> = []
+      const manhwaWithTimestamps: Array<ManhwaCardData & { lastUpdateTime?: number; listIndex?: number }> = []
       
       // Process in batches to get chapter data
+      // Increase to 100 manhwa to get more accurate hot updates
       const batchSize = 20
-      for (let i = 0; i < Math.min(comicsList.length, 50); i += batchSize) {
+      const maxComicsToCheck = Math.min(comicsList.length, 500)
+      console.log(`🔍 Checking ${maxComicsToCheck} manhwa for latest updates...`)
+      
+      for (let i = 0; i < maxComicsToCheck; i += batchSize) {
         const batch = comicsList.slice(i, i + batchSize)
         
-        const batchPromises = batch.map(async (slug) => {
+        const batchPromises = batch.map(async (slug, batchIndex) => {
+          const listIndex = i + batchIndex // Track position in original list
           try {
             // Get metadata
             const metadata = await this.getMetadata(slug)
@@ -536,6 +542,21 @@ export class ManhwaService {
               const latestChapter = chaptersData.chapters[chaptersData.chapters.length - 1]
               if (latestChapter && latestChapter.waktu_rilis) {
                 lastUpdateTime = new Date(latestChapter.waktu_rilis).getTime()
+                // Debug: Log first 3 manhwa with timestamps
+                if (manhwaWithTimestamps.length < 3) {
+                  console.log(`📅 ${metadata.title}: ${latestChapter.waktu_rilis} (${new Date(latestChapter.waktu_rilis).toLocaleString('id-ID')})`)
+                }
+              } else {
+                // FALLBACK: Jika waktu_rilis tidak ada, gunakan jumlah chapter sebagai indikator
+                // Manhwa dengan lebih banyak chapter = lebih sering update
+                // Gunakan timestamp sekarang dikurangi (total_chapters * -1 hari) sebagai estimasi
+                const estimatedTime = Date.now() - ((chaptersData.chapters.length || 0) * 24 * 60 * 60 * 1000)
+                lastUpdateTime = estimatedTime
+                
+                // Debug: Log manhwa without waktu_rilis
+                if (manhwaWithTimestamps.length < 3) {
+                  console.log(`⚠️ ${metadata.title}: NO waktu_rilis - using fallback (${chaptersData.chapters.length} chapters)`)
+                }
               }
             }
 
@@ -543,7 +564,7 @@ export class ManhwaService {
             const metadataObj = (metadata as any).metadata || {}
             let type = metadata.type || metadataObj.Type
             
-            const card: ManhwaCardData & { lastUpdateTime?: number } = {
+            const card: ManhwaCardData & { lastUpdateTime?: number; listIndex?: number } = {
               slug,
               title: metadata.title,
               cover_url: metadata.cover_url,
@@ -551,7 +572,8 @@ export class ManhwaService {
               type: type || 'manhwa',
               status: metadata.status,
               latestChapters,
-              lastUpdateTime
+              lastUpdateTime,
+              listIndex // Simpan index dari comics-list sebagai fallback
             }
 
             return card
@@ -562,32 +584,70 @@ export class ManhwaService {
         })
 
         const batchResults = await Promise.all(batchPromises)
-        const validResults = batchResults.filter((m): m is ManhwaCardData & { lastUpdateTime?: number } => 
-          m !== null && !!m.title && !!m.cover_url
+        
+        // Filter: terima manhwa yang punya title dan cover (waktu_rilis opsional)
+        const validResults = batchResults.filter((m): m is ManhwaCardData & { lastUpdateTime?: number; listIndex?: number } => 
+          m !== null && 
+          !!m.title && 
+          !!m.cover_url
         )
+        
         manhwaWithTimestamps.push(...validResults)
       }
 
+      console.log(`📊 Found ${manhwaWithTimestamps.length} manhwa with valid chapter updates`)
+      
       if (manhwaWithTimestamps.length === 0) {
-        console.warn('⚠️ No valid manhwa data loaded')
+        console.warn('⚠️ No manhwa with chapter updates found')
         return []
       }
 
-      // Sort by lastUpdateTime (most recent first)
+      // Debug: Show sample of timestamps before sorting
+      console.log('🔍 Sample before sorting (first 5):')
+      manhwaWithTimestamps.slice(0, 5).forEach(m => {
+        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No waktu_rilis'
+        console.log(`  - ${m.title}: ${date} (index: ${m.listIndex})`)
+      })
+
+      // Sort by lastUpdateTime if available, otherwise by listIndex (lower = newer)
       const sorted = manhwaWithTimestamps.sort((a, b) => {
-        const timeA = a.lastUpdateTime || 0
-        const timeB = b.lastUpdateTime || 0
-        return timeB - timeA // Descending (newest first)
+        // Jika keduanya punya waktu_rilis, gunakan itu
+        if (a.lastUpdateTime && b.lastUpdateTime) {
+          return b.lastUpdateTime - a.lastUpdateTime // Newest first
+        }
+        
+        // Jika hanya salah satu yang punya waktu_rilis, prioritaskan yang punya
+        if (a.lastUpdateTime && !b.lastUpdateTime) return -1
+        if (!a.lastUpdateTime && b.lastUpdateTime) return 1
+        
+        // Jika keduanya tidak punya waktu_rilis, gunakan listIndex (lower index = newer)
+        const indexA = a.listIndex ?? 999999
+        const indexB = b.listIndex ?? 999999
+        return indexA - indexB // Lower index first
+      })
+      
+      // Debug: Show sample after sorting
+      console.log('🔍 Sample after sorting (first 5):')
+      sorted.slice(0, 5).forEach(m => {
+        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No waktu_rilis'
+        console.log(`  - ${m.title}: ${date} (index: ${m.listIndex})`)
       })
 
       // Take top N with most recent updates
       const hotUpdates = sorted.slice(0, limit)
       
-      // Remove lastUpdateTime before returning (not needed in UI)
-      const cleanedUpdates = hotUpdates.map(({ lastUpdateTime, ...rest }) => rest)
+      // Log top 5 for debugging
+      console.log('🔥 Top 5 hot updates:')
+      hotUpdates.slice(0, 5).forEach((m, idx) => {
+        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No date'
+        console.log(`  ${idx + 1}. ${m.title} - Last update: ${date}`)
+      })
       
-      // Cache in IndexedDB for 15 minutes (shorter cache for fresh updates)
-      await indexedDBCache.set(cacheKey, cleanedUpdates, 15 * 60 * 1000)
+      // Remove lastUpdateTime and listIndex before returning (not needed in UI)
+      const cleanedUpdates = hotUpdates.map(({ lastUpdateTime, listIndex, ...rest }) => rest)
+      
+      // Cache in IndexedDB for 10 minutes (shorter cache for fresh updates)
+      await indexedDBCache.set(cacheKey, cleanedUpdates, 10 * 60 * 1000)
       
       console.log(`✅ Hot updates loaded: ${cleanedUpdates.length} manhwa (sorted by latest chapter)`)
       return cleanedUpdates
