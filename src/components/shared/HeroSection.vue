@@ -112,20 +112,14 @@
 
 <script setup lang="ts">
 import { ref, onMounted } from "vue";
-import { useRouter } from "vue-router";
 import { ManhwaService } from "../../services/manhwaService";
 import type { ManhwaCardData } from "../../types/manhwa";
 import koreaFlag from "../../assets/bendera/south-korea.png";
 import chinaFlag from "../../assets/bendera/china.png";
 import japanFlag from "../../assets/bendera/japan.png";
 
-const router = useRouter();
 const hotUpdates = ref<ManhwaCardData[]>([]);
 const loading = ref(true);
-
-const goToDetail = (slug: string) => {
-  router.push({ name: "detail", params: { slug } });
-};
 
 // Shorten chapter title: "Chapter " -> "Chp "
 const shortenChapterTitle = (title: string): string => {

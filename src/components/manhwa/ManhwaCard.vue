@@ -120,10 +120,6 @@ const toggleBookmark = (event: Event) => {
   isBookmarked.value = !isBookmarked.value
 }
 
-const handleCardClick = () => {
-  emit('click', props.slug || '', props.title)
-}
-
 const handleChapterClick = (event: Event, chapter: { title: string; waktu_rilis?: string; slug?: string }) => {
   event.stopPropagation() // Prevent card click
 

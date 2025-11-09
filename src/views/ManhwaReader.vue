@@ -335,7 +335,6 @@
 
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
 import { ManhwaService } from "../services/manhwaService";
 import { ReadingHistoryService } from "../services/readingHistoryService";
 import CommentSection from "../components/community/CommentSection.vue";
@@ -360,8 +359,6 @@ const getCountryFlagImage = (type: string): string => {
   };
   return typeMap[type.toLowerCase()] || "";
 };
-// Initialize router
-const router = useRouter();
 
 // Tambahkan di antara deklarasi ref lainnya
 const showScrollTop = ref(false);
@@ -474,22 +471,6 @@ const loadRecommendations = async () => {
     recommendations.value = similar;
   } catch (err) {
     console.error("Failed to load recommendations:", err);
-  }
-};
-
-const goToManhwa = async (slug: string) => {
-  console.log(`🔗 Navigating to manhwa: ${slug}`);
-  
-  try {
-    // Navigate directly to the manhwa detail page
-    // Don't emit "close" because that would redirect back to current manhwa
-    console.log(`📍 Using router to navigate to: /detail/${slug}`);
-    await router.push({ name: 'detail', params: { slug } });
-  } catch (error) {
-    console.error("❌ Navigation error:", error);
-    // Fallback to direct navigation if router fails
-    console.log(`🔄 Fallback: Using window.location.href`);
-    window.location.href = `/detail/${slug}`;
   }
 };
 
