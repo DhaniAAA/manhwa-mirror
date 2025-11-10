@@ -398,9 +398,9 @@ const visiblePopularPages = computed(() => getVisiblePages(popularPage.value, po
 const goToDetail = (slug: string) => {
   console.log(`🔗 Navigating to: ${slug}`);
 
-  // Close search overlay if open
+  // Close search overlay but keep query (so user can return to search results)
   if (props.navBarRef) {
-    props.navBarRef.closeSearch();
+    props.navBarRef.closeSearch(true); // Keep search query
   }
 
   router.push({ name: "detail", params: { slug } });
@@ -616,6 +616,14 @@ onMounted(async () => {
     if (route.query.search && typeof route.query.search === "string") {
       console.log("🔍 Search query from URL:", route.query.search);
       await handleSearch(route.query.search);
+      
+      // Re-open search overlay if user came back from detail page
+      if (props.navBarRef && props.navBarRef.openSearch) {
+        nextTick(() => {
+          console.log("🔄 Re-opening search overlay");
+          props.navBarRef!.openSearch(route.query.search as string);
+        });
+      }
     }
 
     // SSR: Load only initial items (10) for fast TTFB

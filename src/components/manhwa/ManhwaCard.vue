@@ -71,7 +71,7 @@
         @click="handleChapterClick($event, chapter)"
       >
         <span class="text-xs text-text-secondary font-medium overflow-hidden text-ellipsis whitespace-nowrap flex-1 group-hover:text-accent-primary">{{ shortenChapterTitle(chapter.title) }}</span>
-        <span class="text-[0.75rem] text-text-muted whitespace-nowrap flex-shrink-0">{{ chapter.waktu_rilis || 'Baru' }}</span>
+        <span class="text-[0.75rem] text-text-muted whitespace-nowrap flex-shrink-0">{{ formatRelativeTime(chapter.waktu_rilis) }}</span>
       </div>
     </div>
   </router-link>
@@ -80,6 +80,7 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LazyImage from '../shared/LazyImage.vue'
+import { formatRelativeTime } from '../../utils/textUtils'
 import koreaFlag from '../../assets/bendera/south-korea.png'
 import chinaFlag from '../../assets/bendera/china.png'
 import japanFlag from '../../assets/bendera/japan.png'

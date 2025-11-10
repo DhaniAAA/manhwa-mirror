@@ -78,7 +78,13 @@ onMounted(async () => {
 })
 
 const goBack = () => {
-  router.push({ name: 'home' })
+  // Check if there's a previous page in history
+  if (window.history.length > 1) {
+    router.back()
+  } else {
+    // Fallback to home if no history
+    router.push({ name: 'home' })
+  }
 }
 
 const goToReader = (chapter: Chapter) => {

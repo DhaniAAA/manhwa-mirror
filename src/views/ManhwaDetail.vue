@@ -257,7 +257,7 @@
                 @click="readChapter(chapter)"
               >
                 <h4 class="font-semibold text-text-primary text-sm md:text-base mb-1 line-clamp-2 group-hover:text-accent-primary transition-colors">{{ chapter.title }}</h4>
-                <span class="text-xs text-text-muted mt-auto">{{ chapter.waktu_rilis || 'Baru' }}</span>
+                <span class="text-xs text-text-muted mt-auto">{{ formatRelativeTime(chapter.waktu_rilis) }}</span>
               </div>
             </div>
 
@@ -347,6 +347,7 @@ import type { Chapter } from '../types/manhwa'
 import RatingWidget from '../components/community/RatingWidget.vue'
 import CommentSection from '../components/community/CommentSection.vue'
 import { CommunityService } from '../services/communityService'
+import { formatRelativeTime } from '../utils/textUtils'
 
 const props = defineProps<{
   slug: string

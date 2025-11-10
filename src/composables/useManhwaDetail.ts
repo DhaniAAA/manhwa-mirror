@@ -1,6 +1,7 @@
 import { ref } from 'vue'
 import { ManhwaService } from '../services/manhwaService'
 import type { ManhwaMetadata, ChaptersData } from '../types/manhwa'
+import { fixMojibake } from '../utils/textUtils'
 
 export function useManhwaDetail() {
   const loading = ref(false)
@@ -29,9 +30,11 @@ export function useManhwaDetail() {
       }
 
       // Normalize metadata format
+      const rawDescription = metadataResult.description || (metadataResult as any).synopsis
       const normalizedMetadata = {
         ...metadataResult,
-        description: metadataResult.description || (metadataResult as any).synopsis,
+        title: fixMojibake(metadataResult.title), // Clean title
+        description: rawDescription ? fixMojibake(rawDescription) : undefined, // Clean description
         author: metadataResult.author || (metadataResult as any).metadata?.Author,
         artist: metadataResult.artist || (metadataResult as any).metadata?.Artist,
         status: metadataResult.status || (metadataResult as any).metadata?.Status,

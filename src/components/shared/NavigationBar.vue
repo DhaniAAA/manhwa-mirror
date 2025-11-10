@@ -173,7 +173,7 @@
           />
           <button
             class="absolute right-3 top-1/2 flex h-10 w-10 -translate-y-1/2 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
-            @click="toggleSearch"
+            @click="closeSearch(true)"
           >
             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
               <line x1="18" y1="6" x2="6" y2="18" />
@@ -238,22 +238,31 @@ const toggleSearch = () => {
   searchOpen.value = !searchOpen.value
   if (searchOpen.value) {
     nextTick(() => searchInputRef.value?.focus())
-  } else {
-    searchQuery.value = ''
-    emit('search', '')
   }
+  // Don't reset query when closing via toggle
+  // User can clear manually or use closeSearch(false)
 }
 
-const closeSearch = () => {
+const closeSearch = (keepQuery = false) => {
   if (searchOpen.value) {
     skipEmit.value = true
     searchOpen.value = false
-    searchQuery.value = ''
+    if (!keepQuery) {
+      searchQuery.value = ''
+    }
     nextTick(() => (skipEmit.value = false))
   }
 }
 
-defineExpose({ closeSearch })
+const openSearch = (query?: string) => {
+  searchOpen.value = true
+  if (query) {
+    searchQuery.value = query
+  }
+  nextTick(() => searchInputRef.value?.focus())
+}
+
+defineExpose({ closeSearch, openSearch })
 
 let searchTimeout: number | undefined
 watch(searchQuery, (val) => {

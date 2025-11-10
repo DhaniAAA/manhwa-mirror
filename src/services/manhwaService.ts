@@ -566,7 +566,7 @@ export class ManhwaService {
             
             const card: ManhwaCardData & { lastUpdateTime?: number; listIndex?: number } = {
               slug,
-              title: metadata.title,
+              title: cleanManhwaTitle(metadata.title), // Clean title from mojibake
               cover_url: metadata.cover_url,
               rating: metadata.rating,
               type: type || 'manhwa',
