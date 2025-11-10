@@ -76,9 +76,9 @@ export function capitalize(text: string): string {
 function parseRelativeTime(relativeTimeStr: string): Date | null {
   const match = relativeTimeStr.match(/(\d+)\s+(second|minute|hour|day|week|month|year)s?\s+ago/i)
   
-  if (!match) return null
+  if (!match || !match[1] || !match[2]) return null
   
-  const amount = parseInt(match[1])
+  const amount = parseInt(match[1], 10)
   const unit = match[2].toLowerCase()
   const now = new Date()
   
