@@ -9,7 +9,7 @@ Disallow: /admin/
 Disallow: /api/
 
 # Sitemap location
-Sitemap: https://manhwa-mirror.netlify.app/sitemap.xml
+Sitemap: https://manhwa-mirror.vercel.app/sitemap.xml
 
 # Crawl-delay for polite crawling
 Crawl-delay: 1

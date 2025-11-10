@@ -10,7 +10,7 @@ import path from 'path'
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || 'https://nnaizqqgdtqmfpwzcspe.supabase.co'
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5uYWl6cXFnZHRxbWZwd3pjc3BlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NjA2NTQwODYsImV4cCI6MjA3NjIzMDA4Nn0.D799-0qBzC4r-kfwUfqxN6k5wTD5JJ5L3i3aqIQTxSs'
 const BUCKET_NAME = 'manga-data'
-const SITE_URL = 'https://manhwa-mirror.netlify.app'
+const SITE_URL = 'https://manhwa-mirror.vercel.app'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
