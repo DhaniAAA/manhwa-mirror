@@ -4,7 +4,7 @@
   
   <!-- Homepage -->
   <url>
-    <loc>https://manhwa-mirror.netlify.app/</loc>
+    <loc>https://manhwa-mirror.vercel.app/</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
@@ -12,7 +12,7 @@
   
   <!-- Search Page -->
   <url>
-    <loc>https://manhwa-mirror.netlify.app/search</loc>
+    <loc>https://manhwa-mirror.vercel.app/search</loc>
     <lastmod>2025-01-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
