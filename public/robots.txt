@@ -1,0 +1,15 @@
+# robots.txt for Manhwa Mirror
+# Allow all search engines to crawl the site
+
+User-agent: *
+Allow: /
+
+# Disallow admin or private pages (if any)
+Disallow: /admin/
+Disallow: /api/
+
+# Sitemap location
+Sitemap: https://manhwa-mirror.netlify.app/sitemap.xml
+
+# Crawl-delay for polite crawling
+Crawl-delay: 1

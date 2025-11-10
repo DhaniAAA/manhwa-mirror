@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9"
+        xmlns:image="http://www.google.com/schemas/sitemap-image/1.1">
+  
+  <!-- Homepage -->
+  <url>
+    <loc>https://manhwa-mirror.netlify.app/</loc>
+    <lastmod>2025-01-10</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>1.0</priority>
+  </url>
+  
+  <!-- Search Page -->
+  <url>
+    <loc>https://manhwa-mirror.netlify.app/search</loc>
+    <lastmod>2025-01-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  
+  <!-- 
+    TODO: Add dynamic manhwa detail pages
+    Example:
+    <url>
+      <loc>https://manhwa-mirror.netlify.app/detail/manhwa-slug</loc>
+      <lastmod>2025-01-10</lastmod>
+      <changefreq>weekly</changefreq>
+      <priority>0.7</priority>
+      <image:image>
+        <image:loc>https://manhwa-mirror.netlify.app/covers/manhwa-slug.jpg</image:loc>
+        <image:title>Manhwa Title</image:title>
+      </image:image>
+    </url>
+  -->
+  
+</urlset>
