@@ -14,64 +14,72 @@ const SITE_URL = 'https://manhwa-mirror.vercel.app'
 
 const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY)
 
-interface ManhwaMetadata {
+interface ManhwaCardData {
   slug: string
   title: string
   cover_url?: string
   lastUpdate?: string
+  lastUpdateTime?: number
+  latestChapters?: Array<{
+    title: string
+    waktu_rilis?: string
+    slug?: string
+  }>
 }
 
 async function generateSitemap() {
   console.log('🗺️  Generating sitemap...')
 
   try {
-    // Get comics list
-    const { data: comicsListData, error: listError } = await supabase.storage
+    // Get all manhwa metadata from single file (NO MORE N+1 QUERIES!)
+    const { data: allMetadataData, error: metadataError } = await supabase.storage
       .from(BUCKET_NAME)
-      .download('comics-list.json')
+      .download('all-manhwa-metadata.json')
 
-    if (listError) throw listError
+    if (metadataError) throw metadataError
 
-    const comicsListText = await comicsListData.text()
-    const comicsList: string[] = JSON.parse(comicsListText)
+    const allMetadataText = await allMetadataData.text()
+    const allManhwa: ManhwaCardData[] = JSON.parse(allMetadataText)
 
-    console.log(`📚 Found ${comicsList.length} manhwa`)
+    console.log(`📚 Found ${allManhwa.length} manhwa in all-manhwa-metadata.json`)
 
-    // Fetch metadata for all manhwa (limit to first 100 for performance)
-    const manhwaUrls: string[] = []
-    const limit = Math.min(comicsList.length, 100)
-
-    for (let i = 0; i < limit; i++) {
-      const slug = comicsList[i]
+    // Generate URLs for all manhwa (no limit needed, single request!)
+    const manhwaUrls: string[] = allManhwa.map(manhwa => {
+      // Use lastUpdateTime if available, otherwise use latest chapter waktu_rilis, or current date
+      let lastmod: string
       
       try {
-        const { data: metadataData } = await supabase.storage
-          .from(BUCKET_NAME)
-          .download(`${slug}/metadata.json`)
+        if (manhwa.lastUpdateTime && !isNaN(manhwa.lastUpdateTime)) {
+          const date = new Date(manhwa.lastUpdateTime)
+          if (!isNaN(date.getTime())) {
+            lastmod = date.toISOString().split('T')[0]
+          } else {
+            throw new Error('Invalid date from lastUpdateTime')
+          }
+        } else if (manhwa.latestChapters && manhwa.latestChapters[0]?.waktu_rilis) {
+          const date = new Date(manhwa.latestChapters[0].waktu_rilis)
+          if (!isNaN(date.getTime())) {
+            lastmod = date.toISOString().split('T')[0]
+          } else {
+            throw new Error('Invalid date from waktu_rilis')
+          }
+        } else {
+          throw new Error('No valid date found')
+        }
+      } catch (error) {
+        // Fallback to current date if any date parsing fails
+        lastmod = new Date().toISOString().split('T')[0]
+      }
 
-        if (metadataData) {
-          const metadataText = await metadataData.text()
-          const metadata: ManhwaMetadata = JSON.parse(metadataText)
-          
-          const lastmod = metadata.lastUpdate 
-            ? new Date(metadata.lastUpdate).toISOString().split('T')[0]
-            : new Date().toISOString().split('T')[0]
-
-          manhwaUrls.push(`  <url>
-    <loc>${SITE_URL}/detail/${slug}</loc>
+      return `  <url>
+    <loc>${SITE_URL}/detail/${manhwa.slug}</loc>
     <lastmod>${lastmod}</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
-  </url>`)
-        }
-      } catch (error) {
-        console.warn(`⚠️  Failed to fetch metadata for ${slug}`)
-      }
+  </url>`
+    })
 
-      if ((i + 1) % 10 === 0) {
-        console.log(`📊 Progress: ${i + 1}/${limit}`)
-      }
-    }
+    console.log(`✅ Generated ${manhwaUrls.length} manhwa URLs`)
 
     // Generate sitemap XML
     const sitemap = `<?xml version="1.0" encoding="UTF-8"?>

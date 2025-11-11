@@ -19,6 +19,11 @@ dist-ssr
 build
 .cache
 
+# Source maps (security - never commit)
+*.map
+*.js.map
+*.css.map
+
 # Environment variables
 .env
 .env.local
@@ -69,3 +74,5 @@ coverage
 # !README.md
 *.py
 *.json
+/python
+/python/requirements.txt

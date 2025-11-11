@@ -63,7 +63,7 @@
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
             <div>
-              <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Rekomendasi Manhwa</h2>
+              <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Rekomendasi Saat Ini</h2>
               <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Pilihan terbaik untuk Anda berdasarkan rating tertinggi</p>
             </div>
           </div>
@@ -175,7 +175,7 @@
     <section id="popular-section" class="py-12">
       <div class="container px-4 mx-auto">
         <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
-          <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Manhwa Populer</h2>
+          <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Sedang Populer</h2>
           <!-- <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
             Halaman {{ popularPage }} dari {{ popularTotalPages }}
           </div> -->
@@ -296,8 +296,8 @@ const route = useRoute();
 
 const loadingLatest = ref(true);
 const loadingPopular = ref(true);
-const latestManhwa = ref<ManhwaCardData[]>([]);
-const popularManhwa = ref<ManhwaCardData[]>([]);
+const latestManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Rekomendasi" (100 teratas acak)
+const popularManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Populer" (sort by rating)
 
 // Search state
 const searchQuery = ref("");
@@ -312,7 +312,7 @@ const isLoadingMore = ref(false);
 // Pagination state
 const latestPage = ref(1);
 const popularPage = ref(1);
-const itemsPerPage = 18;
+const itemsPerPage = 12;
 
 // Total pages
 const latestTotalPages = computed(() => Math.ceil(latestManhwa.value.length / itemsPerPage));
@@ -411,13 +411,35 @@ const goToChapter = (manhwaSlug: string, chapterSlug: string) => {
   router.push({ name: "reader", params: { slug: manhwaSlug, chapterSlug } });
 };
 
-const mergeWithHydratedChapters = (list: ManhwaCardData[], hydratedMap: Map<string, ManhwaCardData>) => {
-  if (!hydratedMap.size) {
-    return list;
-  }
-
-  return list.map((card) => hydratedMap.get(card.slug) ?? card);
+// Seeded Random Number Generator (untuk hasil konsisten)
+const seededRandom = (seed: number) => {
+  let state = seed;
+  return () => {
+    state = (state * 9301 + 49297) % 233280;
+    return state / 233280;
+  };
 };
+
+// Fungsi helper untuk mengacak array dengan seed (Fisher-Yates shuffle)
+// Menggunakan seed agar hasil shuffle konsisten (tidak berubah setiap reload)
+const seededShuffleArray = (array: ManhwaCardData[], seed: number): ManhwaCardData[] => {
+  const shuffled = [...array]; // Clone array to avoid mutating original
+  const random = seededRandom(seed);
+  let currentIndex = shuffled.length;
+  
+  // Selama masih ada elemen untuk diacak
+  while (currentIndex !== 0) {
+    // Ambil elemen tersisa menggunakan seeded random
+    const randomIndex = Math.floor(random() * currentIndex);
+    currentIndex--;
+    
+    // Tukar dengan elemen saat ini (TypeScript-safe swap)
+    const temp = shuffled[currentIndex]!;
+    shuffled[currentIndex] = shuffled[randomIndex]!;
+    shuffled[randomIndex] = temp;
+  }
+  return shuffled;
+}
 
 // Progressive loading after initial render
 const loadRemainingData = async () => {
@@ -434,35 +456,32 @@ const loadRemainingData = async () => {
     }
 
     // Load all manhwa data on client-side
-    const allManhwa = await ManhwaService.getManhwaCards(undefined, true);
+    // Menggunakan service yang sudah dioptimalkan (mengambil all-manhwa-metadata.json)
+    const allManhwa = await ManhwaService.getAllManhwaMetadata();
 
-    // Update recommendations (sorted by rating)
-    latestManhwa.value = [...allManhwa].sort((a, b) => {
+    // --- LOGIKA BARU (DITUKAR) ---
+
+    // Popular: Sort by rating (highest first) - KONSISTEN
+    const sortedByRating = [...allManhwa].sort((a, b) => {
       const ratingA = parseFloat(a.rating || "0");
       const ratingB = parseFloat(b.rating || "0");
       return ratingB - ratingA;
     });
+    // Set list lengkap untuk "Populer"
+    popularManhwa.value = sortedByRating;
 
-    // Update popular (sorted by chapters)
-    popularManhwa.value = [...allManhwa].sort((a, b) => {
-      const chaptersA = a.chapters || a.total_chapters || 0;
-      const chaptersB = b.chapters || b.total_chapters || 0;
-      return chaptersB - chaptersA;
-    });
+    // Rekomendasi: Ambil 100 teratas berdasarkan rating, lalu ACAK (dengan seed untuk konsistensi)
+    const topRated = [...sortedByRating].slice(0, 100);
+    const shuffledRecommendations = seededShuffleArray(topRated, 12345); // Seed 12345 untuk hasil konsisten
+    // Set list lengkap untuk "Rekomendasi"
+    latestManhwa.value = shuffledRecommendations;
+
+    // --- AKHIR LOGIKA BARU ---
 
     console.log(`✅ Loaded ${latestManhwa.value.length} manhwa on client-side`);
 
-    // Hydrate visible cards with chapters
-    setTimeout(async () => {
-      const prioritizedSlugs = new Set<string>([...latestManhwa.value.slice(0, itemsPerPage).map((card) => card.slug), ...popularManhwa.value.slice(0, itemsPerPage).map((card) => card.slug)]);
+    // Hydrate visible cards with chapters (sudah tidak perlu, data chapter ada di all-manhwa-metadata.json)
 
-      const prioritizedCards = allManhwa.filter((card) => prioritizedSlugs.has(card.slug));
-      const hydratedVisible = await ManhwaService.hydrateManhwaCardsWithChapters(prioritizedCards);
-      const visibleMap = new Map(hydratedVisible.map((card) => [card.slug, card]));
-
-      latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, visibleMap);
-      popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, visibleMap);
-    }, 500);
   } catch (error) {
     console.error("❌ Error loading remaining data:", error);
   } finally {
@@ -518,41 +537,11 @@ const goToPopularPage = (page: number) => {
   });
 };
 
-const hydratingSlugs = new Set<string>();
-
-const ensureChaptersForCards = async (cards: ManhwaCardData[]) => {
-  const targets = cards.filter((card) => {
-    if (!card.slug) return false;
-    if (card.latestChapters && card.latestChapters.length > 0) return false;
-    return !hydratingSlugs.has(card.slug);
-  });
-
-  if (!targets.length) {
-    return;
-  }
-
-  targets.forEach((card) => hydratingSlugs.add(card.slug));
-
-  try {
-    const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(targets);
-    const hydratedMap = new Map(hydrated.map((card) => [card.slug, card]));
-
-    latestManhwa.value = mergeWithHydratedChapters(latestManhwa.value, hydratedMap);
-    popularManhwa.value = mergeWithHydratedChapters(popularManhwa.value, hydratedMap);
-  } catch (error) {
-    console.error("❌ Failed to hydrate chapters for current view:", error);
-  } finally {
-    targets.forEach((card) => hydratingSlugs.delete(card.slug));
-  }
-};
-
-watch(displayedLatest, (cards) => {
-  ensureChaptersForCards(cards);
-});
-
-watch(displayedPopular, (cards) => {
-  ensureChaptersForCards(cards);
-});
+// Dihapus karena hydrateManhwaCardsWithChapters sudah tidak digunakan
+// const hydratingSlugs = new Set<string>();
+// const ensureChaptersForCards = async (cards: ManhwaCardData[]) => { ... }
+// watch(displayedLatest, (cards) => { ... });
+// watch(displayedPopular, (cards) => { ... });
 
 // Search function
 const handleSearch = async (query: string) => {
@@ -569,6 +558,7 @@ const handleSearch = async (query: string) => {
   console.log(`🔄 [HomePage] Starting search for: "${query}"`);
 
   try {
+    // Menggunakan service yang sudah dioptimalkan
     const results = await ManhwaService.searchManhwa(query);
     searchResults.value = results;
     console.log(
@@ -627,25 +617,28 @@ onMounted(async () => {
     }
 
     // SSR: Load only initial items (10) for fast TTFB
-    const allManhwa = await ManhwaService.getManhwaCards(undefined, true);
+    // Menggunakan service yang sudah dioptimalkan
+    const allManhwa = await ManhwaService.getAllManhwaMetadata();
 
-    // Recommendations: Sort by rating (highest first) - only take initial items
+    // --- LOGIKA BARU (DITUKAR) ---
+
+    // Popular: Sort by rating (highest first) - KONSISTEN
     const sortedByRating = [...allManhwa].sort((a, b) => {
       const ratingA = parseFloat(a.rating || "0");
       const ratingB = parseFloat(b.rating || "0");
       return ratingB - ratingA;
     });
 
-    // Popular: Sort by total chapters - only take initial items
-    const sortedByChapters = [...allManhwa].sort((a, b) => {
-      const chaptersA = a.chapters || a.total_chapters || 0;
-      const chaptersB = b.chapters || b.total_chapters || 0;
-      return chaptersB - chaptersA;
-    });
+    // Rekomendasi: Ambil 100 teratas berdasarkan rating, lalu ACAK (dengan seed untuk konsistensi)
+    const topRated = [...sortedByRating].slice(0, 100); // Ambil 100 teratas
+    const shuffledRecommendations = seededShuffleArray(topRated, 12345); // Seed 12345 untuk hasil konsisten
+
+    // --- AKHIR LOGIKA BARU ---
+
 
     // Set only initial items for fast render
-    latestManhwa.value = sortedByRating.slice(0, initialLoadCount);
-    popularManhwa.value = sortedByChapters.slice(0, initialLoadCount);
+    latestManhwa.value = shuffledRecommendations.slice(0, initialLoadCount);
+    popularManhwa.value = sortedByRating.slice(0, initialLoadCount);
 
     console.log(`✅ SSR: Loaded ${initialLoadCount} items for fast TTFB`);
     console.log(`📊 Initial render complete`);

@@ -188,30 +188,11 @@ const visiblePages = computed(() => {
   return pages
 })
 
-const hydratingSlugs = new Set<string>()
-
-const ensureChaptersForGrid = async (cards: ManhwaCardData[]) => {
-  const targets = cards.filter(card => {
-    if (!card.slug) return false
-    if (card.latestChapters && card.latestChapters.length > 0) return false
-    return !hydratingSlugs.has(card.slug)
-  })
-
-  if (!targets.length) {
-    return
-  }
-
-  targets.forEach(card => hydratingSlugs.add(card.slug))
-
-  try {
-    const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(targets)
-    const hydratedMap = new Map(hydrated.map(card => [card.slug, card]))
-    allManhwa.value = allManhwa.value.map(card => hydratedMap.get(card.slug) ?? card)
-  } catch (error) {
-    console.error('❌ Error hydrating grid chapters:', error)
-  } finally {
-    targets.forEach(card => hydratingSlugs.delete(card.slug))
-  }
+// No longer needed - all-manhwa-metadata.json already contains latestChapters
+// Keeping function stub for compatibility
+const ensureChaptersForGrid = async (_cards: ManhwaCardData[]) => {
+  // All chapters are already loaded from all-manhwa-metadata.json
+  return
 }
 
 // Methods
@@ -226,26 +207,10 @@ const goToPage = (page: number) => {
 onMounted(async () => {
   try {
     console.log('🔍 Loading all manhwa...')
-    // Load without chapters first for faster initial load
-    const cards = await ManhwaService.getManhwaCards(undefined, true)
+    // Load all data from all-manhwa-metadata.json (already includes latestChapters)
+    const cards = await ManhwaService.getManhwaCards()
     allManhwa.value = cards
-    console.log(`✅ Loaded ${cards.length} manhwa (fast mode)`)
-
-    await ensureChaptersForGrid(paginatedManhwa.value)
-
-    // Load remaining chapters in background batches
-    setTimeout(async () => {
-      const remaining = allManhwa.value.filter(card => !card.latestChapters?.length)
-      if (!remaining.length) {
-        return
-      }
-
-      console.log(`🔄 Hydrating ${remaining.length} remaining cards in background...`)
-      const hydrated = await ManhwaService.hydrateManhwaCardsWithChapters(remaining, { batchSize: 8 })
-      const hydratedMap = new Map(hydrated.map(card => [card.slug, card]))
-      allManhwa.value = allManhwa.value.map(card => hydratedMap.get(card.slug) ?? card)
-      console.log('✅ Remaining chapters hydrated')
-    }, 600)
+    console.log(`✅ Loaded ${cards.length} manhwa with chapters`)
   } catch (err) {
     error.value = err instanceof Error ? err.message : 'Failed to load manhwa'
     console.error('❌ Error loading manhwa:', err)

@@ -5,7 +5,7 @@
   <!-- Homepage -->
   <url>
     <loc>https://manhwa-mirror.vercel.app/</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>daily</changefreq>
     <priority>1.0</priority>
   </url>
@@ -13,7 +13,7 @@
   <!-- Search Page -->
   <url>
     <loc>https://manhwa-mirror.vercel.app/search</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.8</priority>
   </url>
@@ -21,253 +21,253 @@
   <!-- Manhwa Detail Pages -->
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/a-bad-person</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/a-disaster-class-hero-has-returned</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/above-all-gods</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/absolute-sword-sense</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/academys-genius-swordmaster</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/academys-undercover-professor</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/after-improperly-licking-a-dog-i-became-a-billionaire</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/after-transformation-mine-and-her-wild-fantasy</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/arcane-sniper</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/archmage-restaurant</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/auto-hunting</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2020-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/auto-hunting-with-clones</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-26</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/baek-xx</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/battle-frenzy</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/berserk-of-gluttony</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/black-haze</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/black-killer-whale-baby</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/bookworm-reader</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/boss-in-school</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2019-11-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/boundless-necromancer</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/bring-my-level-up-alone</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2024-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/chronicles-of-the-demon-faction</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/circle-zeros-otherworldly-hero</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/d-gray-man</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/demon-lords-martial-arts-ascension</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/demon-spirit-seed-manual</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2021-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/different-kings</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/disastrous-necromancer</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-06</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/dominate-the-three-realms</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/don-s-adventure-in-another-world-tang-yin-zai-yi-jie</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/dreamside</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2020-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/dungeon-reset</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/dusk-howler</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/eleceed</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/ernak</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/everlasting-god-of-sword</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/evolution-begins-with-a-big-tree</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/fff-class-trashero</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/first-dragon-yuanlong</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/get-life</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2021-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/global-gao-wu-global-martial-arts</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/goblin-slayer-gaiden-year-one</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -285,169 +285,169 @@
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/good-reaper</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/grim-reaper-of-the-drifting-moon</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/hardcore-leveling</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/heaven-defying-sword</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/heavenly-demon-cultivation-simulation</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/heavenly-grand-archives-young-master</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/hiiragi-san-chi-no-kyuuketsu-jijou</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/hunter-age</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-am-an-invincible-genius</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-am-daxianzun</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-am-player-who-suck-alone-solo-bug-player</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-copy-talents-your-talent-is-mine</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-have-a-dragon-on-my-body</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-have-a-mansion-in-the-post-apocalyptic-world</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-killed-an-academy-player</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-m-an-evil-god</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-obtained-a-mythic-item</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-reincarnated-as-the-crazed-heir</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/i-was-trash</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/immortal-daddy-xianzun</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/immortal-swordsman-in-the-reverse-world</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2022-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/infinite-level-up-in-murim</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-19</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/infinite-mage</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/insanely-talented-player</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/iron-ladies</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-07-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/jungle-juice</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/kanojo-okarishimasu</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/kaoru-hana-wa-rin-to-saku</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -459,115 +459,115 @@
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/kill-the-dragon</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/killer-peter</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/kuro-no-shoukanshi</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/kuroiwa-medaka-ni-watashi-no-kawaii-ga-tsuujinai</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/lazy-prince-becomes-a-genius-reformation-of-the-deadbeat-noble</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-01-13</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/legend-of-star-general</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/legendary-youngest-son-of-the-marquis-house</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/leveling-in-the-future-apex-future-martial-arts</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/leveling-up-with-skills</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/leveling-with-the-gods</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-02</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/magic-emperor</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-08</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/martial-god-regressed-to-level-2</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-07-12</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/martial-peak</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/matchless-emperor</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/medical-martial-arts</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/megami-no-kafeterasu</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-10-25</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/memoir-of-the-king-of-war</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/mercenary-enrollment</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/metropolitan-system</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2020-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
@@ -579,43 +579,697 @@
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/miracle-app-store</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/murim-login</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/my-dad-is-too-strong</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-09</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/my-daughter-is-a-dragon</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2023-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/my-disciples-are-all-big-villains</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-04</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/myst-might-mayhem</loc>
-    <lastmod>2025-11-10</lastmod>
+    <lastmod>2025-11-11</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>
   <url>
     <loc>https://manhwa-mirror.vercel.app/detail/nano-machine</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/oddeye</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/overgeared</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/past-life-regressor</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/peerless-dad</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/pick-me-up-infinite-gacha</loc>
+    <lastmod>2025-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/piquant</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/player-who-cant-level-up</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/player-who-returned-10000-years-later</loc>
     <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rankers-return</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rankers-return-remake</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/reality-quest</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rebirth-abandoned-less-return</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rebirth-after-80.000-years-passed</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rebirth-city-deity</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rebirth-of-the-urban-immortal-cultivator</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/reborn-as-the-enemy-prince</loc>
+    <lastmod>2025-11-06</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/reborn-big-player</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/record-of-the-war-god</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/regressing-with-the-kings-power</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/reincarnation-of-the-murim-clans-former-ranker</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/return-of-the-broken-constellation</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/return-of-the-frozen-player</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/return-of-the-mad-demon</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/return-of-the-sss-class-ranker</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/return-of-xiandi</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/revenge-of-the-iron-blooded-sword-hound</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rise-of-the-demon-king</loc>
+    <lastmod>2022-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/rooftop-sword-master</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/shark</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/shuumatsu-no-valkyrie</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/skeleton-soldier-couldnt-protect-the-dungeon</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/sleeping-ranker</loc>
+    <lastmod>2025-10-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/solo-farming-in-the-tower</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/solo-leveling</loc>
+    <lastmod>2022-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/solo-leveling-ragnarok-bahasa-indonesia</loc>
+    <lastmod>2025-10-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/solo-max-level-newbie</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/soul-land</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/soul-land-ii</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/spirit-blade-mountain</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/sss-class-suicide-hunter</loc>
+    <lastmod>2025-09-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/stalker-x-stalker</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/standard-of-reincarnation</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/star-embracing-swordmaster</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/strongest-abandoned-son</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/strongest-anti-m.e.t.a</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/super-system</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/superhuman-battlefield</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/supreme-godly-system</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/sword-fanatic-wanders-through-the-night</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/swordmasters-youngest-son</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/tale-of-a-scribe-who-retires-to-the-countryside</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/tale-of-vengenful-spirits</loc>
+    <lastmod>2025-11-05</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/talent-swallowing-magician</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/tales-of-demons-and-gods</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/terminally-ill-genius-dark-knight</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/terror-man</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-blade-of-evolution-walking-alone-in-the-dungeon</loc>
+    <lastmod>2021-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-boy-of-death</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-bully-in-charge</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-constellation-that-returned-from-hell</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-constellations-are-my-disciples</loc>
+    <lastmod>2025-07-12</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-cuckoos-fiancee</loc>
+    <lastmod>2025-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-dark-mages-return-to-enlistment</loc>
+    <lastmod>2025-11-09</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-dark-magician-transmigrates-after-66666-years</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-demon-king-who-lost-his-job</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-extras-academy-survival-guide</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-gamer</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-ghostly-doctor</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-god-of-high-school</loc>
+    <lastmod>2021-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-great-mage-returns-after-4000-years</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-heavenly-demon-cant-live-a-normal-life</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-hunter</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-knight-king-who-returned-with-a-god</loc>
+    <lastmod>2025-11-02</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-last-adventurer</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-max-level-players-100th-regression</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-max-leveled-hero-will-return</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-mythical-realm</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-novels-extra-remake</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-portal-of-wonderland</loc>
+    <lastmod>2020-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-regressed-son-of-a-duke-is-an-assassin</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-reincarnated-assassin-is-a-genius-swordsman</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-reincarnation-of-warrior</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-strongest-manager-in-history</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-superb-captain-in-the-city</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-tutorial-is-too-hard</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-ultimate-of-all-ages-the-ancient-sovereign-of-eternity</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-ultimate-shut-in-the-absolute-ruler-of-the-house</loc>
+    <lastmod>2025-11-03</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-undefeatable-swordsman</loc>
+    <lastmod>2025-11-07</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/the-worlds-best-engineer</loc>
+    <lastmod>2025-10-26</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/this-is-the-law</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/to-be-the-castellan-king</loc>
+    <lastmod>2023-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/to-not-die</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/transcension-academy</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/trash-of-the-counts-family</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/unordinary</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/urban-god</loc>
+    <lastmod>2020-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/versatile-mage</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/villain-to-kill</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/virus-girlfriend</loc>
+    <lastmod>2023-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/volcanic-age</loc>
+    <lastmod>2025-02-13</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/wang-gu-shen-wang</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/wild-ranker</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/witch-hunter</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/worn-and-torn-newbie</loc>
+    <lastmod>2025-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/wu-dong-qian-kun</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/xian-ni</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/yin-zhi-shoumuren-silver-gravekeeper</loc>
+    <lastmod>2021-11-10</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/yuan-zun</loc>
+    <lastmod>2025-11-11</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.7</priority>
+  </url>
+  <url>
+    <loc>https://manhwa-mirror.vercel.app/detail/zui-qiang-shen-the-strongest-god-king</loc>
+    <lastmod>2021-11-10</lastmod>
     <changefreq>weekly</changefreq>
     <priority>0.7</priority>
   </url>

@@ -63,9 +63,15 @@ export default defineConfig(({ mode }) => ({
     })] : [])
   ],
   build: {
+    // SECURITY: Disable source maps completely in production
+    sourcemap: false,
     // Optimize chunk splitting for better caching
     rollupOptions: {
       output: {
+        // Obfuscate file names in production
+        entryFileNames: mode === 'production' ? 'assets/[hash].js' : 'assets/[name]-[hash].js',
+        chunkFileNames: mode === 'production' ? 'assets/[hash].js' : 'assets/[name]-[hash].js',
+        assetFileNames: mode === 'production' ? 'assets/[hash].[ext]' : 'assets/[name]-[hash].[ext]',
         manualChunks: (id) => {
           // Vendor chunk for core dependencies (rarely changes)
           if (id.includes('node_modules')) {
@@ -107,7 +113,6 @@ export default defineConfig(({ mode }) => ({
     assetsInlineLimit: 4096, // Inline assets < 4kb
     // Tree shaking configuration
     reportCompressedSize: false, // Faster builds
-    sourcemap: false, // Disable sourcemaps in production for smaller size
     // CSS minification
     cssMinify: true
   },
@@ -117,6 +122,7 @@ export default defineConfig(({ mode }) => ({
   },
   // CSS optimization
   css: {
+    // SECURITY: Disable CSS source maps in all modes
     devSourcemap: false,
     preprocessorOptions: {
       // Remove unused CSS in production

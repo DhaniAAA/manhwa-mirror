@@ -1,0 +1,36 @@
+# Source files - don't upload to Vercel
+src/
+scripts/
+vite-plugins/
+docs/
+
+# Development files
+*.log
+*.local
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Testing
+coverage/
+.nyc_output/
+
+# Build artifacts (will be built on Vercel)
+node_modules/
+dist/
+
+# Git
+.git/
+.gitignore
+
+# Config files that are not needed in production
+vite.config.ts
+tsconfig.json
+tsconfig.node.json
+postcss.config.js
+tailwind.config.js

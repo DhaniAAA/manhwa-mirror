@@ -9,25 +9,25 @@ import { cleanManhwaTitle } from '../utils/textUtils'
  */
 export class ManhwaService {
   /**
-   * Mendapatkan daftar semua manhwa dari comics-list.json (with IndexedDB caching)
+   * Mendapatkan semua metadata manhwa dari all-manhwa-metadata.json (with IndexedDB caching)
+   * File ini berisi array lengkap dengan metadata, cover, genres, dan latest chapters
    */
-  static async getComicsList(): Promise<string[]> {
-    const cacheKey = 'comics-list'
+  static async getAllManhwaMetadata(): Promise<ManhwaCardData[]> {
+    const cacheKey = 'all-manhwa-metadata'
     
     // Check IndexedDB cache first (persistent storage)
-    const cached = await indexedDBCache.get<string[]>(cacheKey)
+    const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
     if (cached) {
-      console.log(`✅ Using IndexedDB cached comics list (${cached.length} items)`)
-      console.log(`📋 First 5 comics from cache:`, cached.slice(0, 5))
+      console.log(`✅ Using IndexedDB cached all-manhwa-metadata (${cached.length} items)`)
       return cached
     }
 
     try {
-      console.log(`📥 Fetching comics-list.json from bucket: ${BUCKET_NAME}`)
+      console.log(`📥 Fetching all-manhwa-metadata.json from bucket: ${BUCKET_NAME}`)
       
       const { data, error } = await supabase.storage
         .from(BUCKET_NAME)
-        .download('comics-list.json')
+        .download('all-manhwa-metadata.json')
 
       if (error) {
         console.error('❌ Supabase error:', error)
@@ -35,16 +35,15 @@ export class ManhwaService {
       }
 
       const text = await data.text()
-      const comics = JSON.parse(text)
+      const allMetadata: ManhwaCardData[] = JSON.parse(text)
       
-      // Cache in IndexedDB for 20 hours (comics list rarely changes)
-      await indexedDBCache.set(cacheKey, comics, 20 * 60 * 60 * 1000)
+      // Cache in IndexedDB for 6 hours (metadata updates periodically)
+      await indexedDBCache.set(cacheKey, allMetadata, 6 * 60 * 60 * 1000)
       
-      console.log(`✅ Found ${comics.length} comics in list`)
-      console.log(`📋 First 5 comics:`, comics.slice(0, 5))
-      return comics
+      console.log(`✅ Found ${allMetadata.length} manhwa in all-manhwa-metadata.json`)
+      return allMetadata
     } catch (error) {
-      console.error('❌ Error fetching comics list:', error)
+      console.error('❌ Error fetching all-manhwa-metadata.json:', error)
       return []
     }
   }
@@ -200,127 +199,33 @@ export class ManhwaService {
     return data.publicUrl
   }
 
-  /**
-   * Helper: Process manhwa in parallel batches
-   */
-  private static async processBatch(
-    slugs: string[], 
-    skipChapters: boolean,
-    batchSize: number = 20
-  ): Promise<ManhwaCardData[]> {
-    const results: ManhwaCardData[] = []
-    
-    // Process in batches to avoid overwhelming the server
-    for (let i = 0; i < slugs.length; i += batchSize) {
-      const batch = slugs.slice(i, i + batchSize)
-      console.log(`⚡ Processing batch ${Math.floor(i / batchSize) + 1}/${Math.ceil(slugs.length / batchSize)} (${batch.length} items)`)
-      
-      // Fetch metadata in parallel for this batch
-      const batchPromises = batch.map(async (slug) => {
-        try {
-          const metadata = await this.getMetadata(slug)
-          if (!metadata) return null
-
-          // Get latest 2 chapters (only if not skipped)
-          let latestChapters: Array<{ title: string; waktu_rilis?: string; slug?: string }> = []
-          
-          if (!skipChapters) {
-            try {
-              const chaptersData = await this.getChapters(slug)
-              if (chaptersData?.chapters && chaptersData.chapters.length > 0) {
-                latestChapters = chaptersData.chapters
-                  .slice(-2)
-                  .reverse()
-                  .map(ch => ({
-                    title: ch.title,
-                    waktu_rilis: ch.waktu_rilis || undefined,
-                    slug: ch.slug  // Include chapter slug
-                  }))
-              }
-            } catch (error) {
-              // Silently fail for chapters
-            }
-          }
-
-          // Get type from metadata.metadata.Type or metadata.type
-          const metadataObj = (metadata as any).metadata || {}
-          let type = metadata.type || metadataObj.Type
-          if (!type) {
-            // Auto-detect from title if possible
-            const title = metadata.title.toLowerCase()
-            if (title.includes('manhua') || title.includes('中国')) {
-              type = 'manhua'
-            } else if (title.includes('manga') || title.includes('日本')) {
-              type = 'manga'
-            } else {
-              type = 'manhwa' // Default
-            }
-          }
-
-          // Get status from metadata.metadata.Status or metadata.status
-          const status = metadata.status || metadataObj.Status || 'Ongoing'
-
-          return {
-            slug: metadata.slug,
-            title: cleanManhwaTitle(metadata.title), // Fix encoding issues
-            genre: metadata.genres?.join(', ') || 'Action, Fantasy',
-            genres: metadata.genres,
-            type: type,
-            status: status,
-            rating: metadata.rating || '9.5',
-            chapters: metadata.total_chapters,
-            lastUpdate: metadataObj['Updated on'] || 'Baru saja',
-            cover_url: metadata.cover_url,
-            coverImage: metadata.cover_url,
-            latestChapters
-          } as ManhwaCardData
-        } catch (error) {
-          console.warn(`⚠️ Failed to process: ${slug}`)
-          return null
-        }
-      })
-
-      // Wait for all promises in this batch
-      const batchResults = await Promise.all(batchPromises)
-      
-      // Filter out nulls and add to results
-      results.push(...batchResults.filter((item): item is ManhwaCardData => item !== null))
-    }
-
-    return results
-  }
 
   /**
-   * Convert metadata ke format ManhwaCardData untuk UI (with caching and parallel loading)
+   * Convert metadata ke format ManhwaCardData untuk UI (menggunakan all-manhwa-metadata.json)
    */
-  static async getManhwaCards(limit?: number, skipChapters: boolean = false): Promise<ManhwaCardData[]> {
+  static async getManhwaCards(limit?: number): Promise<ManhwaCardData[]> {
     try {
-      const cacheKey = `manhwa-cards-${limit || 'all'}-${skipChapters ? 'no-chapters' : 'with-chapters'}`
-      
-      // Check IndexedDB cache first
-      const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
-      if (cached) {
-        console.log(`🔍 Using cached manhwa cards (${cached.length} items)`)
-        return cached
-      }
-
       console.log(`🔍 Getting manhwa cards (limit: ${limit || 'all'})`)
       
-      const comicsList = await this.getComicsList()
+      // Get all metadata from single file
+      const allMetadata = await this.getAllManhwaMetadata()
       
-      if (comicsList.length === 0) {
-        console.warn('⚠️ Comics list is empty')
+      if (allMetadata.length === 0) {
+        console.warn('⚠️ All manhwa metadata is empty')
         return []
       }
       
-      const comics = limit ? comicsList.slice(0, limit) : comicsList
-      console.log(`📋 Processing ${comics.length} comics in parallel batches`)
-
-      // Process in parallel batches (20 at a time for faster loading)
-      const manhwaCards = await this.processBatch(comics, skipChapters, 20)
+      // Apply limit if specified
+      const manhwaCards = limit ? allMetadata.slice(0, limit) : allMetadata
+      
+      // Clean titles to fix encoding issues
+      const cleanedCards = manhwaCards.map(card => ({
+        ...card,
+        title: cleanManhwaTitle(card.title)
+      }))
 
       // Log type distribution for debugging
-      const typeCount = manhwaCards.reduce((acc, card) => {
+      const typeCount = cleanedCards.reduce((acc, card) => {
         const type = card.type || 'unknown'
         acc[type] = (acc[type] || 0) + 1
         return acc
@@ -328,18 +233,15 @@ export class ManhwaService {
       console.log(`📊 Type distribution:`, typeCount)
       
       // Log status distribution for debugging
-      const statusCount = manhwaCards.reduce((acc, card) => {
+      const statusCount = cleanedCards.reduce((acc, card) => {
         const status = card.status || 'unknown'
         acc[status] = (acc[status] || 0) + 1
         return acc
       }, {} as Record<string, number>)
       console.log(`📊 Status distribution:`, statusCount)
 
-      // Cache in IndexedDB for 6 hours
-      await indexedDBCache.set(cacheKey, manhwaCards, 6 * 60 * 60 * 1000)
-
-      console.log(`✅ Total manhwa cards created: ${manhwaCards.length}`)
-      return manhwaCards
+      console.log(`✅ Total manhwa cards: ${cleanedCards.length}`)
+      return cleanedCards
     } catch (error) {
       console.error('❌ Error getting manhwa cards:', error)
       return []
@@ -375,14 +277,14 @@ export class ManhwaService {
   }
 
   /**
-   * Search manhwa by title, genre, or type
+   * Search manhwa by title, genre, or type (menggunakan all-manhwa-metadata.json)
    */
   static async searchManhwa(query: string): Promise<ManhwaCardData[]> {
-    const allCards = await this.getManhwaCards()
+    const allMetadata = await this.getAllManhwaMetadata()
     const searchQuery = query.toLowerCase()
 
-    return allCards.filter(card => {
-      const title = card.title.toLowerCase()
+    const results = allMetadata.filter(card => {
+      const title = cleanManhwaTitle(card.title).toLowerCase()
       const genre = card.genre?.toLowerCase() || ''
       const genres = card.genres?.map(g => g.toLowerCase()).join(' ') || ''
       const type = card.type?.toLowerCase() || ''
@@ -393,71 +295,14 @@ export class ManhwaService {
              genres.includes(searchQuery) ||
              type.includes(searchQuery)
     })
+
+    // Clean titles in results
+    return results.map(card => ({
+      ...card,
+      title: cleanManhwaTitle(card.title)
+    }))
   }
 
-  /**
-   * Menyuntikkan data chapter terbaru ke daftar kartu tanpa memuat ulang metadata
-   */
-  static async hydrateManhwaCardsWithChapters(
-    cards: ManhwaCardData[],
-    options: { limitChapters?: number; batchSize?: number } = {}
-  ): Promise<ManhwaCardData[]> {
-    if (!cards.length) {
-      return []
-    }
-
-    const { limitChapters = 2, batchSize = 6 } = options
-    const clonedCards = cards.map(card => ({ ...card })) as ManhwaCardData[]
-
-    const cardsToProcess = clonedCards
-      .map((card, index) => ({ card, index }))
-      .filter(({ card }) => !card.latestChapters || card.latestChapters.length === 0)
-
-    for (let i = 0; i < cardsToProcess.length; i += batchSize) {
-      const batch = cardsToProcess.slice(i, i + batchSize)
-
-      const batchResults = await Promise.all(
-        batch.map(async ({ card, index }) => {
-          try {
-            const chaptersData = await this.getChapters(card.slug)
-            if (!chaptersData?.chapters?.length) {
-              return null
-            }
-
-            const latestChapters = chaptersData.chapters
-              .slice(-limitChapters)
-              .reverse()
-              .map(chapter => ({
-                title: chapter.title,
-                waktu_rilis: chapter.waktu_rilis || undefined,
-                slug: chapter.slug
-              }))
-
-            return { index, latestChapters }
-          } catch (error) {
-            console.warn(`⚠️ Failed to hydrate chapters for ${card.slug}`, error)
-            return null
-          }
-        })
-      )
-
-      batchResults.forEach(result => {
-        if (!result) return
-        const { index, latestChapters } = result
-        const current = clonedCards[index]
-        if (!current?.slug) {
-          return
-        }
-
-        clonedCards[index] = {
-          ...current,
-          latestChapters
-        }
-      })
-    }
-
-    return clonedCards
-  }
 
   /**
    * Get chapter images for reader
@@ -477,160 +322,53 @@ export class ManhwaService {
   }
 
   /**
-   * Get manhwa sorted by Last Modified timestamp from Supabase Storage
-   * Returns manhwa with the most recent updates first (based on latest chapter update time)
-   * ONLY shows manhwa that have valid chapter updates with waktu_rilis timestamp
+   * Get manhwa sorted by latest chapter update time
+   * Returns manhwa with the most recent updates first (menggunakan all-manhwa-metadata.json)
    */
   static async getHotUpdates(limit: number = 15): Promise<ManhwaCardData[]> {
     try {
-      const cacheKey = `hot-updates-${limit}`
-      
-      // Check IndexedDB cache first (cache for 15 minutes only for fresh updates)
-      const cached = await indexedDBCache.get<ManhwaCardData[]>(cacheKey)
-      if (cached && cached.length > 0) {
-        console.log(`🔥 Using cached hot updates (${cached.length} items)`)
-        return cached
-      }
-
       console.log('🔥 Fetching hot updates based on latest chapter releases...')
       
-      // Get comics list
-      const comicsList = await this.getComicsList()
-      if (comicsList.length === 0) {
-        console.warn('⚠️ Comics list is empty')
+      // Get all metadata from single file
+      const allMetadata = await this.getAllManhwaMetadata()
+      
+      if (allMetadata.length === 0) {
+        console.warn('⚠️ All manhwa metadata is empty')
         return []
       }
 
-      console.log(`📚 Found ${comicsList.length} total comics`)
+      console.log(`📚 Found ${allMetadata.length} total manhwa`)
 
-      // Get all manhwa with their latest chapter info
-      const manhwaWithTimestamps: Array<ManhwaCardData & { lastUpdateTime?: number; listIndex?: number }> = []
-      
-      // Process in batches to get chapter data
-      // Increase to 100 manhwa to get more accurate hot updates
-      const batchSize = 20
-      const maxComicsToCheck = Math.min(comicsList.length, 500)
-      console.log(`🔍 Checking ${maxComicsToCheck} manhwa for latest updates...`)
-      
-      for (let i = 0; i < maxComicsToCheck; i += batchSize) {
-        const batch = comicsList.slice(i, i + batchSize)
-        
-        const batchPromises = batch.map(async (slug, batchIndex) => {
-          const listIndex = i + batchIndex // Track position in original list
-          try {
-            // Get metadata
-            const metadata = await this.getMetadata(slug)
-            if (!metadata) return null
+      // Filter manhwa that have lastUpdateTime
+      const manhwaWithTimestamps = allMetadata.filter(m => 
+        m.title && 
+        m.cover_url && 
+        (m as any).lastUpdateTime
+      )
 
-            // Get chapters to find latest update
-            const chaptersData = await this.getChapters(slug)
-            let latestChapters: Array<{ title: string; waktu_rilis?: string; slug?: string }> = []
-            let lastUpdateTime = 0
-            
-            if (chaptersData?.chapters && chaptersData.chapters.length > 0) {
-              // Get last 2 chapters
-              latestChapters = chaptersData.chapters
-                .slice(-2)
-                .reverse()
-                .map(ch => ({
-                  title: ch.title,
-                  waktu_rilis: ch.waktu_rilis || undefined,
-                  slug: ch.slug
-                }))
-              
-              // Get the most recent chapter's timestamp
-              const latestChapter = chaptersData.chapters[chaptersData.chapters.length - 1]
-              if (latestChapter && latestChapter.waktu_rilis) {
-                lastUpdateTime = new Date(latestChapter.waktu_rilis).getTime()
-                // Debug: Log first 3 manhwa with timestamps
-                if (manhwaWithTimestamps.length < 3) {
-                  console.log(`📅 ${metadata.title}: ${latestChapter.waktu_rilis} (${new Date(latestChapter.waktu_rilis).toLocaleString('id-ID')})`)
-                }
-              } else {
-                // FALLBACK: Jika waktu_rilis tidak ada, gunakan jumlah chapter sebagai indikator
-                // Manhwa dengan lebih banyak chapter = lebih sering update
-                // Gunakan timestamp sekarang dikurangi (total_chapters * -1 hari) sebagai estimasi
-                const estimatedTime = Date.now() - ((chaptersData.chapters.length || 0) * 24 * 60 * 60 * 1000)
-                lastUpdateTime = estimatedTime
-                
-                // Debug: Log manhwa without waktu_rilis
-                if (manhwaWithTimestamps.length < 3) {
-                  console.log(`⚠️ ${metadata.title}: NO waktu_rilis - using fallback (${chaptersData.chapters.length} chapters)`)
-                }
-              }
-            }
-
-            // Get type from metadata
-            const metadataObj = (metadata as any).metadata || {}
-            let type = metadata.type || metadataObj.Type
-            
-            const card: ManhwaCardData & { lastUpdateTime?: number; listIndex?: number } = {
-              slug,
-              title: cleanManhwaTitle(metadata.title), // Clean title from mojibake
-              cover_url: metadata.cover_url,
-              rating: metadata.rating,
-              type: type || 'manhwa',
-              status: metadata.status,
-              latestChapters,
-              lastUpdateTime,
-              listIndex // Simpan index dari comics-list sebagai fallback
-            }
-
-            return card
-          } catch (error) {
-            console.warn(`⚠️ Failed to load ${slug}:`, error)
-            return null
-          }
-        })
-
-        const batchResults = await Promise.all(batchPromises)
-        
-        // Filter: terima manhwa yang punya title dan cover (waktu_rilis opsional)
-        const validResults = batchResults.filter((m): m is ManhwaCardData & { lastUpdateTime?: number; listIndex?: number } => 
-          m !== null && 
-          !!m.title && 
-          !!m.cover_url
-        )
-        
-        manhwaWithTimestamps.push(...validResults)
-      }
-
-      console.log(`📊 Found ${manhwaWithTimestamps.length} manhwa with valid chapter updates`)
+      console.log(`📊 Found ${manhwaWithTimestamps.length} manhwa with valid timestamps`)
       
       if (manhwaWithTimestamps.length === 0) {
-        console.warn('⚠️ No manhwa with chapter updates found')
-        return []
+        console.warn('⚠️ No manhwa with timestamps found, returning first items')
+        return allMetadata.slice(0, limit).map(card => ({
+          ...card,
+          title: cleanManhwaTitle(card.title)
+        }))
       }
 
-      // Debug: Show sample of timestamps before sorting
-      console.log('🔍 Sample before sorting (first 5):')
-      manhwaWithTimestamps.slice(0, 5).forEach(m => {
-        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No waktu_rilis'
-        console.log(`  - ${m.title}: ${date} (index: ${m.listIndex})`)
-      })
-
-      // Sort by lastUpdateTime if available, otherwise by listIndex (lower = newer)
+      // Sort by lastUpdateTime (newest first)
       const sorted = manhwaWithTimestamps.sort((a, b) => {
-        // Jika keduanya punya waktu_rilis, gunakan itu
-        if (a.lastUpdateTime && b.lastUpdateTime) {
-          return b.lastUpdateTime - a.lastUpdateTime // Newest first
-        }
-        
-        // Jika hanya salah satu yang punya waktu_rilis, prioritaskan yang punya
-        if (a.lastUpdateTime && !b.lastUpdateTime) return -1
-        if (!a.lastUpdateTime && b.lastUpdateTime) return 1
-        
-        // Jika keduanya tidak punya waktu_rilis, gunakan listIndex (lower index = newer)
-        const indexA = a.listIndex ?? 999999
-        const indexB = b.listIndex ?? 999999
-        return indexA - indexB // Lower index first
+        const timeA = (a as any).lastUpdateTime || 0
+        const timeB = (b as any).lastUpdateTime || 0
+        return timeB - timeA // Newest first
       })
       
       // Debug: Show sample after sorting
       console.log('🔍 Sample after sorting (first 5):')
       sorted.slice(0, 5).forEach(m => {
-        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No waktu_rilis'
-        console.log(`  - ${m.title}: ${date} (index: ${m.listIndex})`)
+        const time = (m as any).lastUpdateTime
+        const date = time ? new Date(time).toLocaleString('id-ID') : 'No timestamp'
+        console.log(`  - ${m.title}: ${date}`)
       })
 
       // Take top N with most recent updates
@@ -639,32 +377,25 @@ export class ManhwaService {
       // Log top 5 for debugging
       console.log('🔥 Top 5 hot updates:')
       hotUpdates.slice(0, 5).forEach((m, idx) => {
-        const date = m.lastUpdateTime ? new Date(m.lastUpdateTime).toLocaleString('id-ID') : 'No date'
+        const time = (m as any).lastUpdateTime
+        const date = time ? new Date(time).toLocaleString('id-ID') : 'No date'
         console.log(`  ${idx + 1}. ${m.title} - Last update: ${date}`)
       })
       
-      // Remove lastUpdateTime and listIndex before returning (not needed in UI)
-      const cleanedUpdates = hotUpdates.map(({ lastUpdateTime, listIndex, ...rest }) => rest)
-      
-      // Cache in IndexedDB for 10 minutes (shorter cache for fresh updates)
-      await indexedDBCache.set(cacheKey, cleanedUpdates, 10 * 60 * 1000)
+      // Clean titles and remove lastUpdateTime before returning
+      const cleanedUpdates = hotUpdates.map(({ ...card }) => {
+        const { lastUpdateTime, ...rest } = card as any
+        return {
+          ...rest,
+          title: cleanManhwaTitle(rest.title)
+        }
+      })
       
       console.log(`✅ Hot updates loaded: ${cleanedUpdates.length} manhwa (sorted by latest chapter)`)
       return cleanedUpdates
     } catch (error) {
       console.error('❌ Error getting hot updates:', error)
-      
-      // Fallback: try to get any manhwa
-      try {
-        console.log('🔄 Attempting fallback...')
-        const comicsList = await this.getComicsList()
-        const fallbackSlugs = comicsList.slice(0, limit)
-        const fallbackData = await this.processBatch(fallbackSlugs, false, 5)
-        return fallbackData.filter(m => m.title && m.cover_url)
-      } catch (fallbackError) {
-        console.error('❌ Fallback also failed:', fallbackError)
-        return []
-      }
+      return []
     }
   }
 
