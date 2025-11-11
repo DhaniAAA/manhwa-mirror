@@ -1,6 +1,6 @@
 # Source files - don't upload to Vercel
 src/
-scripts/
+# scripts/ - NEEDED for build (generate-sitemap.ts)
 vite-plugins/
 docs/
 
@@ -28,9 +28,9 @@ dist/
 .git/
 .gitignore
 
-# Config files that are not needed in production
-vite.config.ts
-tsconfig.json
-tsconfig.node.json
-postcss.config.js
-tailwind.config.js
+# Config files - KEEP for build process
+# vite.config.ts - NEEDED
+# tsconfig.json - NEEDED
+# tsconfig.node.json - NEEDED
+# postcss.config.js - NEEDED
+# tailwind.config.js - NEEDED
