@@ -55,7 +55,12 @@ const handleError = (event: Event) => {
   error.value = true
   isLoaded.value = false
   
-  // Retry with timeout
+  // Check if mobile device for different retry strategy
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  
+  // Retry with timeout - longer for mobile due to slower connections
+  const retryDelay = isMobile ? 2000 : 1000
+  
   setTimeout(() => {
     if (imageWrapper.value) {
       const img = new Image()
@@ -70,9 +75,11 @@ const handleError = (event: Event) => {
         isLoaded.value = false
         emit('error', event)
       }
-      img.src = props.src + '?retry=' + Date.now() // Cache busting
+      // Add cache busting and mobile-specific parameters
+      const mobileParam = isMobile ? '&mobile=1' : ''
+      img.src = props.src + '?retry=' + Date.now() + mobileParam
     }
-  }, 1000)
+  }, retryDelay)
   
   emit('error', event)
 }
@@ -90,7 +97,12 @@ onMounted(() => {
     return
   }
 
+  // Check if mobile device for optimized observer settings
+  const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)
+  
   // Create Intersection Observer for non-priority images
+  // Mobile: Load earlier (100px before) with lower threshold for better UX
+  // Desktop: Load at 50px before with standard threshold
   observer = new IntersectionObserver(
     (entries) => {
       entries.forEach((entry) => {
@@ -104,8 +116,8 @@ onMounted(() => {
       })
     },
     {
-      rootMargin: '50px', // Start loading 50px before entering viewport
-      threshold: 0.01
+      rootMargin: isMobile ? '100px' : '50px', // Start loading earlier on mobile
+      threshold: isMobile ? 0.01 : 0.01 // Same threshold but mobile gets more margin
     }
   )
 

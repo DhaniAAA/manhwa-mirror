@@ -3,19 +3,24 @@
  * Converts external image URLs to use our proxy
  */
 
-
 // Domain mapping: ID -> Domain (exported for use in other modules)
 export const DOMAIN_MAP: Record<string, string> = {
-  '1': 'sv1.imgkc1.my.id',
-  '2': 'sv2.imgkc2.my.id',
-  '3': 'sv3.imgkc3.my.id'
+  "1": "sv1.imgkc1.my.id",
+  "2": "sv2.imgkc2.my.id",
+  "3": "sv3.imgkc3.my.id",
+  "4": "sv4.imgkc4.my.id", // <-- TAMBAHKAN
+  "5": "sv5.imgkc5.my.id", // <-- TAMBAHKAN
+  "6": "komikcast03.com", // For direct cover images
 };
 
 // Reverse mapping: Domain -> ID
 const DOMAIN_TO_ID: Record<string, string> = {
-  'sv1.imgkc1.my.id': '1',
-  'sv2.imgkc2.my.id': '2',
-  'sv3.imgkc3.my.id': '3'
+  "sv1.imgkc1.my.id": "1",
+  "sv2.imgkc2.my.id": "2",
+  "sv3.imgkc3.my.id": "3",
+  "sv4.imgkc4.my.id": "4", // <-- TAMBAHKAN
+  "sv5.imgkc5.my.id": "5", // <-- TAMBAHKAN
+  "komikcast03.com": "6", // For direct cover images
 };
 
 /**
@@ -45,30 +50,32 @@ export function getProxiedImageUrl(originalUrl: string): string {
     const urlObj = new URL(originalUrl);
     const domain = urlObj.hostname;
     const path = urlObj.pathname;
-    
+
     // Convert domain to ID (1, 2, 3)
     const domainId = DOMAIN_TO_ID[domain];
-    
+
     if (!domainId) {
-      console.error('Unknown domain:', domain);
+      console.error("Unknown domain:", domain);
       return originalUrl;
     }
-    
-    // Create clean proxy URL with ID: /api/image/{id}{path}
-    // Example: /api/image/1/wp-content/img/A/A_Bad_Person/005/001.jpg
+
+    // Create clean proxy URL with ID: /api/image/{id}{path} (dev) or /api/image-proxy?id={id}&path={path} (prod)
+    // Example dev: /api/image/1/wp-content/img/A/A_Bad_Person/005/001.jpg
+    // Example prod: /api/image-proxy?id=1&path=wp-content/img/A/A_Bad_Person/005/001.jpg
     const cleanPath = `/api/image/${domainId}${path}`;
-    
+
     // For development, use relative path
     if (import.meta.env.DEV) {
       return cleanPath;
     }
-    
-    // For production, use full URL
+
+    // For production, use the API endpoint with query parameters
+    const productionPath = `/api/image-proxy?id=${domainId}&path=${encodeURIComponent(path.substring(1))}`;
     const baseUrl = window.location.origin;
-    return `${baseUrl}${cleanPath}`;
+    return `${baseUrl}${productionPath}`;
   } catch (e) {
     // Fallback to original URL if parsing fails
-    console.error('Failed to parse image URL:', originalUrl, e);
+    console.error("Failed to parse image URL:", originalUrl, e);
     return originalUrl;
   }
 }
@@ -83,7 +90,7 @@ export function proxyChapterImages(chapter: any): any {
 
   return {
     ...chapter,
-    images: chapter.images.map((url: string) => getProxiedImageUrl(url))
+    images: chapter.images.map((url: string) => getProxiedImageUrl(url)),
   };
 }
 
@@ -97,7 +104,7 @@ export function proxyChaptersData(data: any): any {
 
   return {
     ...data,
-    chapters: data.chapters.map((chapter: any) => proxyChapterImages(chapter))
+    chapters: data.chapters.map((chapter: any) => proxyChapterImages(chapter)),
   };
 }
 
@@ -107,10 +114,10 @@ export function proxyChaptersData(data: any): any {
  */
 export async function fetchImageWithProxy(url: string): Promise<Blob> {
   const proxiedUrl = getProxiedImageUrl(url);
-  
+
   const response = await fetch(proxiedUrl, {
     headers: {
-      'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
+      Accept: "image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8",
     },
   });
 

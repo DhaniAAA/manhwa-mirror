@@ -1,10 +1,13 @@
 import type { Plugin } from 'vite';
 
-// Domain mapping: ID -> Domain
+// Domain mapping: ID -> Domain (WAJIB SAMA DENGAN VERSI SERVER)
 const DOMAIN_MAP: Record<string, string> = {
   '1': 'sv1.imgkc1.my.id',
   '2': 'sv2.imgkc2.my.id',
-  '3': 'sv3.imgkc3.my.id'
+  '3': 'sv3.imgkc3.my.id',
+  '4': 'sv4.imgkc4.my.id', // <-- Diperbarui
+  '5': 'sv5.imgkc5.my.id', // <-- Diperbarui
+  '6': 'komikcast03.com',  // <-- Diperbarui
 };
 
 /**
@@ -54,7 +57,7 @@ export function imageProxyPlugin(): Plugin {
           const response = await fetch(imageUrl, {
             headers: {
               'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-              'Referer': 'https://komikcast03.com/',
+              'Referer': 'https://komikcast03.com/', // Biarkan referer ini
               'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
             },
           });
