@@ -3,12 +3,6 @@
  * Converts external image URLs to use our proxy
  */
 
-// List of domains to proxy
-const PROXY_DOMAINS = [
-  'sv1.imgkc1.my.id',
-  'sv2.imgkc2.my.id',
-  'sv3.imgkc3.my.id'
-];
 
 // Domain mapping: ID -> Domain (exported for use in other modules)
 export const DOMAIN_MAP: Record<string, string> = {
