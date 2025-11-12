@@ -30,7 +30,7 @@ const DOMAIN_TO_ID: Record<string, string> = {
 export function shouldProxyUrl(url: string): boolean {
   try {
     const urlObj = new URL(url);
-    return PROXY_DOMAINS.includes(urlObj.hostname);
+    return Object.keys(DOMAIN_TO_ID).includes(urlObj.hostname);
   } catch {
     return false;
   }

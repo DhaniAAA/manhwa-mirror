@@ -4,8 +4,8 @@
       <div class="relative aspect-[3/4] bg-gradient-to-br from-bg-tertiary to-bg-elevated overflow-hidden">
         <!-- Cover Image with Lazy Loading -->
         <LazyImage
-          v-if="coverImage"
-          :src="coverImage"
+          v-if="proxiedCover"
+          :src="proxiedCover"
           :alt="title"
           image-class="absolute inset-0 h-full w-full object-cover object-center pointer-events-none"
           :priority="priority"
@@ -80,6 +80,8 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import LazyImage from '../shared/LazyImage.vue'
+import { computed } from 'vue'
+import { getProxiedImageUrl } from '../../utils/imageProxy'
 import { formatRelativeTime } from '../../utils/textUtils'
 import koreaFlag from '../../assets/bendera/south-korea.png'
 import chinaFlag from '../../assets/bendera/china.png'
@@ -87,6 +89,7 @@ import japanFlag from '../../assets/bendera/japan.png'
 
 // Removed unused badge class functions - using inline classes in template
 
+// Props definition
 const props = defineProps<{
   slug?: string
   title: string
@@ -135,6 +138,9 @@ const handleChapterClick = (event: Event, chapter: { title: string; waktu_rilis?
 // const handleQuickRead = () => {
 //   emit('quickRead', props.slug || '', props.title)
 // }
+
+// Computed proxied cover
+const proxiedCover = computed(() => getProxiedImageUrl(props.coverImage || ''))
 
 const handleImageError = () => {
   console.warn(`Failed to load cover image for: ${props.title}`)
