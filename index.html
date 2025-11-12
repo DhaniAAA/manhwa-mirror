@@ -32,7 +32,6 @@
   <meta name="robots" content="index, follow" />
 
   <!-- Google Search Console Verification -->
-  <!-- Replace 'YOUR_VERIFICATION_CODE' with actual code from Google Search Console -->
   <meta name="google-site-verification" content="JM-_bSRKc3BMNsI61fT4tpu94Gu3Do5mbhvvRiGSP6s" />
 
   <!-- Google Tag Manager -->
@@ -46,36 +45,12 @@
     })(window, document, 'script', 'dataLayer', 'GTM-5BD8MBNC');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Google tag (gtag.js) with error handling -->
-  <script>
-    // Skip analytics in development
-    const shouldLoadGA = !window.location.hostname.includes('localhost') && 
-                        !window.location.hostname.includes('127.0.0.1');
-    
-    if (shouldLoadGA) {
-      const script = document.createElement('script');
-      script.async = true;
-      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-L48L6TNV7M';
-      
-      script.onerror = function() {
-        console.warn('Google Analytics failed to load');
-      };
-      
-      document.head.appendChild(script);
-      
-      window.dataLayer = window.dataLayer || [];
-      function gtag(){dataLayer.push(arguments);}
-      gtag('js', new Date());
-      gtag('config', 'G-L48L6TNV7M');
-    } else {
-      // Development mode - mock gtag to prevent errors
-      window.dataLayer = window.dataLayer || [];
-      window.gtag = function() { 
-        window.dataLayer.push(arguments);
-        console.log('Analytics event:', arguments);
-      };
-    }
-  </script>
+  <!-- 
+    DIHAPUS: Google tag (gtag.js) yang konflik.
+    Script gtag.js dan gtag('config', 'G-L48L6TNV7M') telah dihapus.
+    Anda HARUS mengkonfigurasi tag GA4 di dalam Google Tag Manager.
+  -->
+
   <!-- Critical CSS - Inline for faster FCP/LCP -->
   <style>
     :root {
@@ -140,6 +115,7 @@
 
 <body>
   <!-- Google Tag Manager (noscript) -->
+  <!-- DITAMBAHKAN: Bagian noscript GTM yang hilang -->
   <noscript><iframe src="https://www.googletagmanager.com/ns.html?id=GTM-5BD8MBNC" height="0" width="0"
       style="display:none;visibility:hidden"></iframe></noscript>
   <!-- End Google Tag Manager (noscript) -->
