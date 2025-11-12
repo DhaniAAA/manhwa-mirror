@@ -4,52 +4,51 @@
     <div class="container px-4 mx-auto">
       <InfoBoard />
       <!-- Search Results Section -->
-      <section v-if="searchQuery" class="py-12 bg-gradient-to-b from-violet-500/5 via-transparent border-b border-slate-200 dark:border-slate-700">
+      <section v-if="searchQuery"
+        class="py-12 bg-gradient-to-b from-violet-500/5 via-transparent border-b border-slate-200 dark:border-slate-700">
         <div class="container px-4 mx-auto">
           <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
             <h2 class="flex items-center text-3xl font-bold text-violet-500 lg:text-2xl md:text-xl">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="inline-block mr-2">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="inline-block mr-2">
                 <circle cx="11" cy="11" r="8" />
                 <path d="m21 21-4.35-4.35" />
               </svg>
               Hasil Pencarian: "{{ searchQuery }}"
             </h2>
-            <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
+            <div
+              class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
               {{ searchResults.length }} manhwa ditemukan
             </div>
           </div>
 
-          <div v-if="searchLoading" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
-            <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
+          <div v-if="searchLoading"
+            class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+            <div
+              class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin">
+            </div>
             <p>Mencari manhwa...</p>
           </div>
 
-          <div v-else-if="searchResults.length === 0" class="flex flex-col items-center justify-center min-h-[300px] px-4 py-12 text-center">
-            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" class="mb-6 opacity-50 text-slate-400 dark:text-slate-500">
+          <div v-else-if="searchResults.length === 0"
+            class="flex flex-col items-center justify-center min-h-[300px] px-4 py-12 text-center">
+            <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"
+              class="mb-6 opacity-50 text-slate-400 dark:text-slate-500">
               <circle cx="11" cy="11" r="8" />
               <path d="m21 21-4.35-4.35" />
             </svg>
             <h3 class="mb-2 text-xl font-semibold text-slate-900 dark:text-slate-100">Tidak ada hasil</h3>
-            <p class="text-base text-slate-600 dark:text-slate-400 max-w-[400px]">Coba kata kunci lain untuk menemukan manhwa yang Anda cari</p>
+            <p class="text-base text-slate-600 dark:text-slate-400 max-w-[400px]">Coba kata kunci lain untuk menemukan
+              manhwa yang Anda cari</p>
           </div>
 
-          <div v-else class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
-            <ManhwaCard
-              v-for="manhwa in searchResults"
-              :key="manhwa.slug"
-              :slug="manhwa.slug"
-              :title="manhwa.title"
-              :coverImage="manhwa.cover_url || manhwa.coverImage"
-              :type="manhwa.type"
-              :status="manhwa.status"
-              :rating="manhwa.rating"
-              :chapters="manhwa.chapters || manhwa.total_chapters"
-              :genre="manhwa.genre"
-              :badge="manhwa.badge"
-              :latestChapters="manhwa.latestChapters"
-              @click="goToDetail"
-              @chapterClick="goToChapter"
-            />
+          <div v-else
+            class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
+            <ManhwaCard v-for="manhwa in searchResults" :key="manhwa.slug" :slug="manhwa.slug" :title="manhwa.title"
+              :coverImage="manhwa.cover_url || manhwa.coverImage" :type="manhwa.type" :status="manhwa.status"
+              :rating="manhwa.rating" :chapters="manhwa.chapters || manhwa.total_chapters" :genre="manhwa.genre"
+              :badge="manhwa.badge" :latestChapters="manhwa.latestChapters" @click="goToDetail"
+              @chapterClick="goToChapter" />
           </div>
         </div>
       </section>
@@ -59,58 +58,57 @@
       <div class="container px-4 mx-auto">
         <div class="flex items-center justify-between mb-8 md:flex-col md:items-start md:gap-4">
           <div class="flex items-center gap-4">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="flex-shrink-0 text-amber-400">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              class="flex-shrink-0 text-amber-400">
               <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z" />
             </svg>
             <div>
-              <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Rekomendasi Saat Ini</h2>
-              <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Pilihan terbaik untuk Anda berdasarkan rating tertinggi</p>
+              <h2 class="text-3xl font-bold text-slate-900 dark:text-slate-100 lg:text-2xl md:text-xl">Rekomendasi Saat
+                Ini</h2>
+              <p class="mt-1 text-sm text-slate-600 dark:text-slate-400">Pilihan terbaik untuk Anda berdasarkan rating
+                tertinggi</p>
             </div>
           </div>
           <div class="flex items-center gap-3">
             <!-- <div class="px-4 py-2 text-sm font-medium border rounded-lg bg-slate-100 border-slate-200 text-slate-600 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-400 md:w-full md:text-center">
               Halaman {{ latestPage }} dari {{ latestTotalPages }}
             </div> -->
-            <div v-if="isLoadingMore" class="flex items-center gap-2 px-3 py-2 text-xs font-medium border rounded-lg bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/20 dark:border-violet-800 dark:text-violet-400">
-              <div class="w-3 h-3 border-2 rounded-full border-violet-300 dark:border-violet-700 border-t-violet-600 dark:border-t-violet-400 animate-spin"></div>
+            <div v-if="isLoadingMore"
+              class="flex items-center gap-2 px-3 py-2 text-xs font-medium border rounded-lg bg-violet-50 border-violet-200 text-violet-600 dark:bg-violet-900/20 dark:border-violet-800 dark:text-violet-400">
+              <div
+                class="w-3 h-3 border-2 rounded-full border-violet-300 dark:border-violet-700 border-t-violet-600 dark:border-t-violet-400 animate-spin">
+              </div>
               <span>Memuat...</span>
             </div>
           </div>
         </div>
 
-        <div v-if="loadingLatest" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
-          <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
+        <div v-if="loadingLatest"
+          class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+          <div
+            class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin">
+          </div>
           <p>Memuat rekomendasi...</p>
         </div>
 
         <div v-else>
-          <div class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
-            <ManhwaCard
-              v-for="(manhwa, index) in displayedLatest"
-              :key="manhwa.slug"
-              :slug="manhwa.slug"
-              :title="manhwa.title"
-              :coverImage="manhwa.cover_url || manhwa.coverImage"
-              :type="manhwa.type"
-              :status="manhwa.status"
-              :rating="manhwa.rating"
-              :chapters="manhwa.chapters || manhwa.total_chapters"
-              :genre="manhwa.genre"
-              :latestChapters="manhwa.latestChapters"
-              :priority="index < 3"
-              @click="goToDetail"
-              @chapterClick="goToChapter"
-            />
+          <div
+            class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
+            <ManhwaCard v-for="(manhwa, index) in displayedLatest" :key="manhwa.slug" :slug="manhwa.slug"
+              :title="manhwa.title" :coverImage="manhwa.cover_url || manhwa.coverImage" :type="manhwa.type"
+              :status="manhwa.status" :rating="manhwa.rating" :chapters="manhwa.chapters || manhwa.total_chapters"
+              :genre="manhwa.genre" :latestChapters="manhwa.latestChapters" :priority="index < 3" @click="goToDetail"
+              @chapterClick="goToChapter" />
           </div>
 
           <!-- Pagination for Recommendations -->
-          <div v-if="latestTotalPages > 1" class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
+          <div v-if="latestTotalPages > 1"
+            class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="latestPage === 1"
-              @click="goToLatestPage(1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="latestPage === 1" @click="goToLatestPage(1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="11 17 6 12 11 7" />
                 <polyline points="18 17 13 12 18 7" />
               </svg>
@@ -118,29 +116,25 @@
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="latestPage === 1"
-              @click="goToLatestPage(latestPage - 1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="latestPage === 1" @click="goToLatestPage(latestPage - 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
 
             <div class="flex flex-wrap justify-center gap-1.5 mx-1 md:gap-2 md:mx-2">
               <template v-for="(page, index) in visibleLatestPages" :key="index">
-                <button
-                  v-if="typeof page === 'number'"
+                <button v-if="typeof page === 'number'"
                   class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
-                  :class="
-                    page === latestPage
+                  :class="page === latestPage
                       ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
                       : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
-                  "
-                  @click="goToLatestPage(page)"
-                >
+                    " @click="goToLatestPage(page)">
                   {{ page }}
                 </button>
-                <span v-else class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
+                <span v-else
+                  class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
                   {{ page }}
                 </span>
               </template>
@@ -148,20 +142,18 @@
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="latestPage === latestTotalPages"
-              @click="goToLatestPage(latestPage + 1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="latestPage === latestTotalPages" @click="goToLatestPage(latestPage + 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="latestPage === latestTotalPages"
-              @click="goToLatestPage(latestTotalPages)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="latestPage === latestTotalPages" @click="goToLatestPage(latestTotalPages)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="13 17 18 12 13 7" />
                 <polyline points="6 17 11 12 6 7" />
               </svg>
@@ -181,38 +173,31 @@
           </div> -->
         </div>
 
-        <div v-if="loadingPopular" class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
-          <div class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin"></div>
+        <div v-if="loadingPopular"
+          class="flex flex-col items-center justify-center min-h-[300px] gap-4 text-slate-600 dark:text-slate-400">
+          <div
+            class="w-12 h-12 border-4 rounded-full border-slate-200 dark:border-slate-700 border-t-violet-500 animate-spin">
+          </div>
           <p>Memuat manhwa...</p>
         </div>
 
         <div v-else>
-          <div class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
-            <ManhwaCard
-              v-for="manhwa in displayedPopular"
-              :key="manhwa.slug"
-              :slug="manhwa.slug"
-              :title="manhwa.title"
-              :coverImage="manhwa.cover_url"
-              :type="manhwa.type"
-              :status="manhwa.status"
-              :rating="manhwa.rating"
-              :chapters="manhwa.total_chapters"
-              :genre="manhwa.genres?.join(', ')"
-              :latestChapters="manhwa.latestChapters"
-              @click="goToDetail"
-              @chapterClick="goToChapter"
-            />
+          <div
+            class="grid grid-cols-2 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))] md:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] md:gap-5 lg:grid-cols-[repeat(auto-fill,minmax(180px,1fr))] lg:gap-6">
+            <ManhwaCard v-for="manhwa in displayedPopular" :key="manhwa.slug" :slug="manhwa.slug" :title="manhwa.title"
+              :coverImage="manhwa.cover_url" :type="manhwa.type" :status="manhwa.status" :rating="manhwa.rating"
+              :chapters="manhwa.total_chapters" :genre="manhwa.genres?.join(', ')"
+              :latestChapters="manhwa.latestChapters" @click="goToDetail" @chapterClick="goToChapter" />
           </div>
 
           <!-- Pagination for Popular -->
-          <div v-if="popularTotalPages > 1" class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
+          <div v-if="popularTotalPages > 1"
+            class="flex flex-wrap items-center justify-center gap-1.5 pt-6 mt-8 border-t border-slate-200 dark:border-slate-700 md:gap-2 md:pt-8 md:mt-12">
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="popularPage === 1"
-              @click="goToPopularPage(1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="popularPage === 1" @click="goToPopularPage(1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="11 17 6 12 11 7" />
                 <polyline points="18 17 13 12 18 7" />
               </svg>
@@ -220,29 +205,25 @@
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="popularPage === 1"
-              @click="goToPopularPage(popularPage - 1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="popularPage === 1" @click="goToPopularPage(popularPage - 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="15 18 9 12 15 6" />
               </svg>
             </button>
 
             <div class="flex flex-wrap justify-center gap-1.5 mx-1 md:gap-2 md:mx-2">
               <template v-for="(page, index) in visiblePopularPages" :key="index">
-                <button
-                  v-if="typeof page === 'number'"
+                <button v-if="typeof page === 'number'"
                   class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
-                  :class="
-                    page === popularPage
+                  :class="page === popularPage
                       ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
                       : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
-                  "
-                  @click="goToPopularPage(page)"
-                >
+                    " @click="goToPopularPage(page)">
                   {{ page }}
                 </button>
-                <span v-else class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
+                <span v-else
+                  class="flex items-center justify-center h-10 min-w-10 px-2 text-slate-500 dark:text-slate-400">
                   {{ page }}
                 </span>
               </template>
@@ -250,20 +231,18 @@
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="popularPage === popularTotalPages"
-              @click="goToPopularPage(popularPage + 1)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="popularPage === popularTotalPages" @click="goToPopularPage(popularPage + 1)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="9 18 15 12 9 6" />
               </svg>
             </button>
 
             <button
               class="relative flex items-center justify-center w-10 h-10 min-w-10 overflow-hidden text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer disabled:opacity-30 disabled:cursor-not-allowed md:w-11 md:h-11 md:min-w-11 dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100 hover:not(:disabled):-translate-y-px hover:not(:disabled):border-violet-500 hover:not(:disabled):text-violet-500 hover:not(:disabled):shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:not(:disabled):translate-y-0 active:not(:disabled):shadow-[0_2px_6px_rgba(139,92,246,0.2)] md:hover:not(:disabled):-translate-y-0.5 dark:hover:not(:disabled):bg-slate-700 disabled:bg-white dark:disabled:bg-slate-900"
-              :disabled="popularPage === popularTotalPages"
-              @click="goToPopularPage(popularTotalPages)"
-            >
-              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="relative z-10">
+              :disabled="popularPage === popularTotalPages" @click="goToPopularPage(popularTotalPages)">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                class="relative z-10">
                 <polyline points="13 17 18 12 13 7" />
                 <polyline points="6 17 11 12 6 7" />
               </svg>
@@ -426,13 +405,13 @@ const seededShuffleArray = (array: ManhwaCardData[], seed: number): ManhwaCardDa
   const shuffled = [...array]; // Clone array to avoid mutating original
   const random = seededRandom(seed);
   let currentIndex = shuffled.length;
-  
+
   // Selama masih ada elemen untuk diacak
   while (currentIndex !== 0) {
     // Ambil elemen tersisa menggunakan seeded random
     const randomIndex = Math.floor(random() * currentIndex);
     currentIndex--;
-    
+
     // Tukar dengan elemen saat ini (TypeScript-safe swap)
     const temp = shuffled[currentIndex]!;
     shuffled[currentIndex] = shuffled[randomIndex]!;
@@ -606,7 +585,7 @@ onMounted(async () => {
     if (route.query.search && typeof route.query.search === "string") {
       console.log("🔍 Search query from URL:", route.query.search);
       await handleSearch(route.query.search);
-      
+
       // Re-open search overlay if user came back from detail page
       if (props.navBarRef && props.navBarRef.openSearch) {
         nextTick(() => {

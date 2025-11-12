@@ -47,10 +47,14 @@
             :style="{ animationDelay: `${index * 0.05}s` }">
             <!-- Image Container -->
             <div class="relative aspect-[3/4] bg-gradient-to-br from-gray-800 to-gray-900 overflow-hidden group">
-              <img v-if="item.cover_url" :src="item.cover_url" :alt="item.title"
+              <img v-if="item.cover_url || item.coverImage"
+                :src="getProxiedImageUrl(item.cover_url || item.coverImage || '')" :alt="item.title"
                 class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 pointer-events-none"
                 :loading="index < 3 ? 'eager' : 'lazy'" :fetchpriority="index === 0 ? 'high' : 'auto'"
                 :decoding="index < 3 ? 'sync' : 'async'" />
+              <img v-else src="/placeholder-cover.svg" :alt="`Cover image for ${item.title} not available`"
+                class="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110 pointer-events-none"
+                loading="lazy" />
 
               <!-- Overlay (put first so badges are on top) -->
               <div
@@ -117,6 +121,8 @@ import type { ManhwaCardData } from "../../types/manhwa";
 import koreaFlag from "../../assets/bendera/south-korea.png";
 import chinaFlag from "../../assets/bendera/china.png";
 import japanFlag from "../../assets/bendera/japan.png";
+// Import image proxy utility to bypass CORS and support mobile
+import { getProxiedImageUrl } from "../../utils/imageProxy";
 
 const hotUpdates = ref<ManhwaCardData[]>([]);
 const loading = ref(true);
@@ -143,7 +149,7 @@ onMounted(async () => {
     hotUpdates.value = await ManhwaService.getHotUpdates(12);
 
     console.log(`✅ Loaded ${hotUpdates.value.length} hot updates`);
-    
+
     // Debug: Check if status field exists
     hotUpdates.value.forEach((item, index) => {
       console.log(`[${index}] ${item.title}:`, {
