@@ -47,10 +47,33 @@ let observer: IntersectionObserver | null = null
 const loadImage = () => {
   if (isLoaded.value || error.value) return
   isLoaded.value = true
+  error.value = false // Reset error state on retry
 }
 
 const handleError = (event: Event) => {
+  console.warn('Image load failed, retrying...', props.src)
   error.value = true
+  isLoaded.value = false
+  
+  // Retry with timeout
+  setTimeout(() => {
+    if (imageWrapper.value) {
+      const img = new Image()
+      img.onload = () => {
+        error.value = false
+        isLoaded.value = true
+        emit('load')
+      }
+      img.onerror = () => {
+        // Final error - show placeholder
+        error.value = true
+        isLoaded.value = false
+        emit('error', event)
+      }
+      img.src = props.src + '?retry=' + Date.now() // Cache busting
+    }
+  }, 1000)
+  
   emit('error', event)
 }
 

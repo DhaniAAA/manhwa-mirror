@@ -138,6 +138,13 @@ const handleChapterClick = (event: Event, chapter: { title: string; waktu_rilis?
 
 const handleImageError = () => {
   console.warn(`Failed to load cover image for: ${props.title}`)
+  
+  // Try to use placeholder as fallback
+  const coverImg = document.querySelector(`[alt="${props.title}"]`) as HTMLImageElement
+  if (coverImg && coverImg.src !== '/placeholder-cover.svg') {
+    coverImg.src = '/placeholder-cover.svg'
+    coverImg.alt = `${props.title} - Cover Not Available`
+  }
 }
 
 // Shorten chapter title: "Chapter 275" -> "Chp 275"

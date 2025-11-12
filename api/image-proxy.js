@@ -4,11 +4,14 @@
  * Usage: /api/image-proxy/1/wp-content/img/...
  */
 
-// Domain mapping: ID -> Domain
+// Domain mapping: ID -> Domain (updated with fallback)
 const DOMAIN_MAP = {
   '1': 'sv1.imgkc1.my.id',
   '2': 'sv2.imgkc2.my.id',
-  '3': 'sv3.imgkc3.my.id'
+  '3': 'sv3.imgkc3.my.id',
+  '4': 'sv4.imgkc4.my.id',
+  '5': 'sv5.imgkc5.my.id',
+  '6': 'komikcast03.com',
 };
 
 export default async function handler(req, res) {
@@ -54,6 +57,8 @@ export default async function handler(req, res) {
         'Referer': 'https://komikcast03.com/',
         'Accept': 'image/avif,image/webp,image/apng,image/svg+xml,image/*,*/*;q=0.8',
       },
+      // Add timeout to prevent hanging
+      signal: AbortSignal.timeout(10000)
     });
 
     if (!response.ok) {

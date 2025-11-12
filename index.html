@@ -46,14 +46,35 @@
     })(window, document, 'script', 'dataLayer', 'GTM-5BD8MBNC');</script>
   <!-- End Google Tag Manager -->
 
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-L48L6TNV7M"></script>
+  <!-- Google tag (gtag.js) with error handling -->
   <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag() { dataLayer.push(arguments); }
-    gtag('js', new Date());
-
-    gtag('config', 'G-L48L6TNV7M');
+    // Skip analytics in development
+    const shouldLoadGA = !window.location.hostname.includes('localhost') && 
+                        !window.location.hostname.includes('127.0.0.1');
+    
+    if (shouldLoadGA) {
+      const script = document.createElement('script');
+      script.async = true;
+      script.src = 'https://www.googletagmanager.com/gtag/js?id=G-L48L6TNV7M';
+      
+      script.onerror = function() {
+        console.warn('Google Analytics failed to load');
+      };
+      
+      document.head.appendChild(script);
+      
+      window.dataLayer = window.dataLayer || [];
+      function gtag(){dataLayer.push(arguments);}
+      gtag('js', new Date());
+      gtag('config', 'G-L48L6TNV7M');
+    } else {
+      // Development mode - mock gtag to prevent errors
+      window.dataLayer = window.dataLayer || [];
+      window.gtag = function() { 
+        window.dataLayer.push(arguments);
+        console.log('Analytics event:', arguments);
+      };
+    }
   </script>
   <!-- Critical CSS - Inline for faster FCP/LCP -->
   <style>
