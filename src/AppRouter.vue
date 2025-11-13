@@ -110,7 +110,7 @@ const navBarRef = ref<InstanceType<typeof NavigationBar> | null>(null);
 
 // Check if current route is reader
 const isReaderRoute = computed(() => {
-  return route.path.includes("/baca/") && route.path.includes("/read/");
+  return route.path.includes("/baca/") || route.path.includes("/reader/");
 });
 
 // Handle search from NavigationBar

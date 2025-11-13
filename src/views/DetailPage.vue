@@ -46,6 +46,7 @@ import { useRoute, useRouter } from 'vue-router'
 import ManhwaDetail from './ManhwaDetail.vue'
 import { useManhwaDetail } from '../composables/useManhwaDetail'
 import { useMeta } from '../composables/useMeta'
+import { generateManhwaStructuredData, generateBreadcrumbStructuredData } from '../utils/structuredData'
 import type { Chapter } from '../types/manhwa'
 
 const route = useRoute()
@@ -61,13 +62,44 @@ const metaOptions = computed(() => {
   const baseUrl = window.location.origin
   const currentUrl = `${baseUrl}/detail/${slug}`
   
+  // Generate structured data
+  const structuredData = metadata.value ? generateManhwaStructuredData({
+    title: metadata.value.title,
+    description: metadata.value.description || `Baca ${metadata.value.title} online. ${metadata.value.genres?.join(', ') || 'Manhwa'} dengan ${metadata.value.total_chapters} chapter tersedia.`,
+    coverUrl: metadata.value.cover_url || `${baseUrl}/og-image.jpg`,
+    url: currentUrl,
+    author: metadata.value.author || 'Unknown Author',
+    artist: metadata.value.artist || undefined,
+    genres: metadata.value.genres || [],
+    status: metadata.value.status || 'Unknown',
+    type: metadata.value.type || 'Manhwa',
+    rating: metadata.value.rating || undefined,
+    totalChapters: metadata.value.total_chapters || undefined,
+    lastUpdate: metadata.value.lastUpdate || undefined,
+    releaseYear: metadata.value.release_year ? parseInt(metadata.value.release_year.toString()) : undefined
+  }) : undefined
+
+  // Generate breadcrumb structured data
+  const breadcrumbData = generateBreadcrumbStructuredData([
+    { name: 'Home', url: baseUrl },
+    { name: metadata.value?.title || 'Detail', url: currentUrl }
+  ])
+  
+  // Combine structured data with breadcrumb
+  const combinedStructuredData = structuredData ? {
+    ...structuredData,
+    breadcrumb: breadcrumbData
+  } : undefined
+  
   return {
     title: `${metadata.value.title} - Manhwa Mirror`,
     description: metadata.value.description || `Baca ${metadata.value.title} online. ${metadata.value.genres?.join(', ') || 'Manhwa'} dengan ${metadata.value.total_chapters} chapter tersedia.`,
     image: metadata.value.cover_url || `${baseUrl}/og-image.jpg`,
     url: currentUrl,
+    canonical: currentUrl,
     type: 'article',
-    keywords: `${metadata.value.title}, manhwa, ${metadata.value.genres?.join(', ') || 'komik'}, baca online`
+    keywords: `${metadata.value.title}, manhwa, ${metadata.value.genres?.join(', ') || 'komik'}, baca online`,
+    structuredData: combinedStructuredData
   }
 })
 

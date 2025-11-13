@@ -8,6 +8,8 @@ export interface MetaOptions {
   url?: string
   type?: string
   keywords?: string
+  canonical?: string
+  structuredData?: Record<string, any>
 }
 
 /**
@@ -87,6 +89,32 @@ export function useMeta(options: MetaOptions | Ref<MetaOptions>) {
 
     if (opts.url) {
       updateMetaTag('meta[name="twitter:url"]', opts.url)
+    }
+
+    // Canonical URL
+    if (opts.canonical) {
+      let canonicalLink = document.querySelector('link[rel="canonical"]') as HTMLLinkElement
+      if (canonicalLink) {
+        canonicalLink.setAttribute('href', opts.canonical)
+      } else {
+        canonicalLink = document.createElement('link')
+        canonicalLink.setAttribute('rel', 'canonical')
+        canonicalLink.setAttribute('href', opts.canonical)
+        document.head.appendChild(canonicalLink)
+      }
+    }
+
+    // Structured Data (JSON-LD)
+    if (opts.structuredData) {
+      let scriptElement = document.querySelector('script[type="application/ld+json"]')
+      if (scriptElement) {
+        scriptElement.textContent = JSON.stringify(opts.structuredData)
+      } else {
+        scriptElement = document.createElement('script')
+        scriptElement.setAttribute('type', 'application/ld+json')
+        scriptElement.textContent = JSON.stringify(opts.structuredData)
+        document.head.appendChild(scriptElement)
+      }
     }
   }
 

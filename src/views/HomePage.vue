@@ -261,6 +261,8 @@ import { ManhwaService } from "../services/manhwaService";
 import type { ManhwaCardData } from "../types/manhwa";
 import type NavigationBar from "../components/NavigationBar.vue";
 import InfoBoard from "../components/shared/InfoBoard.vue";
+import { useMeta } from "../composables/useMeta";
+import { generateWebsiteStructuredData } from "../utils/structuredData";
 // Lazy load heavy components
 const HeroSection = defineAsyncComponent(() => import("../components/shared/HeroSection.vue"));
 const ManhwaCard = defineAsyncComponent(() => import("../components/manhwa/ManhwaCard.vue"));
@@ -273,15 +275,40 @@ const props = defineProps<{
 const router = useRouter();
 const route = useRoute();
 
-const loadingLatest = ref(true);
-const loadingPopular = ref(true);
-const latestManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Rekomendasi" (100 teratas acak)
-const popularManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Populer" (sort by rating)
-
 // Search state
 const searchQuery = ref("");
 const searchResults = ref<ManhwaCardData[]>([]);
 const searchLoading = ref(false);
+
+// Dynamic meta tags for homepage
+const metaOptions = computed(() => {
+  const baseUrl = window.location.origin
+  const currentUrl = searchQuery.value ? `${baseUrl}?search=${encodeURIComponent(searchQuery.value)}` : baseUrl
+  
+  // Generate structured data for website
+  const structuredData = generateWebsiteStructuredData()
+  
+  return {
+    title: searchQuery.value ? `Hasil Pencarian: "${searchQuery.value}" - Manhwa Mirror` : "Manhwa Mirror - Baca Manhwa Online",
+    description: searchQuery.value 
+      ? `Temukan ${searchResults.value.length} manhwa untuk pencarian "${searchQuery.value}" di Manhwa Mirror. Platform modern untuk membaca manhwa online gratis.`
+      : "Platform modern untuk membaca manhwa dengan antarmuka yang nyaman dan intuitif. Temukan manhwa favorit Anda dan baca online gratis.",
+    image: `${baseUrl}/og-image.jpg`,
+    url: currentUrl,
+    canonical: currentUrl,
+    type: 'website',
+    keywords: 'manhwa, manga, manhua, komik, baca online, webtoon, manhwa mirror',
+    structuredData: structuredData
+  }
+})
+
+// Apply meta tags
+useMeta(metaOptions)
+
+const loadingLatest = ref(true);
+const loadingPopular = ref(true);
+const latestManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Rekomendasi" (100 teratas acak)
+const popularManhwa = ref<ManhwaCardData[]>([]); // Ini untuk "Populer" (sort by rating)
 
 // SSR + CSR Strategy
 const initialLoadCount = 10; // Load only 10 items on SSR
