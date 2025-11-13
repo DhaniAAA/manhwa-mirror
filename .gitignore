@@ -73,6 +73,7 @@ coverage
 # *.md
 # !README.md
 *.py
-*.json
+# *.json
 /python
 /python/requirements.txt
+merger_link.json
