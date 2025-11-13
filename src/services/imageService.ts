@@ -36,8 +36,11 @@ export class ImageService {
   static async getImageUrl(originalUrl: string, config = DEFAULT_CONFIG): Promise<string> {
     if (!originalUrl) return config.fallbackUrl
 
-    // Check if it's already a proxy URL
-    if (originalUrl.includes('/api/image-proxy/')) {
+    // Check if it's already a proxy URL (prod query or dev path)
+    if (
+      originalUrl.includes('/api/image-proxy') ||
+      originalUrl.includes('/api/image/')
+    ) {
       return originalUrl
     }
 
@@ -55,16 +58,21 @@ export class ImageService {
   static createProxyUrl(originalUrl: string): string {
     if (!originalUrl) return ''
     
-    // Extract server ID and path
-    const match = originalUrl.match(/https:\/\/sv(\d+)\.imgkc\d+\.my\.id(.*)/)
+    // Extract server ID and path for known domains
+    const match = originalUrl.match(/https:\/\/sv(\d+)\.imgkc\d+\.my\.id(\/.*)/)
     if (match) {
-      const [, serverId, path] = match
-      return `/api/image-proxy/${serverId}${path}`
+      const serverId = match[1]
+      const path = match[2] ?? ''
+      if (!path) return originalUrl
+      if (import.meta.env?.DEV) {
+        return `/api/image/${serverId}${path}`
+      }
+      const cleanPath = encodeURIComponent(path.slice(1))
+      return `/api/image-proxy?id=${serverId}&path=${cleanPath}`
     }
     
-    // For other URLs, use server 1 as default
-    const encodedUrl = encodeURIComponent(originalUrl)
-    return `/api/image-proxy/1${encodedUrl}`
+    // Unknown domain: do not proxy, return original
+    return originalUrl
   }
 
   /**
