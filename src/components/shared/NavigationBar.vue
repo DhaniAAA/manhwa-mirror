@@ -179,7 +179,7 @@
       leave-to-class="opacity-0 -translate-y-full"
     >
       <div v-if="mobileMenuOpen" class="lg:hidden fixed left-0 right-0 top-[70px] bottom-0 z-[95] bg-bg-primary backdrop-blur-2xl">
-        <div class="container py-6 bg-gradient-to-b from-bg-primary via-bg-primary to-bg-elevated/50">
+        <div class="container py-6 bg-gradient-to-b from-bg-primary via-bg-primary to-bg-elevated">
           <!-- Search Bar (Mobile) -->
           <div class="mb-6">
             <div class="relative">
@@ -240,7 +240,7 @@
           </div>
 
           <!-- User Section (Mobile) -->
-          <div class="border-t border-border-color pt-6">
+          <div class="border-t border-border-color pt-10">
             <!-- Authenticated User -->
             <div v-if="isAuthenticated" class="space-y-3">
               <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-bg-elevated">

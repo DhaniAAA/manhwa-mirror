@@ -17,7 +17,7 @@
             <p class="text-[0.95rem] leading-relaxed text-[var(--text-secondary)]">Platform modern untuk membaca manhwa dengan pengalaman terbaik. Nikmati Puluhan judul favorit Anda kapan saja, di mana saja.</p>
           </div>
 
-          <div class="grid gap-8 md:grid-cols-3">
+          <div class="grid grid-cols-2 gap-8 md:grid-cols-3">
             <div class="space-y-3">
               <h4 class="text-sm font-semibold text-[var(--text-primary)]">Jelajahi</h4>
               <router-link to="/" class="block text-sm text-[var(--text-secondary)] transition-colors duration-200 hover:text-[var(--accent-primary)] hover:underline"> Beranda </router-link>
