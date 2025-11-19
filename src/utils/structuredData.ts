@@ -3,32 +3,32 @@
  */
 
 export interface ManhwaStructuredData {
-  title: string
-  description: string
-  coverUrl: string
-  url: string
-  author: string
-  artist?: string
-  genres: string[]
-  status: string
-  type: string
-  rating?: string
-  totalChapters?: number
-  lastUpdate?: string
-  releaseYear?: number
+  title: string;
+  description: string;
+  coverUrl: string;
+  url: string;
+  author: string;
+  artist?: string;
+  genres: string[];
+  status: string;
+  type: string;
+  rating?: string;
+  totalChapters?: number;
+  lastUpdate?: string;
+  releaseYear?: number;
 }
 
 export interface ReaderStructuredData {
-  title: string
-  chapterTitle: string
-  url: string
-  manhwaUrl: string
-  previousChapterUrl?: string
-  nextChapterUrl?: string
-  chapterNumber: number
-  author: string
-  artist?: string
-  coverUrl: string
+  title: string;
+  chapterTitle: string;
+  url: string;
+  manhwaUrl: string;
+  previousChapterUrl?: string;
+  nextChapterUrl?: string;
+  chapterNumber: number;
+  author: string;
+  artist?: string;
+  coverUrl: string;
 }
 
 /**
@@ -38,60 +38,60 @@ export function generateManhwaStructuredData(data: ManhwaStructuredData) {
   const structuredData: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "Book",
-    "name": data.title,
-    "description": data.description,
-    "url": data.url,
-    "image": data.coverUrl,
-    "author": {
+    name: data.title,
+    description: data.description,
+    url: data.url,
+    image: data.coverUrl,
+    author: {
       "@type": "Person",
-      "name": data.author
+      name: data.author,
     },
-    "genre": data.genres,
-    "inLanguage": "id",
-    "publisher": {
+    genre: data.genres,
+    inLanguage: "id",
+    publisher: {
       "@type": "Organization",
-      "name": "Manhwa Mirror",
-      "url": "https://manhwa-mirror.vercel.app"
+      name: "Manhwa Mirror",
+      url: "https://www.manhwaku.biz.id",
     },
-    "bookFormat": "EBook",
-    "keywords": data.genres.join(", "),
-    "about": data.genres.map(genre => ({
+    bookFormat: "EBook",
+    keywords: data.genres.join(", "),
+    about: data.genres.map((genre) => ({
       "@type": "Thing",
-      "name": genre
-    }))
-  }
+      name: genre,
+    })),
+  };
 
   // Add optional properties only if they exist
   if (data.artist) {
     structuredData.artist = {
       "@type": "Person",
-      "name": data.artist
-    }
+      name: data.artist,
+    };
   }
 
   if (data.releaseYear) {
-    structuredData.datePublished = `${data.releaseYear}-01-01`
+    structuredData.datePublished = `${data.releaseYear}-01-01`;
   }
 
   if (data.lastUpdate) {
-    structuredData.dateModified = data.lastUpdate
+    structuredData.dateModified = data.lastUpdate;
   }
 
   if (data.rating) {
     structuredData.aggregateRating = {
       "@type": "AggregateRating",
-      "ratingValue": data.rating,
-      "ratingCount": "100",
-      "bestRating": "10",
-      "worstRating": "1"
-    }
+      ratingValue: data.rating,
+      ratingCount: "100",
+      bestRating: "10",
+      worstRating: "1",
+    };
   }
 
   if (data.totalChapters) {
-    structuredData.numberOfPages = data.totalChapters
+    structuredData.numberOfPages = data.totalChapters;
   }
 
-  return structuredData
+  return structuredData;
 }
 
 /**
@@ -101,62 +101,62 @@ export function generateReaderStructuredData(data: ReaderStructuredData) {
   const structuredData: Record<string, any> = {
     "@context": "https://schema.org",
     "@type": "Article",
-    "headline": data.chapterTitle,
-    "name": data.chapterTitle,
-    "description": `Baca ${data.title} Chapter ${data.chapterNumber} online gratis`,
-    "url": data.url,
-    "image": data.coverUrl,
-    "author": {
+    headline: data.chapterTitle,
+    name: data.chapterTitle,
+    description: `Baca ${data.title} Chapter ${data.chapterNumber} online gratis`,
+    url: data.url,
+    image: data.coverUrl,
+    author: {
       "@type": "Person",
-      "name": data.author
+      name: data.author,
     },
-    "publisher": {
+    publisher: {
       "@type": "Organization",
-      "name": "Manhwa Mirror",
-      "url": "https://manhwa-mirror.vercel.app"
+      name: "Manhwa Mirror",
+      url: "https://www.manhwaku.biz.id",
     },
-    "datePublished": new Date().toISOString(),
-    "dateModified": new Date().toISOString(),
-    "isPartOf": {
+    datePublished: new Date().toISOString(),
+    dateModified: new Date().toISOString(),
+    isPartOf: {
       "@type": "Book",
-      "name": data.title,
-      "url": data.manhwaUrl
+      name: data.title,
+      url: data.manhwaUrl,
     },
-    "position": data.chapterNumber,
-    "articleSection": "Chapter",
-    "inLanguage": "id",
-    "mainEntityOfPage": {
+    position: data.chapterNumber,
+    articleSection: "Chapter",
+    inLanguage: "id",
+    mainEntityOfPage: {
       "@type": "WebPage",
-      "@id": data.url
+      "@id": data.url,
     },
-    "hasPart": [
+    hasPart: [
       {
         "@type": "WebPageElement",
-        "name": "Chapter Content",
-        "isAccessibleForFree": true
-      }
-    ]
-  }
+        name: "Chapter Content",
+        isAccessibleForFree: true,
+      },
+    ],
+  };
 
   // Add optional properties only if they exist
   if (data.artist) {
     structuredData.artist = {
       "@type": "Person",
-      "name": data.artist
-    }
+      name: data.artist,
+    };
   }
 
   if (data.nextChapterUrl) {
     structuredData.potentialAction = {
       "@type": "ReadAction",
-      "object": {
+      object: {
         "@type": "WebPage",
-        "url": data.nextChapterUrl
-      }
-    }
+        url: data.nextChapterUrl,
+      },
+    };
   }
 
-  return structuredData
+  return structuredData;
 }
 
 /**
@@ -166,25 +166,25 @@ export function generateWebsiteStructuredData() {
   return {
     "@context": "https://schema.org",
     "@type": "WebSite",
-    "name": "Manhwa Mirror",
-    "description": "Platform modern untuk membaca manhwa dengan antarmuka yang nyaman dan intuitif",
-    "url": "https://manhwa-mirror.vercel.app",
-    "image": "https://manhwa-mirror.vercel.app/og-image.jpg",
-    "publisher": {
+    name: "Manhwa Mirror",
+    description: "Platform modern untuk membaca manhwa dengan antarmuka yang nyaman dan intuitif",
+    url: "https://www.manhwaku.biz.id",
+    image: "https://www.manhwaku.biz.id/og-image.jpg",
+    publisher: {
       "@type": "Organization",
-      "name": "Manhwa Mirror",
-      "url": "https://manhwa-mirror.vercel.app"
+      name: "Manhwa Mirror",
+      url: "https://www.manhwaku.biz.id",
     },
-    "potentialAction": {
+    potentialAction: {
       "@type": "SearchAction",
-      "target": {
+      target: {
         "@type": "EntryPoint",
-        "urlTemplate": "https://manhwa-mirror.vercel.app/search?q={search_term_string}"
+        urlTemplate: "https://www.manhwaku.biz.id/search?q={search_term_string}",
       },
-      "query-input": "required name=search_term_string"
+      "query-input": "required name=search_term_string",
     },
-    "inLanguage": "id"
-  }
+    inLanguage: "id",
+  };
 }
 
 /**
@@ -194,11 +194,11 @@ export function generateBreadcrumbStructuredData(breadcrumbs: Array<{ name: stri
   return {
     "@context": "https://schema.org",
     "@type": "BreadcrumbList",
-    "itemListElement": breadcrumbs.map((crumb, index) => ({
+    itemListElement: breadcrumbs.map((crumb, index) => ({
       "@type": "ListItem",
-      "position": index + 1,
-      "name": crumb.name,
-      "item": crumb.url
-    }))
-  }
+      position: index + 1,
+      name: crumb.name,
+      item: crumb.url,
+    })),
+  };
 }

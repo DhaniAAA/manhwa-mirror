@@ -10,7 +10,7 @@ import path from "path";
 const SUPABASE_URL = process.env.VITE_SUPABASE_URL || process.env.VITE_SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.VITE_SUPABASE_ANON_KEY || process.env.VITE_SUPABASE_ANON_KEY;
 const BUCKET_NAME = "manga-data";
-const SITE_URL = "https://manhwa-mirror.vercel.app";
+const SITE_URL = "https://www.manhwaku.biz.id/";
 
 if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
   console.error("Missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables");
