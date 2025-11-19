@@ -133,7 +133,7 @@
 
         <!-- Recommendations Section -->
         <div v-if="!loading && !error && recommendations.length > 0" class="w-full max-w-4xl mx-auto mt-8 mb-8">
-          
+
           <div class="bg-bg-secondary rounded-2xl border border-border-color overflow-hidden">
             <div class="p-6 border-b border-border-color bg-gradient-to-br from-[rgba(139,92,246,0.05)] to-transparent">
               <div class="flex items-center gap-3">
@@ -156,15 +156,13 @@
             </div>
 
             <div class="p-6">
-              
+
               <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-4">
                 <router-link v-for="manhwa in recommendations" :key="manhwa.slug"
-                  :to="{ name: 'detail', params: { slug: manhwa.slug } }"
-                  class="group cursor-pointer">
+                  :to="{ name: 'detail', params: { slug: manhwa.slug } }" class="group cursor-pointer">
                   <div
                     class="relative aspect-[2/3] rounded-xl overflow-hidden bg-bg-tertiary border border-border-color mb-2 transition-all duration-300 hover:scale-105 hover:shadow-lg hover:border-accent-primary">
                     <img v-if="manhwa.cover_url" :src="manhwa.cover_url" :alt="manhwa.title"
-                    
                       class="w-full h-full object-cover pointer-events-none" loading="lazy" />
                     <div v-else class="w-full h-full flex items-center justify-center text-text-muted">
                       <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -176,7 +174,9 @@
                     </div>
 
                     <!-- Country Flag Badge -->
-                    <img v-if="manhwa.type" :src="getCountryFlagImage(manhwa.type)" :alt="manhwa.type" :title="manhwa.type" class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover pointer-events-none" />
+                    <img v-if="manhwa.type" :src="getCountryFlagImage(manhwa.type)" :alt="manhwa.type"
+                      :title="manhwa.type"
+                      class="absolute top-3 left-3 w-8 h-8 drop-shadow-[0_2px_4px_rgba(0,0,0,0.5)] rounded-sm object-cover pointer-events-none" />
 
 
                     <!-- Badge -->
@@ -197,13 +197,11 @@
 
                   <div class="flex items-center gap-2 text-xs text-text-muted">
                     <span v-if="manhwa.type" class="px-2 py-0.5 rounded bg-bg-tertiary">{{ manhwa.type }}</span>
-                    <div v-if="manhwa.status"
-                      class="px-2 py-0.5 rounded bg-bg-tertiary"
-                      :class="{
-                        'bg-green-500 text-white': manhwa.status.toLowerCase() === 'ongoing',
-                        'bg-blue-600 text-white': manhwa.status.toLowerCase() === 'completed',
-                        'bg-orange-400 text-white': manhwa.status.toLowerCase() === 'hiatus'
-                      }">
+                    <div v-if="manhwa.status" class="px-2 py-0.5 rounded bg-bg-tertiary" :class="{
+                      'bg-green-500 text-white': manhwa.status.toLowerCase() === 'ongoing',
+                      'bg-blue-600 text-white': manhwa.status.toLowerCase() === 'completed',
+                      'bg-orange-400 text-white': manhwa.status.toLowerCase() === 'hiatus'
+                    }">
                       {{ manhwa.status }}
                     </div>
                   </div>
@@ -313,15 +311,15 @@
             <div class="flex gap-2">
               <button class="flex-1 px-2.5 py-2.5 border rounded-lg text-sm font-medium transition-all duration-200"
                 :class="readMode === 'vertical'
-                    ? 'bg-accent-primary border-accent-primary text-white'
-                    : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'
+                  ? 'bg-accent-primary border-accent-primary text-white'
+                  : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'
                   " @click="readMode = 'vertical'">
                 Vertikal
               </button>
               <button class="flex-1 px-2.5 py-2.5 border rounded-lg text-sm font-medium transition-all duration-200"
                 :class="readMode === 'horizontal'
-                    ? 'bg-accent-primary border-accent-primary text-white'
-                    : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'
+                  ? 'bg-accent-primary border-accent-primary text-white'
+                  : 'bg-bg-tertiary border-border-color text-text-secondary hover:border-accent-primary hover:text-text-primary'
                   " @click="readMode = 'horizontal'">
                 Horizontal
               </button>
@@ -765,9 +763,9 @@ const loadTotalChapters = async (manhwaSlug: string) => {
     const extractNum = (slug: string) => {
       // Matches chapter-123 or chapter-123-end or chapter-123.5
       const match = slug.match(/chapter-(\d+(\.\d+)?)/i);
-      return match && match[1]
-        ? parseFloat(match[1])
-        : Number.NEGATIVE_INFINITY;
+      return match && match[1] ? parseFloat(match[1]) : 0;
+      // ?parseFloat(match[1])
+      // : Number.NEGATIVE_INFINITY;
     };
 
     if (data?.chapters?.length) {

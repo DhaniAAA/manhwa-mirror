@@ -8,7 +8,10 @@
 const DOMAIN_MAP = {
   '1': 'sv1.imgkc1.my.id',
   '2': 'sv2.imgkc2.my.id',
-  '3': 'sv3.imgkc3.my.id'
+  '3': 'sv3.imgkc3.my.id',
+  '4': 'sv4.imgkc4.my.id', // Tambahkan ini
+  '5': 'sv5.imgkc5.my.id', // Tambahkan ini
+  '6': 'komikcast03.com'   // Tambahkan ini
 };
 
 exports.handler = async function(event, context) {
@@ -22,7 +25,7 @@ exports.handler = async function(event, context) {
 
   // Parse path from event
   const path = event.path.replace('/.netlify/functions/image-proxy/', '');
-  
+
   // Extract ID (first segment)
   const firstSlashIndex = path.indexOf('/');
   if (firstSlashIndex === -1) {
@@ -31,20 +34,20 @@ exports.handler = async function(event, context) {
       body: JSON.stringify({ error: 'Invalid URL format' })
     };
   }
-  
+
   const domainId = path.substring(0, firstSlashIndex);
   const imagePath = path.substring(firstSlashIndex);
-  
+
   // Convert ID to domain
   const domain = DOMAIN_MAP[domainId];
-  
+
   if (!domain) {
     return {
       statusCode: 403,
       body: JSON.stringify({ error: 'Invalid domain ID', id: domainId })
     };
   }
-  
+
   // Reconstruct original URL
   const url = `https://${domain}${imagePath}`;
 
@@ -61,8 +64,8 @@ exports.handler = async function(event, context) {
     if (!response.ok) {
       return {
         statusCode: response.status,
-        body: JSON.stringify({ 
-          error: `Failed to fetch image: ${response.statusText}` 
+        body: JSON.stringify({
+          error: `Failed to fetch image: ${response.statusText}`
         })
       };
     }
@@ -89,9 +92,9 @@ exports.handler = async function(event, context) {
     console.error('Proxy error:', error);
     return {
       statusCode: 500,
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         error: 'Failed to proxy image',
-        details: error.message 
+        details: error.message
       })
     };
   }
