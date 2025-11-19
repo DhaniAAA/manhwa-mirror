@@ -6,10 +6,10 @@
       <div class="flex items-center">
         <router-link to="/"
           class="flex items-center gap-3 text-lg font-bold text-text-primary transition-transform duration-150 ease-standard hover:scale-105">
-          <img src="/Logo.png" alt="Manhwa Mirror Logo" width="50" height="50" class="rounded-lg" />
+          <img src="/Logo.png" alt="Manhwaku Logo" width="50" height="50" class="rounded-lg" />
           <span
             class="hidden bg-gradient-to-br from-accent-primary to-accent-secondary bg-clip-text text-lg font-semibold text-transparent md:inline">
-            Manhwa Mirror </span>
+            Manhwaku </span>
         </router-link>
       </div>
 

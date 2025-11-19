@@ -128,8 +128,8 @@
                 <button v-if="typeof page === 'number'"
                   class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
                   :class="page === latestPage
-                      ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
-                      : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
+                    ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
+                    : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
                     " @click="goToLatestPage(page)">
                   {{ page }}
                 </button>
@@ -217,8 +217,8 @@
                 <button v-if="typeof page === 'number'"
                   class="relative flex items-center justify-center h-10 min-w-10 px-3.5 overflow-hidden text-sm font-semibold text-slate-900 transition-all duration-200 ease-in-out border-2 rounded-[0.625rem] bg-slate-100 border-slate-200 cursor-pointer md:h-11 md:min-w-11 md:text-[0.9375rem] dark:bg-slate-800 dark:border-slate-700 dark:text-slate-100"
                   :class="page === popularPage
-                      ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
-                      : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
+                    ? 'bg-gradient-to-br from-violet-500 to-violet-700 border-violet-500 text-white shadow-[0_4px_16px_rgba(139,92,246,0.4)] scale-105 font-bold'
+                    : 'hover:bg-slate-200 dark:hover:bg-slate-700 hover:border-violet-500 hover:text-violet-500 hover:-translate-y-px md:hover:-translate-y-0.5 hover:shadow-[0_4px_12px_rgba(139,92,246,0.2)] active:translate-y-0'
                     " @click="goToPopularPage(page)">
                   {{ page }}
                 </button>
@@ -284,20 +284,20 @@ const searchLoading = ref(false);
 const metaOptions = computed(() => {
   const baseUrl = window.location.origin
   const currentUrl = searchQuery.value ? `${baseUrl}?search=${encodeURIComponent(searchQuery.value)}` : baseUrl
-  
+
   // Generate structured data for website
   const structuredData = generateWebsiteStructuredData()
-  
+
   return {
-    title: searchQuery.value ? `Hasil Pencarian: "${searchQuery.value}" - Manhwa Mirror` : "Manhwa Mirror - Baca Manhwa Online",
-    description: searchQuery.value 
-      ? `Temukan ${searchResults.value.length} manhwa untuk pencarian "${searchQuery.value}" di Manhwa Mirror. Platform modern untuk membaca manhwa online gratis.`
+    title: searchQuery.value ? `Hasil Pencarian: "${searchQuery.value}" - Manhwaku` : "Manhwaku - Baca Manhwa Online",
+    description: searchQuery.value
+      ? `Temukan ${searchResults.value.length} manhwa untuk pencarian "${searchQuery.value}" di Manhwaku. Platform modern untuk membaca manhwa online gratis.`
       : "Platform modern untuk membaca manhwa dengan antarmuka yang nyaman dan intuitif. Temukan manhwa favorit Anda dan baca online gratis.",
     image: `${baseUrl}/og-image.jpg`,
     url: currentUrl,
     canonical: currentUrl,
     type: 'website',
-    keywords: 'manhwa, manga, manhua, komik, baca online, webtoon, manhwa mirror',
+    keywords: 'manhwa, manga, manhua, komik, baca online, webtoon, Manhwaku',
     structuredData: structuredData
   }
 })

@@ -21,7 +21,7 @@
 
             <div>
                 <h3 class="mb-2 text-lg font-semibold text-text-primary">
-                    Selamat Datang di Manhwa Mirror!
+                    Selamat Datang di Manhwaku!
                 </h3>
 
                 <ul class="list-disc space-y-2 pl-5 text-sm leading-relaxed text-text-secondary">

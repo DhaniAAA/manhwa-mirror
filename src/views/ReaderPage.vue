@@ -1,12 +1,7 @@
 <template>
   <div class="reader-page-wrapper">
-    <ManhwaReader
-      :manhwaTitle="manhwaTitle"
-      :manhwaSlug="slug"
-      :chapterSlug="chapterSlug"
-      @close="goToDetail"
-      @chapterChange="handleChapterChange"
-    />
+    <ManhwaReader :manhwaTitle="manhwaTitle" :manhwaSlug="slug" :chapterSlug="chapterSlug" @close="goToDetail"
+      @chapterChange="handleChapterChange" />
   </div>
 </template>
 
@@ -31,14 +26,14 @@ const { metadata, loadManhwaDetail } = useManhwaDetail()
 // Dynamic meta tags for reader page
 const metaOptions = computed(() => {
   if (!metadata.value || !manhwaTitle.value) return {}
-  
+
   const baseUrl = window.location.origin
   const currentUrl = `${baseUrl}/reader/${slug}/${chapterSlug.value}`
   const manhwaUrl = `${baseUrl}/detail/${slug}`
-  
+
   // Extract chapter number from chapterSlug
   const chapterNumber = parseInt(chapterSlug.value.replace('chapter-', '')) || 1
-  
+
   // Generate structured data for reader
   const structuredData = generateReaderStructuredData({
     title: metadata.value.title,
@@ -50,22 +45,22 @@ const metaOptions = computed(() => {
     artist: metadata.value.artist || undefined,
     coverUrl: metadata.value.cover_url || `${baseUrl}/og-image.jpg`
   })
-  
+
   // Generate breadcrumb structured data
   const breadcrumbData = generateBreadcrumbStructuredData([
     { name: 'Home', url: baseUrl },
     { name: metadata.value.title, url: manhwaUrl },
     { name: `Chapter ${chapterNumber}`, url: currentUrl }
   ])
-  
+
   // Combine structured data with breadcrumb
   const combinedStructuredData = structuredData ? {
     ...structuredData,
     breadcrumb: breadcrumbData
   } : undefined
-  
+
   return {
-    title: `${metadata.value.title} Chapter ${chapterNumber} - Manhwa Mirror`,
+    title: `${metadata.value.title} Chapter ${chapterNumber} - Manhwaku`,
     description: `Baca ${metadata.value.title} Chapter ${chapterNumber} online gratis. ${metadata.value.description}`,
     image: metadata.value.cover_url || `${baseUrl}/og-image.jpg`,
     url: currentUrl,
@@ -95,9 +90,9 @@ const handleChapterChange = (chapter: number) => {
   console.log(`📖 Chapter changed to: ${chapter}`)
   // Update URL without reload
   const newChapterSlug = `chapter-${String(chapter).padStart(2, '0')}`
-  router.replace({ 
-    name: 'reader', 
-    params: { slug, chapterSlug: newChapterSlug } 
+  router.replace({
+    name: 'reader',
+    params: { slug, chapterSlug: newChapterSlug }
   })
 }
 </script>

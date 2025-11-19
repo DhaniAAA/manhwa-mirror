@@ -1,36 +1,21 @@
 <template>
   <div class="detail-page-wrapper">
-    <ManhwaDetail
-      v-if="metadata"
-      :slug="slug"
-      :title="metadata.title"
-      :rating="metadata.rating"
-      :totalChapters="metadata.total_chapters"
-      :description="metadata.description"
-      :author="metadata.author"
-      :artist="metadata.artist"
-      :genres="metadata.genres || []"
-      :status="metadata.status"
-      :type="metadata.type"
-      :releaseYear="metadata.release_year"
-      :lastUpdate="metadata.lastUpdate"
-      :coverUrl="metadata.cover_url"
-      :chapters="chaptersData?.chapters || []"
-      @close="goBack"
-      @readChapter="goToReader"
-      @authRequest="promptAuth"
-    />
-    
+    <ManhwaDetail v-if="metadata" :slug="slug" :title="metadata.title" :rating="metadata.rating"
+      :totalChapters="metadata.total_chapters" :description="metadata.description" :author="metadata.author"
+      :artist="metadata.artist" :genres="metadata.genres || []" :status="metadata.status" :type="metadata.type"
+      :releaseYear="metadata.release_year" :lastUpdate="metadata.lastUpdate" :coverUrl="metadata.cover_url"
+      :chapters="chaptersData?.chapters || []" @close="goBack" @readChapter="goToReader" @authRequest="promptAuth" />
+
     <div v-else-if="loading" class="loading-container">
       <div class="spinner"></div>
       <p>Memuat detail manhwa...</p>
     </div>
-    
+
     <div v-else-if="error" class="error-container">
       <svg width="64" height="64" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-        <circle cx="12" cy="12" r="10"/>
-        <line x1="12" y1="8" x2="12" y2="12"/>
-        <line x1="12" y1="16" x2="12.01" y2="16"/>
+        <circle cx="12" cy="12" r="10" />
+        <line x1="12" y1="8" x2="12" y2="12" />
+        <line x1="12" y1="16" x2="12.01" y2="16" />
       </svg>
       <h2>Gagal Memuat Data</h2>
       <p>{{ error }}</p>
@@ -58,10 +43,10 @@ const { loading, error, metadata, chaptersData, loadManhwaDetail } = useManhwaDe
 // Dynamic meta tags
 const metaOptions = computed(() => {
   if (!metadata.value) return {}
-  
+
   const baseUrl = window.location.origin
   const currentUrl = `${baseUrl}/detail/${slug}`
-  
+
   // Generate structured data
   const structuredData = metadata.value ? generateManhwaStructuredData({
     title: metadata.value.title,
@@ -84,15 +69,15 @@ const metaOptions = computed(() => {
     { name: 'Home', url: baseUrl },
     { name: metadata.value?.title || 'Detail', url: currentUrl }
   ])
-  
+
   // Combine structured data with breadcrumb
   const combinedStructuredData = structuredData ? {
     ...structuredData,
     breadcrumb: breadcrumbData
   } : undefined
-  
+
   return {
-    title: `${metadata.value.title} - Manhwa Mirror`,
+    title: `${metadata.value.title} - Manhwaku`,
     description: metadata.value.description || `Baca ${metadata.value.title} online. ${metadata.value.genres?.join(', ') || 'Manhwa'} dengan ${metadata.value.total_chapters} chapter tersedia.`,
     image: metadata.value.cover_url || `${baseUrl}/og-image.jpg`,
     url: currentUrl,
@@ -120,8 +105,8 @@ const goBack = () => {
 }
 
 const goToReader = (chapter: Chapter) => {
-  router.push({ 
-    name: 'reader', 
+  router.push({
+    name: 'reader',
     params: { slug, chapterSlug: chapter.slug }
   })
 }
@@ -166,7 +151,9 @@ const promptAuth = () => {
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .error-container svg {
