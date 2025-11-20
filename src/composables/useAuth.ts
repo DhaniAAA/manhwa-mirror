@@ -16,59 +16,36 @@ export function useAuth() {
 
   // Ubah loadUser menjadi seperti ini:
   const loadUser = async () => {
-    // Cegah re-entry jika sedang loading
-    if (isFetching.value) return;
-
     loading.value = true;
-    isFetching.value = true;
-
     try {
-      // Coba get session dari client (memory)
-      const {
+      let {
         data: { session },
-        error: sessionError,
       } = await supabase.auth.getSession();
 
-      if (sessionError) throw sessionError;
-
       if (!session) {
-        // Hanya coba restore dari server cookie jika kita di browser
-        if (typeof window !== "undefined") {
-          try {
-            await AuthService.getSession();
-          } catch (e) {
-            // Silent fail on session restore to prevent loop
-            console.debug("No server session found");
-          }
+        const serverSession = await AuthService.getSession(); // Simpan hasilnya
+        if (serverSession) {
+          session = serverSession; // Session berhasil dipulihkan
         }
       }
 
-      // Get user details
-      const {
-        data: { user },
-        error: userError,
-      } = await supabase.auth.getUser();
-
-      if (userError) {
-        // Jangan throw error untuk 'Auth session missing', ini normal untuk guest
-        if (!userError.message.includes("Auth session missing")) {
-          console.warn("Auth check failed:", userError.message);
-        }
-        currentUser.value = null;
-        currentProfile.value = null;
-      } else {
+      if (session) {
+        const user = await AuthService.getCurrentUser();
         currentUser.value = user;
+
         if (user) {
           const profile = await CommunityService.getProfile(user.id);
           currentProfile.value = profile;
         }
+      } else {
+        // Jika tidak ada session, set user ke null tanpa panggil API
+        currentUser.value = null;
+        currentProfile.value = null;
       }
     } catch (error) {
-      console.error("Error loading user:", error);
-      currentUser.value = null;
+      // ... error handling ...
     } finally {
       loading.value = false;
-      isFetching.value = false;
     }
   };
 
