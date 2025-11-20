@@ -22,13 +22,6 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     detectSessionInUrl: true,
     flowType: "pkce",
   },
-  global: {
-    headers: {
-      Accept: "application/json",
-      apikey: supabaseAnonKey,
-      Authorization: `Bearer ${supabaseAnonKey}`,
-    },
-  },
 });
 
 export const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || "manga-data";

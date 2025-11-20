@@ -19,7 +19,8 @@ class SessionManager {
       });
       return response.ok;
     } catch (error) {
-      console.error("Error setting session:", error);
+      // Abaikan error koneksi di localhost/dev tanpa server backend
+      console.warn("⚠️ Session sync failed (API not available):", error);
       return false;
     }
   }
@@ -31,17 +32,23 @@ class SessionManager {
         credentials: "include",
       });
 
+      if (!response.ok) return null;
+
+      // Cek header content-type
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
-        // Ini menangani kasus di mana Vite mengembalikan HTML/JS saat endpoint API tidak ditemukan
         return null;
       }
 
-      const data = await response.json();
-      return data.session || null;
+      try {
+        const data = await response.json();
+        return data.session || null;
+      } catch (parseError) {
+        console.warn("⚠️ API returned non-JSON response, ignoring.");
+        return null;
+      }
     } catch (error) {
-      // Log error tapi jangan crash, return null agar user dianggap logout
-      console.warn("Error getting session (likely offline or dev mode):", error);
+      console.warn("⚠️ Error getting session (likely offline or dev mode):", error);
       return null;
     }
   }
@@ -54,7 +61,7 @@ class SessionManager {
       });
       return response.ok;
     } catch (error) {
-      console.error("Error clearing session:", error);
+      console.warn("⚠️ Session clear failed (API not available):", error);
       return false;
     }
   }

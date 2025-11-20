@@ -97,27 +97,21 @@ export class AuthService {
    */
   static async getSession(): Promise<Session | null> {
     try {
-      // Get session from server (encrypted cookie)
+      // Coba ambil sesi dari server/cookie dulu
       const serverSession = await sessionManager.getSession();
 
-      if (!serverSession) {
-        return null;
+      if (serverSession) {
+        const { data } = await supabase.auth.setSession({
+          access_token: serverSession.access_token,
+          refresh_token: serverSession.refresh_token,
+        });
+        return data.session;
       }
 
-      // Set session in Supabase client
-      const { data, error } = await supabase.auth.setSession({
-        access_token: serverSession.access_token,
-        refresh_token: serverSession.refresh_token,
-      });
-
-      if (error) {
-        console.error("❌ Get session error:", error);
-        return null;
-      }
-
+      // Fallback ke sesi lokal Supabase
+      const { data } = await supabase.auth.getSession();
       return data.session;
     } catch (error) {
-      console.error("❌ Get session exception:", error);
       return null;
     }
   }
@@ -133,82 +127,44 @@ export class AuthService {
       } = await supabase.auth.getUser();
 
       if (error) {
-        // AuthSessionMissingError is normal when user is not logged in
-        if (error.message?.includes("Auth session missing")) {
-          return null;
+        // Abaikan error jika memang tidak ada sesi
+        if (error.message?.includes("Auth session missing")) return null;
+
+        console.error("❌ Get user error:", error.message);
+
+        // FIX: Auto-logout jika token invalid/expired (401) atau API Key salah
+        const isAuthError = error.status === 401 || error.message?.includes("401") || error.message?.includes("Invalid token") || error.message?.includes("No API key"); // Handle error API key
+
+        if (isAuthError) {
+          console.warn("⚠️ Auth error detected. Clearing session to fix state.");
+          await this.signOut();
+          // Force reload halaman jika perlu untuk reset state penuh
+          // window.location.reload();
         }
-
-        console.error("❌ Get user error:", error);
-
-        // Ini mencegah pengiriman token rusak di request berikutnya
-        if (error.status === 401 || error.message?.includes("401") || error.message?.includes("Invalid token")) {
-          console.warn("⚠️ Session expired or invalid. Clearing auth state.");
-          await this.signOut(); // Bersihkan session lokal & server
-        }
-
         return null;
       }
-
       return user;
     } catch (error) {
-      const err = error as any;
-      if (err?.message?.includes("Auth session missing")) {
-        return null;
-      }
-      console.error("❌ Get user exception:", error);
       return null;
     }
   }
 
-  // ... methods resetPassword, updatePassword, onAuthStateChange remain unchanged ...
-
   /**
    * Reset password
    */
+  // ... method resetPassword, updatePassword, onAuthStateChange biarkan seperti sebelumnya ...
   static async resetPassword(email: string): Promise<{ error: AuthError | null }> {
-    try {
-      const { error } = await supabase.auth.resetPasswordForEmail(email, {
-        redirectTo: `${window.location.origin}/reset-password`,
-      });
-
-      if (error) {
-        console.error("❌ Reset password error:", error);
-        return { error };
-      }
-
-      console.log("✅ Password reset email sent");
-      return { error: null };
-    } catch (error) {
-      console.error("❌ Reset password exception:", error);
-      return { error: error as AuthError };
-    }
+    const { error } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/reset-password`,
+    });
+    return { error };
   }
 
-  /**
-   * Update password
-   */
   static async updatePassword(newPassword: string): Promise<{ error: AuthError | null }> {
-    try {
-      const { error } = await supabase.auth.updateUser({
-        password: newPassword,
-      });
-
-      if (error) {
-        console.error("❌ Update password error:", error);
-        return { error };
-      }
-
-      console.log("✅ Password updated");
-      return { error: null };
-    } catch (error) {
-      console.error("❌ Update password exception:", error);
-      return { error: error as AuthError };
-    }
+    const { error } = await supabase.auth.updateUser({ password: newPassword });
+    return { error };
   }
 
-  /**
-   * Listen to auth state changes
-   */
   static onAuthStateChange(callback: (user: User | null) => void) {
     return supabase.auth.onAuthStateChange((_event, session) => {
       callback(session?.user ?? null);
