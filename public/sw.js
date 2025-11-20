@@ -39,6 +39,23 @@ self.addEventListener('activate', (event) => {
   self.clients.claim()
 })
 
+// Domain mappings for image proxy
+const DOMAIN_MAPPINGS = {
+  '1': 'sv1.imgkc1.my.id',
+  '2': 'sv2.imgkc2.my.id',
+  '3': 'sv3.imgkc3.my.id',
+  '4': 'sv4.imgkc4.my.id',
+  '5': 'sv5.imgkc5.my.id'
+}
+
+const REVERSE_DOMAIN_MAPPINGS = {
+  'sv1.imgkc1.my.id': '1',
+  'sv2.imgkc2.my.id': '2',
+  'sv3.imgkc3.my.id': '3',
+  'sv4.imgkc4.my.id': '4',
+  'sv5.imgkc5.my.id': '5'
+}
+
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
@@ -47,8 +64,20 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome extensions and other schemes
   if (!event.request.url.startsWith('http')) return
 
+  // Intercept image requests to route through proxy
+  const url = new URL(event.request.url)
+  let requestUrl = event.request.url
+
+  // Check if this is an image from a mapped domain
+  const domainId = REVERSE_DOMAIN_MAPPINGS[url.hostname]
+  if (domainId && url.pathname.includes('/wp-content/')) {
+    // Route through image proxy
+    const path = url.pathname + url.search
+    requestUrl = `/api/image/${domainId}${path}`
+  }
+
   event.respondWith(
-    fetch(event.request)
+    fetch(requestUrl)
       .then((response) => {
         // Clone the response
         const responseToCache = response.clone()
