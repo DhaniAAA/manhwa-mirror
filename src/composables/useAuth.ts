@@ -1,5 +1,5 @@
 import { ref, computed, onMounted } from "vue";
-import { AuthService } from "../services/authService";
+import { AuthService } from "../services/authService.ts";
 import { CommunityService } from "../services/communityService";
 import type { User } from "@supabase/supabase-js";
 import type { Profile } from "../types/community";
@@ -110,7 +110,7 @@ export function useAuth() {
     loadUser();
 
     // Listen to auth changes
-    AuthService.onAuthStateChange((user) => {
+    AuthService.onAuthStateChange((user: User | null) => {
       currentUser.value = user;
       if (user) {
         CommunityService.getProfile(user.id).then((profile) => {
