@@ -47,6 +47,12 @@ self.addEventListener('fetch', (event) => {
   // Skip chrome extensions and other schemes
   if (!event.request.url.startsWith('http')) return
 
+  // Skip empty or invalid URLs
+  if (!event.request.url || event.request.url.trim() === '') {
+    console.warn('[SW] Skipping empty URL')
+    return
+  }
+
   event.respondWith(
     fetch(event.request)
       .then((response) => {
@@ -62,7 +68,10 @@ self.addEventListener('fetch', (event) => {
 
         return response
       })
-      .catch(() => {
+      .catch((error) => {
+        // Log the error for debugging
+        console.warn('[SW] Fetch failed:', event.request.url, error)
+
         // Network failed, try cache
         return caches.match(event.request).then((cachedResponse) => {
           if (cachedResponse) {
