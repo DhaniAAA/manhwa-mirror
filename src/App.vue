@@ -193,7 +193,7 @@ const generateDemoChapters = (totalChapters: number): Chapter[] => {
     </main>
 
     <footer v-if="!showReader"
-      class="relative z-[1] mt-16 border-t border-[var(--border-color)] bg-[var(--bg-secondary)] pt-16 pb-8">
+      class="relative z-[1] border-t border-[var(--border-color)] bg-[var(--bg-secondary)] pt-6 pb-6">
       <div class="container">
         <div class="mb-12 grid gap-12 lg:[grid-template-columns:2fr_3fr] lg:gap-16">
           <div class="max-w-md space-y-4">
