@@ -7,7 +7,6 @@ const DOMAIN_MAP: Record<string, string> = {
   '3': 'sv3.imgkc3.my.id',
   '4': 'sv4.imgkc4.my.id', // <-- Diperbarui
   '5': 'sv5.imgkc5.my.id', // <-- Diperbarui
-  '6': 'komikcast03.com',  // <-- Diperbarui
 };
 
 /**

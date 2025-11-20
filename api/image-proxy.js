@@ -11,7 +11,6 @@ const DOMAIN_MAP = {
   '3': 'sv3.imgkc3.my.id',
   '4': 'sv4.imgkc4.my.id',
   '5': 'sv5.imgkc5.my.id',
-  '6': 'komikcast03.com',
 };
 
 export default async function handler(req, res) {

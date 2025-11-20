@@ -20,11 +20,6 @@ export class ImageService {
    */
   static async checkImage(url: string): Promise<boolean> {
     try {
-      // Skip empty or invalid URLs
-      if (!url || url.trim() === '') {
-        return false
-      }
-
       const response = await fetch(url, { 
         method: 'HEAD',
         signal: AbortSignal.timeout(5000)

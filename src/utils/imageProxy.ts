@@ -10,7 +10,6 @@ export const DOMAIN_MAP: Record<string, string> = {
   "3": "sv3.imgkc3.my.id",
   "4": "sv4.imgkc4.my.id", // <-- TAMBAHKAN
   "5": "sv5.imgkc5.my.id", // <-- TAMBAHKAN
-  "6": "komikcast03.com", // For direct cover images
 };
 
 // Reverse mapping: Domain -> ID
@@ -20,7 +19,6 @@ const DOMAIN_TO_ID: Record<string, string> = {
   "sv3.imgkc3.my.id": "3",
   "sv4.imgkc4.my.id": "4", // <-- TAMBAHKAN
   "sv5.imgkc5.my.id": "5", // <-- TAMBAHKAN
-  "komikcast03.com": "6", // For direct cover images
 };
 
 /**
@@ -59,13 +57,20 @@ export function getProxiedImageUrl(originalUrl: string): string {
       return originalUrl;
     }
 
-    // Create clean proxy URL with ID: /api/image/{id}{path}
-    // Example: /api/image/1/wp-content/img/A/A_Bad_Person/005/001.jpg
-    // Vercel rewrites this to /api/image-proxy?id=1&path=wp-content/img/A/A_Bad_Person/005/001.jpg
+    // Create clean proxy URL with ID: /api/image/{id}{path} (dev) or /api/image-proxy?id={id}&path={path} (prod)
+    // Example dev: /api/image/1/wp-content/img/A/A_Bad_Person/005/001.jpg
+    // Example prod: /api/image-proxy?id=1&path=wp-content/img/A/A_Bad_Person/005/001.jpg
     const cleanPath = `/api/image/${domainId}${path}`;
 
-    // Use the same format for both dev and prod (Vercel handles the rewrite)
-    return cleanPath;
+    // For development, use relative path
+    if (import.meta.env.DEV) {
+      return cleanPath;
+    }
+
+    // For production, use the API endpoint with query parameters
+    const productionPath = `/api/image-proxy?id=${domainId}&path=${encodeURIComponent(path.substring(1))}`;
+    const baseUrl = window.location.origin;
+    return `${baseUrl}${productionPath}`;
   } catch (e) {
     // Fallback to original URL if parsing fails
     console.error("Failed to parse image URL:", originalUrl, e);
