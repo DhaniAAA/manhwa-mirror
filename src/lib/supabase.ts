@@ -22,6 +22,11 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     persistSession: false,
     detectSessionInUrl: true,
     flowType: 'pkce',
+  },
+  global: {
+    headers: {
+      'Accept': 'application/json'
+    }
   }
 })
 
