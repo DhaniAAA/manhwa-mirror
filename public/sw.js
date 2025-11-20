@@ -66,6 +66,10 @@ self.addEventListener('fetch', (event) => {
 
   // Intercept image requests to route through proxy
   const url = new URL(event.request.url)
+  if (url.hostname.includes('komikcast03.com')) {
+    return
+  }
+
   let requestUrl = event.request.url
 
   // Check if this is an image from a mapped domain
@@ -104,24 +108,22 @@ self.addEventListener('fetch', (event) => {
           }
 
           // Return a basic offline response for other requests
-          return new Response('Offline', {
-            status: 503,
-            statusText: 'Service Unavailable',
-            headers: new Headers({
-              'Content-Type': 'text/plain'
-            })
+          // Menggunakan status 200 dengan placeholder untuk menghindari error di console
+          return new Response('<svg>...</svg>', {
+             status: 200,
+             headers: { 'Content-Type': 'image/svg+xml' }
           })
         })
       })
-  )
-})
+    )
+  })
 
 // Message event - handle commands from app
 self.addEventListener('message', (event) => {
   if (event.data && event.data.type === 'SKIP_WAITING') {
     self.skipWaiting()
   }
-  
+
   if (event.data && event.data.type === 'CACHE_URLS') {
     const urls = event.data.urls
     event.waitUntil(
@@ -130,7 +132,7 @@ self.addEventListener('message', (event) => {
       })
     )
   }
-  
+
   if (event.data && event.data.type === 'CLEAR_CACHE') {
     event.waitUntil(
       caches.delete(CACHE_NAME).then(() => {

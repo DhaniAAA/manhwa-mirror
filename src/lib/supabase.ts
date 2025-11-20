@@ -1,15 +1,19 @@
-import { createClient } from '@supabase/supabase-js'
+import { createClient } from "@supabase/supabase-js";
 
-const supabaseUrl = import.meta.env.VITE_SUPABASE_URL
-const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY
+const supabaseUrl = import.meta.env.VITE_SUPABASE_URL;
+const supabaseAnonKey = import.meta.env.VITE_SUPABASE_ANON_KEY;
+
+console.log("Supabase Config:", {
+  url: supabaseUrl ? "Set ✅" : "Missing ❌",
+  key: supabaseAnonKey ? `Set (${supabaseAnonKey.substring(0, 5)}...) ✅` : "Missing ❌",
+});
 
 if (!supabaseUrl || !supabaseAnonKey) {
-  throw new Error('Missing Supabase environment variables')
+  console.error("CRITICAL: Missing Supabase environment variables!");
 }
-
 /**
  * Supabase Client dengan PKCE Flow + Server-side Session
- * 
+ *
  * - persistSession: false (tidak simpan di Web Storage)
  * - storage: undefined (tidak gunakan localStorage/sessionStorage)
  * - flowType: pkce (PKCE flow untuk OAuth)
@@ -21,13 +25,13 @@ export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
     autoRefreshToken: false,
     persistSession: false,
     detectSessionInUrl: true,
-    flowType: 'pkce',
+    flowType: "pkce",
   },
   global: {
     headers: {
-      'Accept': 'application/json'
-    }
-  }
-})
+      Accept: "application/json",
+    },
+  },
+});
 
-export const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || 'manga-data'
+export const BUCKET_NAME = import.meta.env.VITE_BUCKET_NAME || "manga-data";
