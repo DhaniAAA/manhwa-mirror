@@ -12,7 +12,7 @@ const loading = ref(true);
 
 export function useAuth() {
   const isAuthenticated = computed(() => !!currentUser.value);
-  const isFetching = ref(false);
+  // const isFetching = ref(false);
 
   // Ubah loadUser menjadi seperti ini:
   const loadUser = async () => {
