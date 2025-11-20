@@ -9,45 +9,25 @@ const PRECACHE_ASSETS = [
   '/manifest.json'
 ]
 
-// Install event - cache essential assets
+// Install event
 self.addEventListener('install', (event) => {
-  console.log('[SW] Installing service worker...')
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      console.log('[SW] Precaching assets')
-      return cache.addAll(PRECACHE_ASSETS)
-    })
-  )
   self.skipWaiting()
+  event.waitUntil(
+    caches.open(CACHE_NAME).then((cache) => cache.addAll(PRECACHE_ASSETS))
+  )
 })
 
-// Activate event - clean up old caches
+// Activate event
 self.addEventListener('activate', (event) => {
-  console.log('[SW] Activating service worker...')
-  event.waitUntil(
-    caches.keys().then((cacheNames) => {
-      return Promise.all(
-        cacheNames.map((cacheName) => {
-          if (cacheName !== CACHE_NAME) {
-            console.log('[SW] Deleting old cache:', cacheName)
-            return caches.delete(cacheName)
-          }
-        })
-      )
-    })
-  )
   self.clients.claim()
+  event.waitUntil(
+    caches.keys().then((keys) => Promise.all(
+      keys.map((key) => key !== CACHE_NAME && caches.delete(key))
+    ))
+  )
 })
 
 // Domain mappings for image proxy
-const DOMAIN_MAPPINGS = {
-  '1': 'sv1.imgkc1.my.id',
-  '2': 'sv2.imgkc2.my.id',
-  '3': 'sv3.imgkc3.my.id',
-  '4': 'sv4.imgkc4.my.id',
-  '5': 'sv5.imgkc5.my.id'
-}
-
 const REVERSE_DOMAIN_MAPPINGS = {
   'sv1.imgkc1.my.id': '1',
   'sv2.imgkc2.my.id': '2',
@@ -56,100 +36,74 @@ const REVERSE_DOMAIN_MAPPINGS = {
   'sv5.imgkc5.my.id': '5'
 }
 
-// Fetch event - serve from cache when offline
+// Fetch event
 self.addEventListener('fetch', (event) => {
   // Skip non-GET requests
   if (event.request.method !== 'GET') return
-
-  // Skip chrome extensions and other schemes
   if (!event.request.url.startsWith('http')) return
 
-  // Intercept image requests to route through proxy
   const url = new URL(event.request.url)
-  if (url.hostname.includes('komikcast03.com')) {
+
+  // FIX: Jangan intersep request ke Google Tag Manager / Analytics
+  // Biarkan browser menanganinya secara langsung (network only)
+  if (url.hostname.includes('googletagmanager.com') ||
+      url.hostname.includes('google-analytics.com')) {
     return
   }
 
+  // Intercept image requests to route through proxy
   let requestUrl = event.request.url
+  if (url.hostname.includes('komikcast03.com')) return
 
-  // Check if this is an image from a mapped domain
   const domainId = REVERSE_DOMAIN_MAPPINGS[url.hostname]
   if (domainId && url.pathname.includes('/wp-content/')) {
-    // Route through image proxy
-    const path = url.pathname + url.search
-    requestUrl = `/api/image/${domainId}${path}`
+    requestUrl = `/api/image/${domainId}${url.pathname + url.search}`
   }
 
   event.respondWith(
     fetch(requestUrl)
       .then((response) => {
-        // Clone the response
-        const responseToCache = response.clone()
-
         // Cache successful responses
         if (response.status === 200) {
+          const responseToCache = response.clone()
           caches.open(CACHE_NAME).then((cache) => {
-            try {
-              cache.put(event.request, responseToCache)
-            } catch (e) {
-              // Ignore cache errors
-            }
+            try { cache.put(event.request, responseToCache) } catch (e) {}
           })
         }
-
         return response
       })
       .catch(() => {
-        // Network failed, try cache
         return caches.match(event.request).then((cachedResponse) => {
-          if (cachedResponse) {
-            return cachedResponse
-          }
+          if (cachedResponse) return cachedResponse
 
-          // If no cache, show offline page for navigation requests
+          // Navigation requests -> Offline page
           if (event.request.mode === 'navigate') {
             return caches.match(OFFLINE_URL)
           }
 
-          // FIX: Hanya return SVG jika request adalah GAMBAR
-          // Ini memperbaiki error GTM (MIME type mismatch) dan fetch API error
+          // Image requests -> Placeholder SVG
           const isImage = event.request.destination === 'image' ||
-            requestUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+                          requestUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
 
           if (isImage) {
-            return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>', {
+            return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="3" x2="21" y2="21"/><line x1="21" y1="3" x2="3" y2="21"/></svg>', {
               status: 200,
               headers: { 'Content-Type': 'image/svg+xml' }
             })
           }
 
-          // Untuk script/API/CSS yang gagal, biarkan error (atau return 503) agar tidak merusak parsing
-          return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
+          // Untuk resource lain yang gagal (seperti script external),
+          // return 503 atau error response standar agar tidak merusak parsing di browser
+          return new Response('Offline', { status: 503, statusText: 'Service Unavailable' })
         })
       })
   )
 })
 
-// Message event - handle commands from app
+// Message event
 self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
-    self.skipWaiting()
-  }
-
-  if (event.data && event.data.type === 'CACHE_URLS') {
-    const urls = event.data.urls
-    event.waitUntil(
-      caches.open(CACHE_NAME).then((cache) => {
-        return cache.addAll(urls)
-      })
-    )
-  }
-
-  if (event.data && event.data.type === 'CLEAR_CACHE') {
-    event.waitUntil(
-      caches.delete(CACHE_NAME).then(() => {
-        return caches.open(CACHE_NAME)
-      })
-    )
+  if (event.data?.type === 'SKIP_WAITING') self.skipWaiting()
+  if (event.data?.type === 'CLEAR_CACHE') {
+    event.waitUntil(caches.delete(CACHE_NAME))
   }
 })
