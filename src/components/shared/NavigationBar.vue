@@ -79,26 +79,22 @@
           </svg>
         </button>
 
-        <!-- Burger Menu Button (Mobile) -->
-        <button
-          class="flex lg:hidden h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
-          @click="toggleMobileMenu">
-          <svg v-if="!mobileMenuOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-            stroke-width="2">
-            <line x1="4" y1="6" x2="20" y2="6" />
-            <line x1="4" y1="12" x2="20" y2="12" />
-            <line x1="4" y1="18" x2="20" y2="18" />
+        <!-- Login Button (Mobile) -->
+        <button v-if="!isAuthenticated" @click="showAuthModal = true"
+          class="flex lg:hidden items-center gap-2 h-10 px-4 rounded-lg bg-violet-500 hover:bg-violet-600 text-white text-sm font-medium transition-colors">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
+            <polyline points="10 17 15 12 10 7" />
+            <line x1="15" y1="12" x2="3" y2="12" />
           </svg>
-          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="18" y1="6" x2="6" y2="18" />
-            <line x1="6" y1="6" x2="18" y2="18" />
-          </svg>
+          <span>Masuk</span>
         </button>
 
-        <!-- User Menu (Desktop) -->
-        <div v-if="isAuthenticated" class="hidden lg:block relative" ref="userMenuRef">
+        <!-- User Menu Container (Mobile & Desktop) -->
+        <div v-if="isAuthenticated" class="relative" ref="userMenuRef">
+          <!-- User Menu Button (Mobile) -->
           <button @click="toggleUserMenu"
-            class="flex h-10 items-center gap-2 rounded-lg px-3 text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary">
+            class="flex lg:hidden h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary">
             <img v-if="currentProfile?.avatar_url" :src="currentProfile.avatar_url" alt="Avatar"
               class="w-8 h-8 rounded-full object-cover" />
             <div v-else
@@ -107,12 +103,23 @@
             </div>
           </button>
 
-          <!-- Dropdown Menu -->
+          <!-- User Menu Button (Desktop) -->
+          <button @click="toggleUserMenu"
+            class="hidden lg:flex h-10 items-center gap-2 rounded-lg px-3 text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary">
+            <img v-if="currentProfile?.avatar_url" :src="currentProfile.avatar_url" alt="Avatar"
+              class="w-8 h-8 rounded-full object-cover" />
+            <div v-else
+              class="w-8 h-8 rounded-full bg-violet-500 flex items-center justify-center text-white text-sm font-bold">
+              {{ ((currentProfile?.username || 'U')[0] || 'U').toUpperCase() }}
+            </div>
+          </button>
+
+          <!-- Dropdown Menu (Mobile & Desktop) -->
           <Transition enter-active-class="transition-all duration-200 ease-out"
             leave-active-class="transition-all duration-150 ease-in" enter-from-class="opacity-0 translate-y-4"
             leave-to-class="opacity-0 translate-y-4">
             <div v-if="userMenuOpen"
-              class="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-50">
+              class="absolute right-0 top-12 w-56 bg-white dark:bg-slate-800 rounded-xl shadow-xl border border-slate-200 dark:border-slate-700 py-2 z-[110]">
               <div class="px-4 py-3 border-b border-slate-200 dark:border-slate-700">
                 <p class="text-sm font-medium text-slate-900 dark:text-slate-100">
                   {{ currentProfile?.username || 'User' }}
@@ -152,8 +159,24 @@
           </Transition>
         </div>
 
+        <!-- Burger Menu Button (Mobile) -->
+        <button
+          class="flex lg:hidden h-10 w-10 items-center justify-center rounded-lg text-text-secondary transition-colors duration-150 ease-standard hover:bg-bg-tertiary/80 hover:text-text-primary"
+          @click="toggleMobileMenu">
+          <svg v-if="!mobileMenuOpen" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+            stroke-width="2">
+            <line x1="4" y1="6" x2="20" y2="6" />
+            <line x1="4" y1="12" x2="20" y2="12" />
+            <line x1="4" y1="18" x2="20" y2="18" />
+          </svg>
+          <svg v-else width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <line x1="18" y1="6" x2="6" y2="18" />
+            <line x1="6" y1="6" x2="18" y2="18" />
+          </svg>
+        </button>
+
         <!-- Login Button (Desktop) -->
-        <button v-else @click="showAuthModal = true"
+        <button v-if="!isAuthenticated" @click="showAuthModal = true"
           class="hidden lg:flex items-center gap-2 h-10 px-4 rounded-lg bg-violet-500 hover:bg-violet-600 text-white text-sm font-medium transition-colors">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
@@ -190,7 +213,7 @@
           </div>
 
           <!-- Navigation Links (Mobile) -->
-          <div class="space-y-2 mb-6">
+          <div class="space-y-2 mb-2">
             <RouterLink to="/" custom v-slot="{ href, navigate, isActive }">
               <a :href="href" @click="navigate(); closeMobileMenu()" :class="mobileLinkClasses(isActive)">
                 <svg class="w-6 h-6 text-gray-800 dark:text-white" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"
@@ -232,67 +255,6 @@
                 <span>Populer</span>
               </a>
             </RouterLink>
-          </div>
-
-          <!-- User Section (Mobile) -->
-          <div class="border-t border-border-color pt-2">
-            <!-- Authenticated User -->
-            <div v-if="isAuthenticated" class="space-y-3">
-              <div class="flex items-center gap-3 px-4 py-3 rounded-lg bg-bg-elevated">
-                <img v-if="currentProfile?.avatar_url" :src="currentProfile.avatar_url" alt="Avatar"
-                  class="w-10 h-10 rounded-full object-cover" />
-                <div v-else
-                  class="w-10 h-10 rounded-full bg-violet-500 flex items-center justify-center text-white text-sm font-bold">
-                  {{ ((currentProfile?.username || 'U')[0] || 'U').toUpperCase() }}
-                </div>
-                <div>
-                  <p class="text-sm font-medium text-text-primary">
-                    {{ currentProfile?.username || 'User' }}
-                  </p>
-                  <p class="text-xs text-text-muted">
-                    {{ currentUser?.email }}
-                  </p>
-                </div>
-              </div>
-
-              <router-link to="/profile" @click="closeMobileMenu"
-                class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary rounded-lg transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2" />
-                  <circle cx="12" cy="7" r="4" />
-                </svg>
-                <span>Profil Saya</span>
-              </router-link>
-
-              <router-link to="/history" @click="closeMobileMenu"
-                class="flex items-center gap-3 px-4 py-3 text-text-secondary hover:bg-bg-tertiary/80 hover:text-text-primary rounded-lg transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>Riwayat Baca</span>
-              </router-link>
-
-              <button @click="handleMobileSignOut"
-                class="w-full flex items-center gap-3 px-4 py-3 text-red-600 dark:text-red-400 hover:bg-bg-tertiary/80 rounded-lg transition-colors">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-                  <polyline points="16 17 21 12 16 7" />
-                  <line x1="21" y1="12" x2="9" y2="12" />
-                </svg>
-                <span>Keluar</span>
-              </button>
-            </div>
-
-            <!-- Login Button (Mobile) -->
-            <button v-else @click="handleMobileLogin"
-              class="w-full flex items-center justify-center gap-2 px-4 py-3 rounded-lg bg-violet-500 hover:bg-violet-600 text-white font-medium transition-colors">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                <path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4" />
-                <polyline points="10 17 15 12 10 7" />
-                <line x1="15" y1="12" x2="3" y2="12" />
-              </svg>
-              <span>Masuk</span>
-            </button>
           </div>
         </div>
       </div>
@@ -357,13 +319,9 @@ const toggleMobileMenu = () => {
   mobileMenuOpen.value = !mobileMenuOpen.value
 }
 
+
 const closeMobileMenu = () => {
   mobileMenuOpen.value = false
-}
-
-const handleMobileLogin = () => {
-  showAuthModal.value = true
-  closeMobileMenu()
 }
 
 const handleMobileSignOut = async () => {
