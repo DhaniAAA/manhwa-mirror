@@ -1,66 +1,63 @@
-/**
- * Session Manager untuk Server-side Authentication
- * 
- * - Session disimpan di server dengan HttpOnly cookies (encrypted AES-256-GCM)
- * - Tidak ada token di client-side storage
- * - Semua akses via API proxy
- */
-
 interface SessionData {
-  access_token: string
-  refresh_token: string
+  access_token: string;
+  refresh_token: string;
 }
 
 class SessionManager {
-  private apiUrl = '/api/auth'
+  private apiUrl = "/api/auth";
 
   async setSession(accessToken: string, refreshToken: string): Promise<boolean> {
     try {
       const response = await fetch(`${this.apiUrl}/session`, {
-        method: 'POST',
-        credentials: 'include',
-        headers: { 'Content-Type': 'application/json' },
+        method: "POST",
+        credentials: "include",
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           access_token: accessToken,
           refresh_token: refreshToken,
         }),
-      })
-      return response.ok
+      });
+      return response.ok;
     } catch (error) {
-      console.error('Error setting session:', error)
-      return false
+      console.error("Error setting session:", error);
+      return false;
     }
   }
 
   async getSession(): Promise<SessionData | null> {
     try {
       const response = await fetch(`${this.apiUrl}/session`, {
-        method: 'GET',
-        credentials: 'include',
-      })
+        method: "GET",
+        credentials: "include",
+      });
 
-      if (!response.ok) return null
+      const contentType = response.headers.get("content-type");
+      if (!contentType || !contentType.includes("application/json")) {
+        // Ini menangani kasus di mana Vite mengembalikan HTML/JS saat endpoint API tidak ditemukan
+        return null;
+      }
 
-      const data = await response.json()
-      return data.session || null
+      const data = await response.json();
+      return data.session || null;
     } catch (error) {
-      console.error('Error getting session:', error)
-      return null
+      // Log error tapi jangan crash, return null agar user dianggap logout
+      console.warn("Error getting session (likely offline or dev mode):", error);
+      return null;
     }
   }
 
   async clearSession(): Promise<boolean> {
     try {
       const response = await fetch(`${this.apiUrl}/session`, {
-        method: 'DELETE',
-        credentials: 'include',
-      })
-      return response.ok
+        method: "DELETE",
+        credentials: "include",
+      });
+      return response.ok;
     } catch (error) {
-      console.error('Error clearing session:', error)
-      return false
+      console.error("Error clearing session:", error);
+      return false;
     }
   }
 }
 
-export const sessionManager = new SessionManager()
+export const sessionManager = new SessionManager();

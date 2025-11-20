@@ -11,25 +11,22 @@ console.log("Supabase Config:", {
 if (!supabaseUrl || !supabaseAnonKey) {
   console.error("CRITICAL: Missing Supabase environment variables!");
 }
-/**
- * Supabase Client dengan PKCE Flow + Server-side Session
- *
- * - persistSession: false (tidak simpan di Web Storage)
- * - storage: undefined (tidak gunakan localStorage/sessionStorage)
- * - flowType: pkce (PKCE flow untuk OAuth)
- * - Session disimpan di server via HttpOnly cookies (encrypted)
- */
+
+const browserStorage = typeof window !== "undefined" ? window.localStorage : undefined;
+
 export const supabase = createClient(supabaseUrl, supabaseAnonKey, {
   auth: {
-    storage: undefined,
-    autoRefreshToken: false,
-    persistSession: false,
+    storage: browserStorage,
+    autoRefreshToken: true,
+    persistSession: true,
     detectSessionInUrl: true,
     flowType: "pkce",
   },
   global: {
     headers: {
       Accept: "application/json",
+      apikey: supabaseAnonKey,
+      Authorization: `Bearer ${supabaseAnonKey}`,
     },
   },
 });

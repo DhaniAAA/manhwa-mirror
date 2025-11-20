@@ -15,9 +15,6 @@ export interface SignInData {
 }
 
 export class AuthService {
-  /**
-   * Sign up new user
-   */
   static async signUp(data: SignUpData): Promise<{ user: User | null; error: AuthError | null }> {
     try {
       const { data: authData, error } = await supabase.auth.signUp({
@@ -138,25 +135,32 @@ export class AuthService {
       if (error) {
         // AuthSessionMissingError is normal when user is not logged in
         if (error.message?.includes("Auth session missing")) {
-          // Silent - this is expected when user is not logged in
           return null;
         }
+
         console.error("❌ Get user error:", error);
+
+        // Ini mencegah pengiriman token rusak di request berikutnya
+        if (error.status === 401 || error.message?.includes("401") || error.message?.includes("Invalid token")) {
+          console.warn("⚠️ Session expired or invalid. Clearing auth state.");
+          await this.signOut(); // Bersihkan session lokal & server
+        }
+
         return null;
       }
 
       return user;
     } catch (error) {
-      // Check if it's the session missing error
       const err = error as any;
       if (err?.message?.includes("Auth session missing")) {
-        // Silent - this is expected when user is not logged in
         return null;
       }
       console.error("❌ Get user exception:", error);
       return null;
     }
   }
+
+  // ... methods resetPassword, updatePassword, onAuthStateChange remain unchanged ...
 
   /**
    * Reset password

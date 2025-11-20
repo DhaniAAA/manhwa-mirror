@@ -89,7 +89,11 @@ self.addEventListener('fetch', (event) => {
         // Cache successful responses
         if (response.status === 200) {
           caches.open(CACHE_NAME).then((cache) => {
-            cache.put(event.request, responseToCache)
+            try {
+              cache.put(event.request, responseToCache)
+            } catch (e) {
+              // Ignore cache errors
+            }
           })
         }
 
@@ -107,16 +111,24 @@ self.addEventListener('fetch', (event) => {
             return caches.match(OFFLINE_URL)
           }
 
-          // Return a basic offline response for other requests
-          // Menggunakan status 200 dengan placeholder untuk menghindari error di console
-          return new Response('<svg>...</svg>', {
-             status: 200,
-             headers: { 'Content-Type': 'image/svg+xml' }
-          })
+          // FIX: Hanya return SVG jika request adalah GAMBAR
+          // Ini memperbaiki error GTM (MIME type mismatch) dan fetch API error
+          const isImage = event.request.destination === 'image' ||
+            requestUrl.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i);
+
+          if (isImage) {
+            return new Response('<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>', {
+              status: 200,
+              headers: { 'Content-Type': 'image/svg+xml' }
+            })
+          }
+
+          // Untuk script/API/CSS yang gagal, biarkan error (atau return 503) agar tidak merusak parsing
+          return new Response('Offline', { status: 503, statusText: 'Service Unavailable' });
         })
       })
-    )
-  })
+  )
+})
 
 // Message event - handle commands from app
 self.addEventListener('message', (event) => {
