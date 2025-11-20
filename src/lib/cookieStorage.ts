@@ -19,8 +19,7 @@ class SessionManager {
       });
       return response.ok;
     } catch (error) {
-      // Abaikan error koneksi di localhost/dev tanpa server backend
-      console.warn("⚠️ Session sync failed (API not available):", error);
+      console.warn("[cookie] Session sync failed (API not available):", error);
       return false;
     }
   }
@@ -34,7 +33,6 @@ class SessionManager {
 
       if (!response.ok) return null;
 
-      // Cek header content-type
       const contentType = response.headers.get("content-type");
       if (!contentType || !contentType.includes("application/json")) {
         return null;
@@ -43,12 +41,12 @@ class SessionManager {
       try {
         const data = await response.json();
         return data.session || null;
-      } catch (parseError) {
-        console.warn("⚠️ API returned non-JSON response, ignoring.");
+      } catch (_parseError) {
+        console.warn("[cookie] API returned non-JSON response, ignoring.");
         return null;
       }
     } catch (error) {
-      console.warn("⚠️ Error getting session (likely offline or dev mode):", error);
+      console.warn("[cookie] Error getting session (likely offline or dev mode):", error);
       return null;
     }
   }
@@ -61,7 +59,7 @@ class SessionManager {
       });
       return response.ok;
     } catch (error) {
-      console.warn("⚠️ Session clear failed (API not available):", error);
+      console.warn("[cookie] Session clear failed (API not available):", error);
       return false;
     }
   }
