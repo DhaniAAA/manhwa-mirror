@@ -324,11 +324,6 @@ const closeMobileMenu = () => {
   mobileMenuOpen.value = false
 }
 
-const handleMobileSignOut = async () => {
-  await signOut()
-  closeMobileMenu()
-}
-
 const handleMobileSearch = () => {
   if (searchQuery.value.trim()) {
     emit('search', searchQuery.value)
